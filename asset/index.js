@@ -13,8 +13,9 @@ for (let characterName in hyyzvoices) {
 	lib.translate[`#ext:忽悠宇宙/asset/character/audio/${characterName}`] = hyyzvoices[characterName];//筛选技能
 }
 
-//——————————————整合武将信息——————————————//
-const allCharacter = { ...characters2023, ...characters2024, ...characters2025, ...characters2026 }
+//——————————————整合武将信息————————— —————//
+const allCharacter = { ...characters2023, ...characters2024, ...characters2025, ...characters2026 },//
+	dynamicTranslates = { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026 }
 //初始化一些常用属性
 const characters = {}, characterTitles = {}, characterIntros = {}, skills = {}, translates = {}, characterSorts = {};
 //依次过滤、筛选、解码导入的信息
@@ -70,7 +71,7 @@ if (lib.config['extension_忽悠宇宙_type'] == '1') {//按角色来源分类
 for (let data in allCharacter) {//键：日期
 	if (lib.config['extension_忽悠宇宙_type'] == '0') {//按圆梦时间分类
 		if (/^\d+$/.test(data)) {//日期 202408
-			sortName = 'hyyz_' + data
+			sortName = 'hyyzSort_' + data
 			translates[sortName] = `20${data.slice(0, 2)}.${data.slice(2)}圆梦`;//hyyz_202408: 2024.08圆梦
 			translates[sortName + '_info'] = `20${data.slice(0, 2)}.${data.slice(2, 4)}圆梦，由群赛投票、语音交流评选得到`;//hyyz_202408_info: xxxxxxx
 		}
@@ -82,6 +83,7 @@ for (let data in allCharacter) {//键：日期
 		characterSorts[sortName] ??= [];//生成一个空扩展包
 	}
 	for (let name in allCharacter[data]) {//键：角色 or 技能名 or 技能名_info
+		if (sortName != 'hyyzSort_2309') continue;
 		/**值：角色前置数组['',[],'',''] or 技能内容{} or 技能翻译'xx|xxxx' 
 		 * @type { Character | Skill | String } values
 		*/
@@ -109,7 +111,7 @@ for (let data in allCharacter) {//键：日期
 			}
 			if (temps[1]) {//称号
 				/**'xxx' \ 'xxxx-xxxx' */
-				const tilte = temps[1]
+				const tilte = temps[1];
 				if (tilte.includes('-')) {
 					characterTitles[name] = `<span class="firetext">${tilte.split('-')[0]}</span><br><span class="greentext">${tilte.split('-')[1]}</span>`
 					//加入扩展包
@@ -163,7 +165,7 @@ game.import("character", () => {
 		characterSort: { hyyzCharacter: characterSorts },
 		skill: skills,
 		translate: translates,// 
-		dynamicTranslate: { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026 },
+		dynamicTranslate: dynamicTranslates,
 		characterSubstitute: {
 			hyyz_ys_furina: [
 				["mengjvxing_achieve", ["ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/mengjvxing_achieve.jpg"]],
@@ -198,7 +200,6 @@ Object.assign(lib.characterReplace, characterReplace)
 
 //——————————————整合卡牌信息——————————————//
 const { card, skill, translate, list } = hyyzcards;
-console.log(card, translate);
 //skill、list不需要处理
 for (let cardName in card) {//translate需要添加card里折叠的文字
 	let values = card[cardName];

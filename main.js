@@ -49,7 +49,7 @@ async function PRECONTENT() {
 			hyyzSort_wuleizhengxin: '五雷正心',
 			hyyzSort_dengjie: '灯姐',
 			hyyzSort_sanqiu: '三秋',
-			hyyzSort_luoyeqiushuang: '落叶秋霜/尾改',
+			hyyzSort_luoyeqiushuang: '落叶秋霜',
 		},
 		prefix: {
 
@@ -59,6 +59,7 @@ async function PRECONTENT() {
 		//注释
 		get introduce() {
 			const introduce = {
+				生息: "特有概念：buff，加2点体力上限，下次受到伤害后，回复1点体力。失去此效果的回合结束后，减2点体力上限。",
 				//属性
 				风蚀: `特有概念：一名角色受到风蚀伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。`,
 				量子: `特有概念：一名角色使用量子【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。`,
@@ -95,7 +96,7 @@ async function PRECONTENT() {
 				断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
 				背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
 				单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
-
+				追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。'
 			}
 			for (let i in introduce) introduce[i] = '<li>' + introduce[i];
 			return introduce;
@@ -231,7 +232,9 @@ async function PRECONTENT() {
 			async content(event, trigger, player) {
 				const { cards } = await player.chooseCard(`纠缠`, `你可以重铸一张牌，${get.translation(trigger.target)}将随机重铸一张同类型的牌`, 'he', function (card) {
 					return _status.event.player.canRecast(card);
-				}).set('ai', (card) => 8 - get.value(card)).forResult();
+				})
+					.set('ai', (card) => 8 - get.value(card))
+					.forResult();
 				if (cards) {
 					await player.recast(cards);
 					const loses = trigger.target.getCards('he', card => get.type2(card) == get.type2(cards[0]));

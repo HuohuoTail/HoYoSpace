@@ -117,7 +117,8 @@ export const hyyzBuffx = async function () {//———————————�
 							content: `dotdebuff，每层令此角色使用牌指定其他角色后<span style="color:#f40cf0">失去1点体力</span>。`,
 						},
 						async bang(player) {
-							await player.loseHp(1, 'nosource').set('dotDebuff', 'hyyzBuff_lieshang');
+							await player.loseHp(1, 'nosource')
+								.set('dotDebuff', 'hyyzBuff_lieshang');
 						},
 					},
 					zhuoshao: {
@@ -168,7 +169,8 @@ export const hyyzBuffx = async function () {//———————————�
 							content: `dotdebuff，准备阶段，每层使此角色<span style="color:#f40cf0">受到1点无来源风蚀伤害</span>。`,
 						},
 						async bang(player) {
-							await player.damage(1, 'hyyz_wind', 'nosource').set('dotDebuff', 'hyyzBuff_fenghua');;
+							await player.damage(1, 'hyyz_wind', 'nosource')
+								.set('dotDebuff', 'hyyzBuff_fenghua');;
 						},
 					},
 					chudian: {
@@ -181,7 +183,8 @@ export const hyyzBuffx = async function () {//———————————�
 							content: `dotdebuff，始终横置；每层使此角色使用或打出无目标的牌后<span style="color:#f40cf0">受到1点雷电伤害</span>。`,
 						},
 						async bang(player) {
-							await player.damage(1, 'thunder', 'nosource').set('dotDebuff', 'hyyzBuff_chudian');;
+							await player.damage(1, 'thunder', 'nosource')
+								.set('dotDebuff', 'hyyzBuff_chudian');;
 						},
 					},
 				}
@@ -1602,8 +1605,8 @@ export const hyyzBuffx = async function () {//———————————�
 
 		}
 		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
-		game.hyyzSkillAudio = function (type = 'hyyz', skillname = '', ...args) {
-			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', type, 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
+		game.hyyzSkillAudio = function (skillname = '', ...args) {
+			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
 			return arguments
 		}
 		//检测一个扩展是否开启（未启用）
@@ -1703,7 +1706,8 @@ export const hyyzBuffx = async function () {//———————————�
 				return;
 			}
 			if (change > 0) {
-				const result = await player.draw(change).forResult();
+				const result = await player.draw(change)
+					.forResult();
 				if (result.length) {
 					event.result = {
 						bool: true,
@@ -1816,7 +1820,8 @@ export const hyyzBuffx = async function () {//———————————�
 				}
 				if (!event.prompt) event.prompt = `将${str}张牌置于牌堆${event.bottom == true ? '底' : '顶'}${event.No == 1 ? '' : '第' + event.No + '张'}（先选择的在上）`;
 				cards = await player.chooseCard(event.position, event.selectCard, event.filterCard, event.ai, event.forced)
-					.set('prompt', event.prompt).set('prompt2', event.prompt2)
+					.set('prompt', event.prompt)
+					.set('prompt2', event.prompt2)
 					.forResultCards();
 			}
 			if (cards) {
@@ -1869,7 +1874,8 @@ export const hyyzBuffx = async function () {//———————————�
 		}
 		lib.element.content.chooseToSwapSeat = async function (event, trigger, player) {
 			//while (true) {
-			//	const {targets} = await player.chooseTarget("选择两名角色交换位置", 2).forResult();
+			//	const {targets} = await player.chooseTarget("选择两名角色交换位置", 2)
+			//				.forResult();
 			//	if (!targets) break;
 			//	game.swapSeat(targets[0], targets[1], null, null, true);
 			//}

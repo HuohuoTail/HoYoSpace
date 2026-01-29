@@ -7,11 +7,11 @@ const characters = {
 		hyyz_xt_yvkong: ['驭空', ['female', 'hyyz_xt', 3, ['mengxiaowang', 'mengqingping', 'mengyunjin', 'mengchenling'], ["clan:狐族",]], '七夕月', ''],
 		mengxiaowang: {
 			audio: [
-				'ext:忽悠宇宙/asset/meng/audio/mengxiaowang1.mp3',
-				'ext:忽悠宇宙/asset/meng/audio/mengxiaowang2.mp3',
-				'ext:忽悠宇宙/asset/meng/audio/mengxiaowang3.mp3',
-				'ext:忽悠宇宙/asset/meng/audio/mengxiaowang1.mp3',
-				'ext:忽悠宇宙/asset/meng/audio/mengxiaowang2.mp3',
+				'ext:忽悠宇宙/asset/character/audio/mengxiaowang1.mp3',
+				'ext:忽悠宇宙/asset/character/audio/mengxiaowang2.mp3',
+				'ext:忽悠宇宙/asset/character/audio/mengxiaowang3.mp3',
+				'ext:忽悠宇宙/asset/character/audio/mengxiaowang1.mp3',
+				'ext:忽悠宇宙/asset/character/audio/mengxiaowang2.mp3',
 			],
 			init(player) {
 				player
@@ -295,7 +295,8 @@ const characters = {
 						let eff = get.effect(trigger.targets[0], trigger.card, trigger.player, player)
 						return get.effect(player, trigger.card, trigger.player, player) > eff ||
 							get.effect(trigger.player, trigger.card, player, player) > eff;
-					}).forResult();
+					})
+					.forResult();
 			},
 			async content(event, trigger, player) {
 				if (!player.mengsanyin) player.mengsanyin = [];
@@ -308,7 +309,8 @@ const characters = {
 
 				const { control } = await player
 					.chooseControl('使用者', '目标')
-					.set('prompt', '你想成为' + get.translation(trigger.card) + '的').set('ai', function () {
+					.set('prompt', '你想成为' + get.translation(trigger.card) + '的')
+					.set('ai', function () {
 						const player = _status.event.player, trigger = _status.event.getTrigger();
 						let eff = get.effect(trigger.targets[0], trigger.card, trigger.player, player)
 						if (get.effect(player, trigger.card, trigger.player, player) > eff) return '目标';
@@ -613,7 +615,8 @@ const characters = {
 						filterCard: true,
 						filterTarget: lib.filter.notMe,
 						position: 'he',
-					}).forResult();
+					})
+						.forResult();
 					if (cards && targets) {
 						await player.give(cards, targets[0]);
 						player.when({ source: 'damageSource' }).then(() => {
@@ -852,7 +855,8 @@ const characters = {
 									cards,
 								], (button) => {
 									return get.value(button.link);
-								}).forResult();
+								})
+									.forResult();
 								if (links) {
 									cards.removeArray(links)
 									await current.gain(links, player, 'give');
@@ -863,7 +867,8 @@ const characters = {
 								if (!cards.length) break;
 								const { links } = await target.chooseButton(['授冠：获得其中一张牌', cards], (button) => {
 									return get.value(button.link);
-								}).forResult();
+								})
+									.forResult();
 								if (links) {
 									cards.remove(links[0]);
 									await target.gain(links, player, 'give');
@@ -892,10 +897,12 @@ const characters = {
 				return get.attitude2(event.player) > 0;
 			},
 			async cost(event, trigger, player) {
-				event.result = await player.chooseTarget('造势：请一名其他角色摸两张牌', lib.filter.notMe).set('ai', i => get.attitude2(i)).forResult()
+				event.result = await player.chooseTarget('造势：请一名其他角色摸两张牌', lib.filter.notMe)
+					.set('ai', i => get.attitude2(i)).forResult()
 			},
 			async content(event, trigger, player) {
-				const { bool } = await event.targets[0].chooseBool('是否摸两张牌。若如此做，展示牌时，king先获得其中两张牌').forResult();
+				const { bool } = await event.targets[0].chooseBool('是否摸两张牌。若如此做，展示牌时，king先获得其中两张牌')
+					.forResult();
 				if (bool) {
 					event.targets[0].draw(2);
 					event.targets[0].addSkill('mengzhushiK2');
@@ -1139,7 +1146,8 @@ const characters = {
 							.forResult()
 						if (game.players.every(i => targets.includes(i)) && game.players.length == targets.length) {
 							player.logSkill(event.name);
-							let results = await player.draw(num).forResult();
+							let results = await player.draw(num)
+								.forResult();
 							results = results.filter(i => player.getCards('he').includes(i));
 							const { cards: cs, targets: ts } = await player.chooseCardTarget({
 								filterCard: (card) => results.includes(card),
@@ -1187,7 +1195,9 @@ const characters = {
 			},
 			usable: 1,
 			async content(event, trigger, player) {
-				const { bool } = await player.chooseToCompare(event.targets[0]).set('small', true).forResult();
+				const { bool } = await player.chooseToCompare(event.targets[0])
+					.set('small', true)
+					.forResult();
 				if (bool) {
 					delete player.storage.counttrigger.menggaojie;
 					game.log(player, "重置了", "#g【高洁】");
@@ -1234,7 +1244,8 @@ const characters = {
 			},
 			async cost(event, trigger, player) {
 				const cards = get.centralCards().filter(i => get.timetype(i) == 'notime' && player.hasUseTarget(i))
-				const { links } = await player.chooseButton(['辩琴：选择使用的牌', cards]).forResult();
+				const { links } = await player.chooseButton(['辩琴：选择使用的牌', cards])
+					.forResult();
 				if (links) {
 					event.result = {
 						bool: true,
@@ -1275,7 +1286,8 @@ const characters = {
 				game.log(player, "将", cards, "置于了牌堆顶");
 				if (_status.currentPhase.countCards('h') >= player.countCards('h')) {
 					trigger.targets.length = 0;
-					const { suit } = await player.judge().forResult();
+					const { suit } = await player.judge()
+						.forResult();
 					switch (suit) {
 						case "heart":
 							await player.recover();
@@ -1330,21 +1342,21 @@ const characters = {
 			logAudio(event, player, name) {
 				if (name == 'damageBefore') {
 					return [
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie1.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie2.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie3.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie4.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie1.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie2.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie3.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie4.mp3',
 					]
 				} else {
 					return [
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie5.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie6.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie7.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie8.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie9.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie10.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie11.mp3',
-						'ext:忽悠宇宙/asset/meng/audio/menghunqvmingzhichishenbumie12.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie5.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie6.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie7.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie8.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie9.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie10.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie11.mp3',
+						'ext:忽悠宇宙/asset/character/audio/menghunqvmingzhichishenbumie12.mp3',
 					]
 				}
 			},
@@ -1693,7 +1705,8 @@ const characters = {
 					},
 					async cost(event, trigger, player) {
 						const { cards } = await player
-							.choosePlayerCard('e', get.prompt("zzhenggong"), trigger.source).set('ai', (button) => {
+							.choosePlayerCard('e', get.prompt("zzhenggong"), trigger.source)
+							.set('ai', (button) => {
 								if (get.attitude2(_status.event.getTrigger().source) <= 0) {
 									return get.equipValue(button.link);
 								}
@@ -1890,7 +1903,8 @@ const characters = {
 						return true
 					},
 					async cost(event, trigger, player) {
-						event.result = await lib.yingbian.condition.complex.get("zhuzhan")(trigger).forResult();
+						event.result = await lib.yingbian.condition.complex.get("zhuzhan")(trigger)
+							.forResult();
 					},
 					async content(event, trigger, player) {
 						player.popup("yingbian_force_tag", lib.yingbian.condition.color.get("force"));
@@ -2120,7 +2134,8 @@ const characters = {
 			logTarget: 'targets',
 			async content(event, trigger, player) {
 				trigger.cancel();
-				const { bool } = await player.chooseToCompare(event.targets[0]).forResult();
+				const { bool } = await player.chooseToCompare(event.targets[0])
+					.forResult();
 				if (bool) {
 					const targets = []
 					game.getGlobalHistory('everything', (evt) => {
@@ -2774,7 +2789,8 @@ const characters = {
 			},
 			async content(event, trigger, player) {
 				const target = event.targets[0];
-				const { cards } = await player.gainPlayerCard(target, 'he', true).forResult();
+				const { cards } = await player.gainPlayerCard(target, 'he', true)
+					.forResult();
 
 				const sha = get.autoViewAs({ name: 'sha', isCard: true }),
 					juedou = get.autoViewAs({ name: 'juedou', isCard: true })
@@ -2782,10 +2798,13 @@ const characters = {
 					(target.canUse(sha, player, false, false) || target.canUse(juedou, player, false, false))
 				) {
 					const { control } = await target
-						.chooseControl('杀', '决斗').set('prompt', '对' + get.translation(player) + '使用：').set('ai', () =>
+						.chooseControl('杀', '决斗')
+						.set('prompt', '对' + get.translation(player) + '使用：')
+						.set('ai', () =>
 							get.effect(player, sha, target, target) > get.effect(player, juedou, target, target) ? '杀' : '决斗'
 						).forResult()
-					target.useCard(control == '杀' ? sha : juedou, player).set('baseDamage', player.getStat().skill.mengfuqin || 1)
+					target.useCard(control == '杀' ? sha : juedou, player)
+						.set('baseDamage', player.getStat().skill.mengfuqin || 1)
 				}
 			},
 			ai: {
@@ -2810,7 +2829,8 @@ const characters = {
 				event.result = await player.chooseCard(2, get.prompt('mengtashi'), '重铸两张类别不同的牌并检索获得一张与之类别不同的牌', 'he', (card) => {
 					if (ui.selected.cards.length > 0) return get.type2(card) != get.type2(ui.selected.cards[0])
 					return true;
-				}).set("complexCard", true).forResult()
+				})
+					.set("complexCard", true).forResult()
 			},
 			async content(event, trigger, player) {
 				const num = Math.max(0, get.number(event.cards[0]), get.number(event.cards[1])),
@@ -2904,7 +2924,8 @@ const characters = {
 						trigger.getParent().directHit.add(trigger.target)
 					} else {
 						if (player.countCards('he')) {
-							const { cards } = await player.chooseCard('重铸一张牌', 'he', true).forResult();
+							const { cards } = await player.chooseCard('重铸一张牌', 'he', true)
+								.forResult();
 							if (cards) await player.recast(cards);
 						}
 						player.tempBanSkill('mengkouzun')
@@ -3124,7 +3145,8 @@ const characters = {
 			async cost(event, trigger, player) {
 				event.result = await player.chooseCard(get.prompt2('mengyvqiong'), [1, player.storage.counttrigger.mengpiye], card => {
 					return get.is.shownCard(card)
-				}).forResult();
+				})
+					.forResult();
 			},
 			async content(event, trigger, player) {
 				player.awakenSkill(event.name);

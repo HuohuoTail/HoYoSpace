@@ -326,7 +326,8 @@ export const hyyzcards = {
 				//第二步：描述
 				const list2 = map[control1];
 				const { control: control2 } = await target.chooseControl(list2)
-					.set('list2', list2).set('control1', control1)
+					.set('list2', list2)
+					.set('control1', control1)
 					.set('prompt', '自塑尘脂')
 					.set('prompt2', '二、选择描述包含的词语')
 					.set('ai', () => {
@@ -1479,13 +1480,14 @@ export const hyyzcards = {
 						if (i != "hyyz_jiwang" && get.type(i) == "trick" && lib.filter.filterCard({ name: i, cards: cards }, player)) list.push(["锦囊", "", i]);
 					}
 					if (list.length) {
-						player.chooseButton(["继往开来：选择要使用的牌", [list, "vcard"]], true).set("ai", function (button) {
-							var player = _status.event.player;
-							return player.getUseValue({
-								name: button.link[2],
-								cards: player.getCards("h"),
+						player.chooseButton(["继往开来：选择要使用的牌", [list, "vcard"]], true)
+							.set("ai", function (button) {
+								var player = _status.event.player;
+								return player.getUseValue({
+									name: button.link[2],
+									cards: player.getCards("h"),
+								});
 							});
-						});
 					} else event.finish();
 				}
 				"step 2";
@@ -1551,6 +1553,21 @@ export const hyyzcards = {
 				},
 				result: {
 					target: (player, target, card) => get.equipResult(player, target, card.name),
+				},
+			},
+		},
+		hyyz_mengtaixu_info: ['太虚剑气', '原本是一张普通牌。', ``],
+		hyyz_mengtaixu: {
+			type: "equip",
+			derivation: "hyyz_b3_sushang",
+			fullimage: true,
+			subtype: "equip1",
+			cardPrompt(card) {
+				return '原本是一张普通牌，被置入了武器栏。';
+			},
+			ai: {
+				basic: {
+					equipValue: 0.1,
 				},
 			},
 		},
@@ -2374,7 +2391,8 @@ export const hyyzcards = {
 			forced: true,
 			async content(event, trigger, player) {
 				const { bool } = await player
-					.chooseBool(get.prompt('hyyz_weiba_skill') + '失去1点体力，让尾巴大爷代你玩一回合；或让尾巴大爷伤心离开').set('ai', () => {
+					.chooseBool(get.prompt('hyyz_weiba_skill') + '失去1点体力，让尾巴大爷代你玩一回合；或让尾巴大爷伤心离开')
+					.set('ai', () => {
 						return player.hp > 2
 					})
 					.forResult();
