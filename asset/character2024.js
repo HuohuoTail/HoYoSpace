@@ -1020,7 +1020,7 @@ const characters = {
 					player.addTempSkill('mengtansheng_usable');
 				}
 				if (get.number(card1) == get.number(card2) && get.suit(card1) == get.suit(card2)) {
-					game.hyyzSkillAudio('meng', 'mengtansheng', 3)
+					game.hyyzSkillAudio('mengtansheng', 3)
 					let count = 0;
 					while (count < 20) {
 						count++;
@@ -2099,7 +2099,7 @@ const characters = {
 			logAudio: () => false,
 			init() {
 				lib.translate['visible_hyyz_ys_furina'] = '明·芙';
-				game.hyyzSkillAudio('meng', 'mengjvxing_init',)
+				game.hyyzSkillAudio('mengjvxing_init',)
 			},
 			dutySkill: true,
 			trigger: { global: "roundStart" },
@@ -2147,7 +2147,7 @@ const characters = {
 							return -get.attitude2(target) / (get.distance(_status.event.player, target) + 0.1);
 						})).result.targets;
 					if (targets.length) {
-						game.hyyzSkillAudio('meng', 'mengjvxing', player.countEnabledSlot())
+						game.hyyzSkillAudio('mengjvxing', player.countEnabledSlot())
 						player.line(targets, 'thunder');
 						exchangeShownCards(targets[0], 'hyyz_ys_furina', '明·芙');
 					}
@@ -2348,7 +2348,7 @@ const characters = {
 						if (count == 1) index = 10;
 					}
 				}
-				game.hyyzSkillAudio('meng', 'mengshenyi', index)
+				game.hyyzSkillAudio('mengshenyi', index)
 			},
 			group: ['mengshenyi_draw',],//'mengshenyi_yvyan'
 			subSkill: {
@@ -2515,10 +2515,10 @@ const characters = {
 
 				if (Math.random() > 0.5) {
 					trigger.phaseList[trigger.num] = 'phaseDiscard|mengrensheng';
-					game.hyyzSkillAudio('meng', 'mengrensheng', 3, 4)
+					game.hyyzSkillAudio('mengrensheng', 3, 4)
 				} else {
 					trigger.phaseList[trigger.num] = 'phaseDraw|mengrensheng';
-					game.hyyzSkillAudio('meng', 'mengrensheng', 1, 2)
+					game.hyyzSkillAudio('mengrensheng', 1, 2)
 				}
 				game.log('#g【人生】', str, trigger.phaseList[trigger.num].split("|")[0]);
 			},
@@ -3209,7 +3209,7 @@ const characters = {
 					const { result: cards2 } = await trigger.player.draw();
 
 					if (!hasInclusion(cards1[0]).length && !hasInclusion(cards2[0]).length) {
-						game.hyyzSkillAudio('meng', 'mengxvkong', 1, 2, 3, 4, 5, 6, 7, 8)
+						game.hyyzSkillAudio('mengxvkong', 1, 2, 3, 4, 5, 6, 7, 8)
 					}
 					if (hasInclusion(cards1[0]).length && player.isIn()) {
 						let list = [];
@@ -3429,7 +3429,7 @@ const characters = {
 				"ext:忽悠宇宙/asset/character/audio/mengwuwang6.mp3",
 			],
 			init: (player, skill) => {
-				game.hyyzSkillAudio('meng', 'mengwuwang', 7)
+				game.hyyzSkillAudio('mengwuwang', 7)
 				player.storage[skill] = {
 					card: (player) => player.countCards('h', { name: 'ying' }) > 0,
 					hujia: (player) => player.hujia > 0,
@@ -3764,14 +3764,14 @@ const characters = {
 						};
 					}
 					if (!card) card = game.createCard2('hyyz_mengxiangyixin', 'heart', 6);
-					game.hyyzSkillAudio('meng', 'mengwuxiang', 4)
+					game.hyyzSkillAudio('mengwuxiang', 4)
 					player.$gain2(card, false);
 					player.equip(card);
 				}
 				else {
 					switch (keys[0]) {
 						case 'card': {
-							game.hyyzSkillAudio('meng', 'mengwuxiang', 1)
+							game.hyyzSkillAudio('mengwuxiang', 1)
 							player.addSkillLog(lib.skill.mengwuxiang.derivation[0]);
 							lib.translate.mengwuwang_info =
 								'锁定技，你的初始牌为【影】。你受到伤害时、或一名角色的判定结果为黑色时，你改为将一个{<span class="thundertext" style="font-family: yuanli">首项</span>}当雷【杀】使用，目标角色本回合与{<span class="thundertext" style="font-family: yuanli">此项</span>}类型相同的事物失效。<span class="thundertext" style="font-family: yuanli"><li><s>①【影】</s><li>②护甲<li>③普通技能</span>';
@@ -3779,7 +3779,7 @@ const characters = {
 							break;
 						}
 						case 'hujia': {
-							game.hyyzSkillAudio('meng', 'mengwuxiang', 2)
+							game.hyyzSkillAudio('mengwuxiang', 2)
 							player.addSkillLog(lib.skill.mengwuxiang.derivation[1]);
 							lib.translate.mengwuwang_info =
 								'锁定技，你的初始牌为【影】。你受到伤害时、或一名角色的判定结果为黑色时，你改为将一个{<span class="thundertext" style="font-family: yuanli">首项</span>}当雷【杀】使用，目标角色本回合与{<span class="thundertext" style="font-family: yuanli">此项</span>}类型相同的事物失效。<span class="thundertext" style="font-family: yuanli"><li><s>①【影】</s><li><s>②护甲</s><li>③普通技能</span>';
@@ -3787,7 +3787,7 @@ const characters = {
 							break;
 						}
 						case 'skill': {
-							game.hyyzSkillAudio('meng', 'mengwuxiang', 3)
+							game.hyyzSkillAudio('mengwuxiang', 3)
 							player.addSkillLog(lib.skill.mengwuxiang.derivation[2]);
 							lib.translate.mengwuwang_info =
 								'锁定技，你的初始牌为【影】。你受到伤害时、或一名角色的判定结果为黑色时，你改为将一个{<span class="thundertext" style="font-family: yuanli">首项</span>}当雷【杀】使用，目标角色本回合与{<span class="thundertext" style="font-family: yuanli">此项</span>}类型相同的事物失效。<span class="thundertext" style="font-family: yuanli"><li><s>①【影】</s><li><s>②护甲</s><li><s>③普通技能</s></span>';
@@ -3858,7 +3858,7 @@ const characters = {
 				}
 				player.say("我会成为，下一个『开始』");
 				player.changeSkin({ characterName: "hyyz_ys_leidianying" }, "mengwumeng");
-				player.node.avatar.setBackgroundImage('extension/忽悠宇宙/asset/meng/image/hyyz_ys_leidianying.jpg');
+				player.node.avatar.setBackgroundImage('extension/忽悠宇宙/asset/character/image/hyyz_ys_leidianying.jpg');
 			},
 			trigger: {
 				player: 'useCardToTargeted'
@@ -5511,9 +5511,9 @@ const characters = {
 						let a = ['为国除弊，怎惜残年！', '接天连夜无穷碧，映日荷花别样红！'].randomGet();
 						player.say(a);
 						if (a == '为国除弊，怎惜残年！') {
-							game.hyyzSkillAudio('meng', 'mengyingzhu', 3)
+							game.hyyzSkillAudio('mengyingzhu', 3)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengyingzhu', 4)
+							game.hyyzSkillAudio('mengyingzhu', 4)
 						}
 						const allcount = Math.min(map.get(target), 3);//先辅次数至多3
 						for (const current of [player, target]) {
@@ -5545,9 +5545,9 @@ const characters = {
 										let a = ['姐妹们，爱国真的有用！', '耶！被阿中哥哥表扬了！'].randomGet();
 										player.say(a);
 										if (a == '姐妹们，爱国真的有用！') {
-											game.hyyzSkillAudio('meng', 'mengyingzhu', 5)
+											game.hyyzSkillAudio('mengyingzhu', 5)
 										} else {
-											game.hyyzSkillAudio('meng', 'mengyingzhu', 6)
+											game.hyyzSkillAudio('mengyingzhu', 6)
 										}
 									};
 									await current.give(cards, targets[0]);
@@ -5576,9 +5576,9 @@ const characters = {
 						let a = ['玄甲耀目，朱旗绛天！', '干云气惊八万里，一键光寒十九州！'].randomGet();
 						player.say(a);
 						if (a == '玄甲耀目，朱旗绛天！') {
-							game.hyyzSkillAudio('meng', 'mengyingzhu', 1)
+							game.hyyzSkillAudio('mengyingzhu', 1)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengyingzhu', 2)
+							game.hyyzSkillAudio('mengyingzhu', 2)
 						}
 						player.storage.mengyingzhu.set(target, map.has(target) ? map.get(target) + 1 : 1);
 						player.markSkill('mengyingzhu');
@@ -5759,17 +5759,17 @@ const characters = {
 						let a = ['摅高文之宿愤，光祖宗之玄灵！', '拓后嗣之境宇，振华夏之天声！'].randomGet();
 						player.say(a);
 						if (a == '摅高文之宿愤，光祖宗之玄灵！') {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 3)
+							game.hyyzSkillAudio('mengqiongpi', 3)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 4)
+							game.hyyzSkillAudio('mengqiongpi', 4)
 						}
 					} else if (trigger.source == player) {
 						let a = ['不服国命，纵兵凶战危，也应以血相偿！', '花墙霸屏金鼓震，饭圈起兮万人随！'].randomGet();
 						player.say(a);
 						if (a == '不服国命，纵兵凶战危，也应以血相偿！') {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 7)
+							game.hyyzSkillAudio('mengqiongpi', 7)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 8)
+							game.hyyzSkillAudio('mengqiongpi', 8)
 						}
 					}
 				} else if (trigger.name == 'gain') {
@@ -5778,9 +5778,9 @@ const characters = {
 						let a = ['饭圈出征，寸草不生！', '守护我们最好的阿中哥哥！'].randomGet();
 						player.say(a);
 						if (a == '饭圈出征，寸草不生！') {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 5)
+							game.hyyzSkillAudio('mengqiongpi', 5)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 6)
+							game.hyyzSkillAudio('mengqiongpi', 6)
 						}
 						target = game.filterPlayer(current => {
 							if (current == trigger.player) return false;//失去牌的人是获得的牌的人
@@ -5796,9 +5796,9 @@ const characters = {
 							let a = ['蠢尔蛮荆，大邦为仇！', '威动四极，武义直方！'].randomGet();
 							player.say(a);
 							if (a == '蠢尔蛮荆，大邦为仇！') {
-								game.hyyzSkillAudio('meng', 'mengqiongpi', 1)
+								game.hyyzSkillAudio('mengqiongpi', 1)
 							} else {
-								game.hyyzSkillAudio('meng', 'mengqiongpi', 2)
+								game.hyyzSkillAudio('mengqiongpi', 2)
 							}
 						}
 						target = game.filterPlayer(current => {
@@ -5856,9 +5856,9 @@ const characters = {
 						let a = ['主公，臣妾无异心呐！', '铁拳怎么砸到我身上了？'].randomGet();
 						player.say(a);
 						if (a == '主公，臣妾无异心呐！') {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 11)
+							game.hyyzSkillAudio('mengqiongpi', 11)
 						} else {
-							game.hyyzSkillAudio('meng', 'mengqiongpi', 12)
+							game.hyyzSkillAudio('mengqiongpi', 12)
 						}
 						player.give(player.getCards('he'), trigger.player);
 						player.give(player.getExpansions('mengqiongpi'), trigger.player);
@@ -5943,9 +5943,9 @@ const characters = {
 							let a = ['不惧千夫指，但求无愧心！', '你们越是指责我，那就越说明我做对了！'].randomGet();
 							target.say(a);
 							if (a == '不惧千夫指，但求无愧心！') {
-								game.hyyzSkillAudio('meng', 'mengqiongpi', 9)
+								game.hyyzSkillAudio('mengqiongpi', 9)
 							} else {
-								game.hyyzSkillAudio('meng', 'mengqiongpi', 10)
+								game.hyyzSkillAudio('mengqiongpi', 10)
 							};
 						}
 					},
@@ -7681,7 +7681,7 @@ const characters = {
 			},
 			async content(event, trigger, player) {
 				game.broadcastAll(function () {
-					if (lib.config.background_speak) game.hyyzSkillAudio('meng', 'mengfanxing', 1, 2)
+					if (lib.config.background_speak) game.hyyzSkillAudio('mengfanxing', 1, 2)
 				});
 				if (trigger.player == player && !player.hasSkill('menghuimeng')) {
 					await player.addSkills('menghuimeng')
@@ -13847,7 +13847,7 @@ const characters = {
 			trigger: {
 				global: 'phaseAfter'
 			},
-			direct: true,
+			silent: true,
 			async content(event, trigger, player) {
 				player.storage.mengbolun = {};
 			},
@@ -14059,7 +14059,7 @@ const characters = {
 			async content(event, trigger, player) {
 				player.awakenSkill("mengleishou");
 				const num = player.countMark('mengyueguan');
-				game.hyyzSkillAudio('meng', 'mengleishou', 2)
+				game.hyyzSkillAudio('mengleishou', 2)
 				while (player.countMark('mengyueguan') > 0) {
 					const { bool } = await player
 						.chooseUseTarget({ name: "sha", isCard: true },
@@ -14068,9 +14068,9 @@ const characters = {
 					player.removeMark('mengyueguan', 1);
 					if (bool) {
 						if (!player.countMark('mengyueguan')) {
-							game.hyyzSkillAudio('meng', 'mengleishou', 5)
+							game.hyyzSkillAudio('mengleishou', 5)
 						}
-						else game.hyyzSkillAudio('meng', 'mengleishou', 3, 4)
+						else game.hyyzSkillAudio('mengleishou', 3, 4)
 					}
 					else return;
 					if (player.countMark('mengyueguan') < 6) await player.removeSkills(['mengtiantong']);
@@ -17094,7 +17094,7 @@ const characters = {
 						}
 					}
 					if (num > 0) player.when({ player: 'phaseJieshuBegin' }).vars({ num: num }).then(() => {
-						game.hyyzSkillAudio('meng', 'mengwendao', 7, 8)
+						game.hyyzSkillAudio('mengwendao', 7, 8)
 						player.loseHp(num)
 					});
 				}
@@ -18300,7 +18300,7 @@ const characters = {
 		"menghesong_info": "合颂|每回合限一次，有角色使用牌造成大于1的伤害后，在此牌结算后你可视为使用一张同名牌。若你因此造成的伤害值与其造成的伤害值：相同，其摸一张牌；不相同，你令受伤角色回复1点体力。",
 		"mengxiezou_info": "协奏|每轮每项各限一次，一名角色造成伤害时，你可观看并分配你与其的手牌且差值不能大于1。若因此你的手牌数大于/小于其（若为你无此条件），此伤害-1/+1。",
 
-		meng_b3_sp_qingque: ['青雀', ['female', 'hyyz_xt', 3, ['mengmystouxian', 'mengmysmianzuo'], []], '落叶秋霜', ''],
+		hyyz_b3_sp_qingque: ['青雀', ['female', 'hyyz_xt', 3, ['mengmystouxian', 'mengmysmianzuo'], []], '落叶秋霜', ''],
 		mengmystouxian: {
 			audio: 'hyyzlaoyue',
 			trigger: {

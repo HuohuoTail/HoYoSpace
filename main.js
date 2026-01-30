@@ -135,7 +135,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 10,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/hyyz_water.png',
+			background: 'extension/忽悠宇宙/asset/card/image/hyyz_water.png',
 			lineColor: [0, 100, 200],
 			color: [0, 100, 200],
 		});
@@ -143,7 +143,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 20,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/fire.png',
+			background: 'extension/忽悠宇宙/asset/card/image/fire.png',
 			lineColor: [255, 0, 0],
 			color: [255, 0, 0],
 		});
@@ -151,7 +151,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 30,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/thunder.png',
+			background: 'extension/忽悠宇宙/asset/card/image/thunder.png',
 			lineColor: [180, 0, 180],
 			color: [180, 0, 180],
 		});
@@ -159,7 +159,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 40,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/ice.png',
+			background: 'extension/忽悠宇宙/asset/card/image/ice.png',
 			lineColor: [70, 170, 170],
 			color: [70, 170, 170],
 		});
@@ -167,7 +167,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 70,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/hyyz_wind.png',
+			background: 'extension/忽悠宇宙/asset/card/image/hyyz_wind.png',
 			lineColor: [80, 220, 220],
 			color: [80, 220, 220],
 		});
@@ -215,7 +215,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 80,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/hyyz_quantum.png',
+			background: 'extension/忽悠宇宙/asset/card/image/hyyz_quantum.png',
 			lineColor: [80, 0, 180],
 			color: [80, 0, 180],
 		});
@@ -252,7 +252,7 @@ async function PRECONTENT() {
 			audio: undefined,
 			linked: true,
 			order: 90,
-			background: 'extension/忽悠宇宙/asset/hyyzCard/image/hyyz_imaginary.png',
+			background: 'extension/忽悠宇宙/asset/card/image/hyyz_imaginary.png',
 			lineColor: [255, 255, 0],
 			color: [255, 255, 0],
 		});

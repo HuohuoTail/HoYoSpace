@@ -83,7 +83,7 @@ for (let data in allCharacter) {//键：日期
 		characterSorts[sortName] ??= [];//生成一个空扩展包
 	}
 	for (let name in allCharacter[data]) {//键：角色 or 技能名 or 技能名_info
-		if (sortName != 'hyyzSort_2309') continue;
+		if (sortName != 'hyyzSort_2311') continue;
 		/**值：角色前置数组['',[],'',''] or 技能内容{} or 技能翻译'xx|xxxx' 
 		 * @type { Character | Skill | String } values
 		*/
