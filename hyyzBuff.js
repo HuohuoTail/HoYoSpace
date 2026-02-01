@@ -1395,6 +1395,8 @@ export const hyyzBuffx = async function () {//———————————�
 			if (['trick', 'basic'].includes(get.type(obj, method, player))) return 'notime';
 			return undefined;
 		}
+
+
 		lib.translate._hyyz_fireCard = "🔥"
 		/**每回合结束后弃置点燃牌 */
 		lib.skill._hyyz_fireCard1 = {
@@ -1449,7 +1451,6 @@ export const hyyzBuffx = async function () {//———————————�
 				}
 			},
 		}
-
 		/**点燃一些牌
 		 * @param {Card | Card[] | 'h' | 'e' | 'j' | 's' | 'x'} cards 一个区域/一堆牌/一张牌
 		 * @returns {GameEventPromise}
@@ -1483,6 +1484,7 @@ export const hyyzBuffx = async function () {//———————————�
 			this.addGaintag(cards, '_hyyz_fireCard');
 			await event.trigger("hyyzDianranEnd");
 		}
+
 
 		/**可以发起单挑
 		 * 角色超过2，未处于单挑状态（记录了移除的角色）
@@ -1575,6 +1577,7 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 		}
 
+
 		//调整体力值至x//(甲,5)//(甲,5,甲,5)
 		game.changeHpTo = function (...args) {
 			let currents = args.filter(i => get.itemtype(i) == 'player'),
@@ -1604,6 +1607,8 @@ export const hyyzBuffx = async function () {//———————————�
 			event.trigger('changeHpToAfter')
 
 		}
+
+
 		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
 		game.hyyzSkillAudio = function (skillname = '', ...args) {
 			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
@@ -1621,6 +1626,7 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 			return false;
 		};
+
 
 		//进入隐匿（未启用）
 		lib.element.player.hyyzUnseen = async function (noChange) {
@@ -1684,6 +1690,7 @@ export const hyyzBuffx = async function () {//———————————�
 				document.querySelector(".mark-text.small-text").textContent = lib.translate[skillName];
 		};
 
+
 		//调整手牌至x
 		lib.element.player.changeCardTo = function (num) {
 			let next = game.createEvent('changeCardTo', false);
@@ -1732,6 +1739,7 @@ export const hyyzBuffx = async function () {//———————————�
 			event.trigger('changeCardToEnd')
 			event.trigger('changeCardToAfter')
 		}
+
 
 		//把num张牌放在牌堆顶/牌堆底（'bottom'）的第No张；返回放置的牌
 		//可以放指定的牌为参数//参考赛飞儿
@@ -1850,6 +1858,7 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 		}
 
+
 		/**获取若干有花色有点数的影（未启用）
 		 * @param {number} count 数量
 		 * @returns {cards}
@@ -1863,7 +1872,6 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 			return cards;
 		}
-
 
 		/**进行一次座次排布（未启用） */
 		lib.element.player.chooseToSwapSeat = function () {
@@ -1987,5 +1995,265 @@ export const hyyzBuffx = async function () {//———————————�
 			}, toSwapList);
 			await game.delay();
 		}
+		/**有扩展装备栏 */
+		lib.element.player.hasExpandedSlot = function (slot) {
+			if (slot == "horse" || slot == "equip3_4") {
+				return this.hasExpandedSlot(3) && (get.is.mountCombined() || this.hasExpandedSlot(4));
+			} else if (get.is.mountCombined() && slot == "equip4") {
+				return false;
+			}
+			return this.countDisabledSlot(slot) > 0;
+		}
+		/**返回扩展栏数 */
+		lib.element.player.countExpandedSlot = function (slot) {
+			let allNum = 0;
+			const storage = this.expandedSlots;
+			if (!storage) return 0;
+			if (slot) {//给定位置
+				if (storage[slot]) return storage[slot];
+				if (storage['equip' + slot]) return storage['equip' + slot];
+			} else {//统计所有
+				for (let key in storage) {
+					let subNum = storage[key];
+					if (typeof subNum == 'number' && subNum > 0) {
+						allNum += subNum;
+					}
+				}
+			}
+			return allNum;
+		}
+		/**返回拥有的扩展栏对象{ equip: 1 } */
+		lib.element.player.getExpandedSlot = function () {
+			const storage = this.expandedSlots;
+			if (!storage) return {};
+			const keys = Object.keys(storage).sort();
+			let map = {}, bool = false;
+			for (const key of keys) {//遍历每个部位
+				const subNum = storage[key];//该位置的扩展数
+				if (typeof subNum == 'number' && subNum > 0) {
+					map[key] = subNum;//不写storage[key]，是因为可能是0或者别的什么东西，必须确保为正数
+					bool = true;
+				}
+			}
+			if (bool) return map;
+			return {};
+		}
+		/**扩展栏的标记(无用) */
+		lib.element.player.getExpandedSlot2 = function () {
+			const storage = this.expandedSlots;//{ equip: 1 }
+			if (!storage) return '当前没有扩展装备栏';
+			const keys = Object.keys(storage).sort(), combined = get.is.mountCombined();
+			let str = '';
+			for (const key of keys) {//遍历每个部位
+				const subNum = storage[key];//该位置的扩展数
+				if (typeof subNum == 'number' && subNum > 0) {
+					let trans = (combined && key == 'equip3') ? '坐骑' : get.translation(key);//合并坐骑后，34都是3_4，没有3和4，统称坐骑栏。如果意外有3，看成坐骑。此处只是改个名
+					str += '<li>' + trans + '栏：' + subNum + '个<br>';
+				}
+			}
+			if (str.length) return str.slice(0, str.length - 4);//去掉最后的<br>
+			return '当前没有扩展装备栏';
+		}
+		/**删除指定位置的扩展栏 */
+		lib.element.player.deleteEquip = function () {
+			var next = game.createEvent('deleteEquip');
+			next.player = this;
+			next.slots = [];
+			for (var i = 0; i < arguments.length; i++) {
+				if (get.itemtype(arguments[i]) == 'player') {
+					next.source = arguments[i];
+				}
+				else if (Array.isArray(arguments[i])) {
+					for (var arg of arguments[i]) {
+						if (typeof arg == 'string') {
+							if (arg.startsWith('equip') && parseInt(arg.slice(5)) > 0) next.slots.push(arg);
+						}
+						else if (typeof arg == 'number') {
+							next.slots.push('equip' + arg);
+						}
+					}
+				}
+				else if (typeof arguments[i] == 'string') {
+					if (arguments[i].startsWith('equip') && parseInt(arguments[i].slice(5)) > 0) next.slots.push(arguments[i]);
+				}
+				else if (typeof arguments[i] == 'number') {
+					next.slots.push('equip' + arguments[i]);
+				}
+			}
+			if (!next.source) next.source = _status.event.player;
+			if (!next.slots.length) {
+				_status.event.next.remove(next);
+				next.resolve();
+			}
+			next.setContent('deleteEquip');
+			return next;
+		}
+		lib.element.content.deleteEquip = async function (event, trigger, player) {
+			/**执行到后面时，最终需要弃置的牌 */
+			const discards = []
+			/**要处理的装备栏 */
+			const slotsx = [];//合并['equip1','equip3_4']
+			if (get.is.mountCombined()) {
+				event.slots.forEach(type => {
+					if (type == 'equip3' || type == 'equip4') slotsx.add('equip3_4');
+					else slotsx.add(type);
+				});
+			}
+			else {
+				slotsx.addArray(event.slots);
+			}
+			slotsx.sort();//合并组['equip1','equip3_4']
+			if (!event.slots.length) event.finish()//普通['equip1','equip3']
+
+			//开始删除！['equip1','equip3_4']
+			for (const slot of slotsx) {
+				let slot_key = slot;//二次存equip1？
+				/**已有的扩展栏数 */
+				let left = player.expandedSlots[slot],
+					/**能废除的装备栏数 */
+					lose;
+				if (slot == 'equip3_4') {
+					//选中，3和4中的最大数，然后再与已有装备栏中取小数
+					lose = Math.min(left, Math.max(get.numOf(event.slots, 'equip3'), get.numOf(event.slots, 'equip4')));//相当于，废3则连带4一起废
+				} else {
+					lose = Math.min(left, get.numOf(event.slots, slot));//普通装备栏，在输入的栏中统计这个栏的数量
+				}
+				if (lose > 0) {
+					game.log(player, '移除了' + get.cnNumber(lose) + '个', '#g扩展' + get.translation(slot) + '栏');
+					if (!player.expandedSlots) {//初始化扩展栏
+						player.expandedSlots = {};
+					}
+					player.expandedSlots[slot_key] -= lose;//数据上删除
+					if (player.expandedSlots[slot_key] <= 0) delete player.expandedSlots[slot_key];//合法化这个记录
+					//接下来处理对应装备栏的牌，如果格子不够了，多余的牌就要丢掉
+					let cards = player.getCards("e", card => get.subtypes(card).includes(slot) && !discards.includes(card));//该位置的牌（除了已经统计在内的）
+					if (cards.length > 0) {
+						const enable = player.countEnabledSlot(slot);//未被废除的装备栏数
+						let result;
+						if (!enable) {//已经没了？那就全丢掉
+							result = { bool: true, links: cards };
+						} else if (cards.length > enable) {//位置上的牌比剩余栏多，选择性弃置吧
+							/**操作弃置牌的人 */
+							const source = event.source?.isIn() ? event.source : player,
+								/**需要弃置的牌数 */
+								num = (cards.length - enable);
+							result = await source
+								.chooseButton([
+									`选择${player == source ? '你' : get.translation(player)}的${get.cnNumber(num)}张${get.translation(slot)}牌置入弃牌堆`,
+									cards
+								])
+								.set('selectButton', [1, num])
+								.set('forced', true)
+								.set('filterOk', function () {
+									var evt = _status.event;
+									return ui.selected.buttons.reduce(function (num, button) {
+										if (evt.slot == 'equip3_4') {// 合并栏位：取装备栏3和4子类型的最大值
+											return num + Math.max(get.numOf(get.subtypes(button.link, false), 'equip3'), get.numOf(get.subtypes(button.link, false), 'equip4'));
+										}
+										// 普通栏位：直接统计子类型数量
+										return num + get.numOf(get.subtypes(button.link, false), evt.slot);
+									}, 0) == evt.required;
+								})
+								.set('required', num)
+								.set('slot', slot)
+								.forResult()
+						}
+						if (result.bool) {
+							discards.addArray(result.links);
+						}
+					}
+				} else continue;//废除的数量不够就检测下一个部位
+			}
+			player.$syncExpand();
+			if (!player.countExpandedSlot()) player.unmarkSkill('expandedSlots');
+			if (discards.length > 0) player.loseToDiscardpile(discards);
+		}
+		/**废除手牌区 */
+		lib.element.player.disableHand = function () {
+			var next = game.createEvent('disableHand');
+			next.player = this;
+			for (var i = 0; i < arguments.length; i++) {
+				if (get.itemtype(arguments[i]) == 'player') {
+					next.source = arguments[i];
+				}
+			}
+			if (!next.source) next.source = _status.event.player;
+			next.setContent('disableHand');
+			return next;
+		}
+		lib.element.content.disableHand = async function (event, trigger, player) {
+			game.log(player, "废除了", "#g手牌区");
+			const hs = player.getCards("h")
+			if (hs) await player.discard(hs)
+			player.storage._disableHand = true
+			game.broadcastAll(function (player, card) {
+				player.$disableHand();
+			}, player);
+		}
+		lib.element.player.$disableHand = function () { }
+		lib.skill._hyyz_disableHand = {
+			mark: true,
+			marktext: "✋",
+			intro: {
+				content: "手牌区已废除",
+			},
+			silent: true,
+			priority: null,
+			firstDo: true,
+			trigger: {
+				player: ["gift", "gainBefore"],
+			},
+			filter(event, player) {
+				if (event.name == 'gift') return event.target != player && event.target.storage._disableHand;
+				if (!player.storage._disableHand) return false
+				if (event.giver == event.player || event.source == event.player) return false;
+				return event.getParent(2).name != '_hyyz_disableHand';
+			},
+			async content(event, trigger, player) {
+				if (trigger.getParent(2).name == 'useCard') {
+					trigger.getParent(2).targets.remove(player);
+					trigger.getParent(2).excluded.add(player);
+				};
+				if (trigger.name == 'gift') {
+					trigger.deniedGift.add(trigger.card);
+					trigger.deniedGifts = trigger.cards;
+				}
+				const cards = trigger.cards;
+				if (get.owner(cards[0])) get.owner(cards[0]).discard(cards);
+				await game.cardsDiscard(cards);
+				if (trigger.name == 'gain' && trigger.getg(player).length) {
+					await player.loseToDiscardpile(trigger.cards);
+				}
+				trigger.cancel();
+				if (trigger.bool) trigger.bool = false;
+				if (trigger.cards) trigger.cards = [];
+				if (trigger.links) trigger.links = [];
+				if (trigger.buttons) trigger.buttons = {};
+			},
+			ai: {
+				refuseGifts: true,
+			},
+		}
+		lib.element.player.isDisabledHand = function () {
+			return this.storage._disableHand
+		}
+		/**恢复手牌区 */
+		lib.element.player.enableHand = function () {
+			var next = game.createEvent('enableHand');
+			next.player = this;
+			for (var i = 0; i < arguments.length; i++) {
+				if (get.itemtype(arguments[i]) == 'player') {
+					next.source = arguments[i];
+				}
+			}
+			if (!next.source) next.source = _status.event.player;
+			next.setContent('enableHand');
+			return next;
+		}
+		lib.element.content.enableHand = async function (event, trigger, player) {
+			delete player.storage._disableHand
+			game.log(player, "恢复了", "#g手牌区");
+		}
+
 	}
 }

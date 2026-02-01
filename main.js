@@ -96,7 +96,10 @@ async function PRECONTENT() {
 				断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
 				背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
 				单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
-				追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。'
+				追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
+				法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
+				否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
+				装备栏异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
 			}
 			for (let i in introduce) introduce[i] = '<li>' + introduce[i];
 			return introduce;
@@ -385,7 +388,7 @@ async function PRECONTENT() {
 		forced: true,
 		forceDie: true,
 		filter(event, player) {
-			return event.cards.some(card => card.name.indexOf("hyyz_xvkong") == 0);
+			return event.cards.some(card => card.name.includes("hyyz_xvkong"));
 		},
 		async content(event, trigger, player) {
 			if (player.storage.zhiku_shown) {

@@ -3815,7 +3815,7 @@ const characters = {
 					}
 					return [top];
 				};
-				const result = await next.forResult().forResult()
+				const result = await next.forResult()
 				if (result.bool) {
 					let top = result.moved[0];
 					top.reverse();

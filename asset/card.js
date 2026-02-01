@@ -1516,7 +1516,7 @@ export const hyyzcards = {
 				},
 			},
 		},
-		hyyz_mengxiangyixin_info: ["梦想一心", "每回合限一次，你可以改变一种装备栏的废除状态，视为使用或打出一张雷【杀】。<br>你对唯一目标使用【杀】时，若你没有<span class=\"thundertext\" style=\"font-family: yuanli\">护甲/防具/非锁定技/手牌</span>，目标角色的对应元素失效。"],
+		/*hyyz_mengxiangyixin_info: ["梦想一心", "每回合限一次，你可以改变一种装备栏的废除状态，视为使用或打出一张雷【杀】。<br>你对唯一目标使用【杀】时，若你没有<span class=\"thundertext\" style=\"font-family: yuanli\">护甲/防具/非锁定技/手牌</span>，目标角色的对应元素失效。"],*/
 		hyyz_mengxiangyixin: {//5/5
 			legend: true,
 			fullskin: true,
@@ -1584,36 +1584,33 @@ export const hyyzcards = {
 			enable: "phaseUse",
 			usable: 1,
 			filter(event, player) {
-				return player.countCards('e', (card) => card.name.includes('hyyz_xvkong'));
+				return player.countCards('e', (card) => card.name.startsWith('hyyz_xvkong'));
 			},
 			chooseButton: {
 				dialog(event, player) {
-					let list = [];
-					for (let name of lib.inpile) {
-						if (get.type(name) == 'equip' && name != 'muniu') list.push([get.subtype(name), '', name]);
-					}
-					const cards = player.getCards('e', (card) => card.name.includes('hyyz_xvkong'));
+					const list = lib.inpile
+						.filter(name => get.type(name) == 'equip' && name != 'numiu')
+						.map(name => [get.subtype(name), '', name])
+					const cards = player.getCards('e', (card) => card.name.startsWith('hyyz_xvkong'));
 					if (cards.length == 1) return ui.create.dialog('🔶拟态：将【虚空万藏】拟态为', [list, 'vcard']);
 					return ui.create.dialog('🔶拟态：将【虚空万藏】拟态为', cards, '选择拟态对象', [list, 'vcard']);
 				},
 				select() {
-					if (_status.event.player.countCards('e', (card) => card.name.includes('hyyz_xvkong')) == 1) return 1;
-					return 2;
+					return _status.event.player.countCards('e', (card) => card.name.startsWith('hyyz_xvkong')) == 1 ? 1 : 2
 				},
 				filter(button, player) {
-					if (player.countCards('e', (card) => card.name.includes('hyyz_xvkong')) == 1 || ui.selected.buttons.length) {//已选
-						const cards = player.getCards('e', (card) => card.name.includes('hyyz_xvkong'));
-						if (get.itemtype(button.link) == 'card') return false;
-						//底牌
-						const card = cards.length == 1 ? cards[0] : ui.selected.buttons[0].link,
-							//目标名
-							name = button.link[2];
-						if (get.translation(name) == '虚空万藏' && name != 'hyyz_xvkong') return false;//其他扩的虚空不能转化
-						if (card.name == name || card.name.slice(9).includes(name)) return false;//同名装备，转化的同名装备
-						return true;
+					const hyyz_xvkongList = player.getCards('e', (card) => card.name.startsWith('hyyz_xvkong'));
+					if (hyyz_xvkongList.length > 1 && !ui.selected.buttons.length) {
+						return get.itemtype(button.link) == 'card';
 					}
-					//默认选原始牌
-					return get.itemtype(button.link) == 'card';
+					//选择拟态对象
+					if (get.itemtype(button.link) == 'card') return false;
+					const hyyz_xvkong = hyyz_xvkongList.length == 1 ? hyyz_xvkongList[0] : ui.selected.buttons[0].link,
+						cardName = button.link[2];
+					if (hyyz_xvkong.name == cardName) return false;//同名，防止初始虚空转自己
+					if (hyyz_xvkong.name.slice(12) == button.link[2]) return false;//去除hyyz_xvkong后的同名，防止拟态装备转自己
+					if (get.translation(cardName) == '虚空万藏' && cardName != 'hyyz_xvkong') return false;//其他扩的虚空
+					return true;
 				},
 				check(button) {
 					const card = button.link;
@@ -1624,13 +1621,13 @@ export const hyyzcards = {
 					}
 				},
 				backup(links, player) {
-					var next = get.copy(lib.skill['hyyz_xvkong_skill_backupx']);
+					const next = get.copy(lib.skill['hyyz_xvkong_skill_backupx']);
 					if (links.length == 1) {
-						next.card = player.getCards('e').find((card) => card.name.includes('hyyz_xvkong'));
+						next.card = player.getCards('e').find((card) => card.name.startsWith('hyyz_xvkong'));
 					} else {
-						next.card = links.find(arr => get.itemtype(arr) == 'card');
+						next.card = links.find(link => get.itemtype(link) == 'card');
 					}
-					next.choice = links.find(arr => Array.isArray(arr));
+					next.choice = links.find(arr => Array.isArray(arr));//牌名
 					return next;
 				},
 			},
@@ -1641,29 +1638,33 @@ export const hyyzcards = {
 					selectTarget: -1,
 					filterCard: () => false,
 					filterTarget: () => false,
-					multitarget: true,
 					async content(event, trigger, player) {
 						//导入获取的数据
-						const target_links = lib.skill.hyyz_xvkong_skill_backup.choice,//选择的牌的links
-							source_card = lib.skill.hyyz_xvkong_skill_backup.card,//虚空万藏自己
-							//目标原名
-							target_name = target_links[2];
+						const { card: source_card, choice: target_links } = lib.skill.hyyz_xvkong_skill_backup
+						/**目标原名 */
+						const target_name = target_links[2];
+						//移除
+						if (Array.isArray(lib.card[source_card.name]?.skills)) player.removeSkill(lib.card[source_card.name].skills)
 
-						if (lib.card[source_card.name]?.skills && Array.isArray(lib.card[source_card.name].skills)) {
-							for (let skill of lib.card[source_card.name].skills) {
-								player.removeSkill(skill);
-							};
-						}
-						//目标名
-						const name = 'hyyz_xvkong' + (target_name == 'hyyz_xvkong' ? '' : target_links[2]);
+						/**目标名 */
+						const name = (target_name == 'hyyz_xvkong') ? 'hyyz_xvkong' : ('hyyz_xvkong_' + target_links[2])
 						const skills = ['hyyz_xvkong_skill'];
 						if (Array.isArray(lib.card[target_name]?.skills)) skills.addArray(lib.card[target_name].skills);
 
 						if (!lib.card[name]) {
 							lib.card[name] = {//代码
 								type: 'equip',
+								audio: lib.card[target_name].audio,
+								//史诗
+								legend: true,
+								//类型
 								subtype: lib.card[target_name].subtype,
-								cardimage: lib.card[target_name].cardimage,
+								subtypes: lib.card[target_name].subtypes,
+								//图片
+								fullskin: lib.card[target_name].fullskin,
+								fullimage: lib.card[target_name].fullimage,
+								image: lib.card[target_name].image,
+								//距离
 								distance: lib.card[target_name].distance,
 								skills: skills,
 								destroy: lib.card[target_name].destroy,
@@ -1700,6 +1701,7 @@ export const hyyzcards = {
 								filterTarget(card, player, target) {
 									return target == player;
 								},
+
 								enable: true,
 								selectTarget: -1,
 								filterTarget: (card, player, target) => player == target && target.canEquip(card, true),
@@ -1714,10 +1716,9 @@ export const hyyzcards = {
 										target.equip(card);
 									}
 								},
-								legend: true,
 								toself: true,
 							};
-							if (!lib.translate[name]) lib.translate[name] = `拟态•${get.translation(target_name, 'skill')} `;
+							if (!lib.translate[name]) lib.translate[name] = `拟•${get.translation(target_name, 'skill')} `;
 							lib.translate[name + '_info'] = lib.translate[target_name + '_info'];
 						}
 						const card = game.createCard({
@@ -1725,7 +1726,7 @@ export const hyyzcards = {
 							number: get.number(source_card),
 							suit: get.suit(source_card),
 						});
-						await player.lose([source_card], ui.special);
+						await player.lose(source_card, ui.special);
 						source_card.fix();
 						source_card.remove();
 						source_card.destroyed = true;
@@ -1760,7 +1761,7 @@ export const hyyzcards = {
 				return player != target && player.previous != target;
 			},
 			async content(event, trigger, player) {
-				const card = player.getEquips(4).find((card) => card.name.startsWith('hyyz_qianjie'));
+				const card = player.getEquip(4).find((card) => card.name.includes('hyyz_qianjie'));
 				await player.loseToDiscardpile([card]);
 				while (player.previous != event.targets[0]) {
 					game.swapSeat(player, player.next, false, false);
@@ -2008,7 +2009,7 @@ export const hyyzcards = {
 				await game.cardsDiscard(new_card1);
 
 				const new_card2 = game.createCard2(new_name, new_name == 'hyyz_baihua' ? 'heart' : 'spade', 6);
-				player.equip(new_card2);
+				await player.equip(new_card2);
 			},
 			ai: {
 				order: 6,
@@ -2043,12 +2044,10 @@ export const hyyzcards = {
 				num++;
 				lib.inpile.add('hyyz_tianhuo' + num);
 				const new_card = game.createCard2('hyyz_tianhuo' + num, "diamond", 1);
-				player.equip(new_card);
-
+				await player.equip(new_card);
 			},
 			"_priority": -25,
-		},
-		hyyz_tianhuo_skill: {
+		}, hyyz_tianhuo_skill: {
 			equipSkill: true,
 			enable: "phaseUse",
 			usable: 1,
@@ -2136,7 +2135,7 @@ export const hyyzcards = {
 			prompt: '弃置装备区的一张【不识时务】，对一名其他角色造成1点伤害',
 			filterTarget: lib.filter.notMe,
 			async content(event, trigger, player) {
-				await player.discard(player.getEquips(1).find(card => card.name.startsWith('hyyz_bushi')));
+				await player.discard(player.getEquips(1).find(card => card.name.includes('hyyz_bushi')));
 				await event.targets[0].damage('nocard');
 			},
 			ai: {
@@ -2192,7 +2191,6 @@ export const hyyzcards = {
 					if (from != to) {
 						if (from.getEquips(5).some(i => i.name.startsWith('hyyz_xinghai')) || from.isLinked()) {
 							if (to.isLinked()) return distance - 1;
-							//return distance + 1;
 						}
 					}
 				},
@@ -2486,6 +2484,7 @@ export const hyyzcards = {
 			},
 			"_priority": -25,
 		},
+		//穷观
 		hyyz_qiongguan_skill: {
 			trigger: {
 				global: "judge",

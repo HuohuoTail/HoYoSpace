@@ -1,8 +1,11 @@
+import { Game, game, Get, lib } from "../../../noname";
+import { LibInit } from "../../../noname/library/init";
+
 declare type hyyzBuff = 'hyyzBuff_zhongshang' | 'hyyzBuff_xuruo' | 'hyyzBuff_jiansu' | 'hyyzBuff_jingu' | 'hyyzBuff_jiuchan' | 'hyyzBuff_dongjie' | 'hyyzBuff_zhuoshao' | 'hyyzBuff_chudian' | 'hyyzBuff_lieshang' | 'hyyzBuff_fenghua' | 'hyyzBuff_jiasu'
 declare type hyyzType = 'buff' | 'debuff' | 'dotdebuff';
 declare type weakness = 'fire' | 'thunder' | 'hyyz_physical' | 'hyyz_wind' | 'ice' | 'hyyz_quantum' | 'hyyz_imaginary'
 declare type paths = 'hyyz_kaituo' | 'hyyz_huimie' | 'hyyz_xunlie' | 'hyyz_zhishi' | 'hyyz_tongxie' | 'hyyz_xvwu' | 'hyyz_cunhu' | 'hyyz_fengrao' | 'hyyz_jiyi'
-declare module 'lib' {
+declare namespace LibInit {
 	interface Get {
 		/**获取若干有花色有点数的影
 		 * @param count 数量

@@ -3048,10 +3048,10 @@ const characters = {
 				player.storage.menghuangming = false;
 			},
 			trigger: {
-				global: 'roundStart'
+				global: 'roundEnd'
 			},
 			filter(event, player) {
-				return player.storage.menghuangming == false && game.roundNumber > 0
+				return player.storage.menghuangming == false
 			},
 			async cost(event, trigger, player) {
 				let history = game.getAllGlobalHistory('everything', evt => {
