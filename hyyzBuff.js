@@ -679,7 +679,7 @@ export const hyyzBuffx = async function () {//———————————�
 				console.warn(`警告：Player[${get.translation(this.name)}(${this.name})].changehyyzBuff的参数错误，应当为对象形式。`);
 				return;
 			}
-			if (lib.config['extension_忽悠宇宙_huyou'] != true) {
+			if (lib.config['extension_忽悠宇宙_buff'] != true) {
 				game.log('未开启buff系统，无法继续执行！')
 				return;
 			}
@@ -817,7 +817,7 @@ export const hyyzBuffx = async function () {//———————————�
 		 * player.hyyzJinghua('nolink');//不解除横置
 		 */
 		lib.element.player.hyyzJinghua = function (...args) {
-			if (lib.config['extension_忽悠宇宙_huyou'] != true) {
+			if (lib.config['extension_忽悠宇宙_buff'] != true) {
 				game.log('未开启buff系统！无法净化！')
 				return;
 			}
@@ -894,7 +894,7 @@ export const hyyzBuffx = async function () {//———————————�
 		/**驱散正面buff
 		 */
 		lib.element.player.hyyzQvsan = function () {
-			if (lib.config['extension_忽悠宇宙_huyou'] != true) {
+			if (lib.config['extension_忽悠宇宙_buff'] != true) {
 				game.log('未开启buff系统！无法驱散！')
 				return;
 			}
@@ -933,7 +933,7 @@ export const hyyzBuffx = async function () {//———————————�
 		 * player.hyyzBang({'hyyzBuff_chudian':599, 'hyyzBuff_fenghua':0 })//无论层数，只提取名字且仅引爆一层
 		 */
 		lib.element.player.hyyzBang = function (...args) {
-			if (lib.config['extension_忽悠宇宙_huyou'] != true) {
+			if (lib.config['extension_忽悠宇宙_buff'] != true) {
 				game.log('未开启buff系统！无法引爆！')
 				return;
 			}
@@ -1184,7 +1184,7 @@ export const hyyzBuffx = async function () {//———————————�
 				console.warn(`警告：Player[${get.translation(this.name)}(${this.name})].changeWeakness的参数错误，应当为数组形式。`);
 				return;
 			}
-			if (lib.config['extension_忽悠宇宙_huyou'] != true) {
+			if (lib.config['extension_忽悠宇宙_weakness'] != true) {
 				game.log('未开启弱点系统，无法更改弱点！')
 				return;
 			}
@@ -1248,7 +1248,7 @@ export const hyyzBuffx = async function () {//———————————�
 		//刷新一下弱点显示
 		lib.element.player.$syncWeakness = function () {
 			//如果没有弱点或者未开启，直接清空
-			if (!this.hasWeakness() || lib.config["extension_忽悠宇宙_huyou"] != true) {
+			if (!this.hasWeakness() || lib.config["extension_忽悠宇宙_weakness"] != true) {
 				game.log(this, '的弱点已被清空')
 				this.weakness = [];
 			}

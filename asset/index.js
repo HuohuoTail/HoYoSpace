@@ -101,10 +101,11 @@ for (let data in allCharacter) {//键：日期
 			if (temps[0]) {//名字
 				//批量导入
 				const prefixs = Object.keys(lib.hyyz.prefix);
-				let prefix = prefixs.find(prefix => name.startsWith(prefix));
+				let prefix = prefixs.find(prefix => prefix == name.split('_').slice(0, -1).join('_'));
 				if (prefix) {
-					translates[name] = lib.hyyz.prefix[prefix] + temps[0];
-					translates[name + '_prefix'] = lib.hyyz.prefix[prefix];//添加前缀
+					const t_prefix = lib.hyyz.prefix[prefix]
+					translates[name] = t_prefix + temps[0];
+					translates[name + '_prefix'] = t_prefix;//添加前缀
 				} else {
 					translates[name] = temps[0];
 				}

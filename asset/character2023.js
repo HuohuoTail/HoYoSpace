@@ -1161,7 +1161,7 @@ const characters = {
 		hyyzhuiduo_info: "隳堕|锁定技，你没有判定区，且不会进入濒死状态。<br>若你的体力值小于1：<br>1.你造成伤害后恢复等量体力；<br>2.回合结束后你死亡。",
 		hyyztushang_info: "荼殇|锁定技，每回合限三次，你造成或受到1点伤害后，摸一张牌且不计入手牌上限。",
 
-		hyyz_xt_sp_sushang: ['素裳', ["female", "hyyz_xt", 4, ["mengshanqing", "mengyouren", "mengwuji"], ['ext:hyyz_xt_sushang']], '柚衣'],
+		hyyz_xt_sp_sushang: ['素裳', ["female", "hyyz_xt", 4, ["mengshanqing", "mengyouren", "mengwuji"], ['die:hyyz_xt_sushang']], '柚衣'],
 		mengshanqing: {
 			audio: 3,
 			trigger: {
@@ -1295,7 +1295,7 @@ const characters = {
 		mengyouren_info: "游刃|你使用的非虚拟【杀】结算结束后，展示牌堆顶一张牌；每满足一项便多展示一张牌：<br> 1.目标角色装备区内没有牌。<br> 2.目标角色手牌区内没有牌。<br> 3.此【杀】造成过伤害。<br> 若目标角色存活，你可以弃置展示牌中一种颜色的所有牌，视为对其使用相同数量的【杀】；然后获得剩余的牌。",
 		mengwuji_info: "武继|锁定技，你的延时类锦囊牌视为【杀】。",
 
-		hyyz_xt_sp_bronya: ['布洛妮娅', ["female", "hyyz_xt", 3, ["mengzhenjun", "mengzhenqu", "mengjunzhen"], ['zhu',]], '微雨', '尾巴已对技能〖整军〗〖阵曲〗〖军阵〗进行修改，可联系尾巴复原技能。'],
+		hyyz_xt_sp_bronya: ['布洛妮娅', ["female", "hyyz_xt", 3, ["mengzhenjun", "mengzhenqu", "mengjunzhen"], ['zhu',]], '微雨', '尾巴已对技能〖整军〗〖阵曲〗〖军阵〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengzhenjun: {
 			audio: 2,
 			trigger: {
@@ -1763,7 +1763,7 @@ const characters = {
 		},
 		"hyyzhuangwu_info": "恍悟|锁定技，你不因〖恍悟〗使用【杀】后，对此牌的实体牌执行首个可执行的一项：<br>1.对目标角色使用。<br>2.对自己使用。<br>3.获得。",
 
-		hyyz_ɸ_xierde: ['希尔德', ["female", "hyyz_ɸ", 3, ["menghengyue", "mengguanyang"], []], '绯色愫', '尾巴已对技能〖横跃〗〖贯杨〗进行修改，可联系尾巴复原技能。'],
+		hyyz_ɸ_xierde: ['希尔德', ["female", "hyyz_ɸ", 3, ["menghengyue", "mengguanyang"], []], '绯色愫', '尾巴已对技能〖横跃〗〖贯杨〗进行修改，若有其他方案可私信尾巴修改。'],
 		menghengyue: {
 			audio: 1,
 			mod: {
@@ -2019,7 +2019,7 @@ const characters = {
 		"menghengyue_info": "横跃|锁定技，若你的武器栏内有牌，你的攻击范围视为2。每回合每种花色限一次，你使用牌后，获得距离为1的角色一张牌，然后摸一张牌并交给其一张牌；若如此做，本回合你的进攻距离-1。",
 		"mengguanyang_info": "贯杨|出牌阶段限一次，你可以将X张牌当一张无距离和次数限制的【杀】对一名其他角色使用（X为本回合发动“横跃”的次数）。若该角色的体力值不小于你，其须使用两张【闪】响应此【杀】；此【杀】造成伤害后，若你与该角色的距离为1，你令其" + get.hyyzIntroduce('减速') + "。",
 
-		hyyz_xt_kelala: ['克拉拉', ["female", "hyyz_xt", 4, ["mengdaijia", "mengweijia", "mengruyue"], []], '日玖阳气冲三关', '尾巴已对技能〖代价〗〖如约〗进行修改，可联系尾巴复原技能。'],
+		hyyz_xt_kelala: ['克拉拉', ["female", "hyyz_xt", 4, ["mengdaijia", "mengweijia", "mengruyue"], []], '日玖阳气冲三关', '尾巴已对技能〖代价〗〖如约〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengdaijia: {
 			audio: 3,
 			logAudio: () => [
@@ -2152,7 +2152,7 @@ const characters = {
 		"mengweijia_info": "为家|锁定技，你受到伤害后，对伤害来源造成1点伤害，然后令其获得“警告”。",
 		"mengruyue_info": "如约|锁定技，你对有“警告”的其他角色造成" + get.hyyzIntroduce('追加攻击') + "伤害时，移去“警告”并选择一项：①此伤害+1；②回复1点体力。",
 
-		hyyz_b3_sp_xier: ['希儿', ["female", "hyyz_b3", 3, ["mengshuangsheng", "mengbian"], []], '微雨', '尾巴已对技能〖双生〗〖彼岸〗进行修改，可联系尾巴复原技能。'],
+		hyyz_b3_sp_xier: ['希儿', ["female", "hyyz_b3", 3, ["mengshuangsheng", "mengbian"], []], '微雨', '尾巴已对技能〖双生〗〖彼岸〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengshuangsheng: {
 			audio: 5,
 			logAudio: () => false,
@@ -2170,6 +2170,7 @@ const characters = {
 			group: ["mengshuangsheng_1", "mengshuangsheng_2"],
 			subSkill: {
 				"1": {
+					audio: 'mengshuangsheng',
 					logAudio: () => [
 						"ext:忽悠宇宙/asset/character/audio/mengshuangsheng1.mp3",
 						"ext:忽悠宇宙/asset/character/audio/mengshuangsheng2.mp3",
@@ -2212,6 +2213,7 @@ const characters = {
 					},
 				},
 				"2": {
+					audio: 'mengshuangsheng',
 					logAudio: () => [
 						"ext:忽悠宇宙/asset/character/audio/mengshuangsheng3.mp3",
 						"ext:忽悠宇宙/asset/character/audio/mengshuangsheng4.mp3",
@@ -3492,7 +3494,7 @@ const characters = {
 		"mengmushou_info": "幕手|使命技。锁定技，你不能成为黑色锦囊牌的目标。<br><span class=greentext>成功</span>：有〖曙光〗的角色获得二十八张牌后，你加两点体力上限并回复2点体力。<br><span class=firetext>失败</span>：有〖曙光〗的角色进入濒死状态时，你减2点体力上限并令其回复2点体力。<br><hr><span class=thundertext>〖幕手〗失效后，你获得〖身退〗。</span>",
 		"mengshentui_info": "身退|你对/被其他角色使用单体即时牌时，体力上限较小的一方不能响应此牌。",
 
-		hyyz_b3_sp_jiziwuliangta: ['姬子', ["female", "hyyz_b3", "4/6", ["mengnuwu", "mengjiezhan", "mengxinhuo"], ['die:hyyz_b3_jiziwuliangta']], '柚衣', '尾巴已对技能〖薪火〗〖薪炎〗进行修改，可联系尾巴复原技能。'],
+		hyyz_b3_sp_jiziwuliangta: ['姬子', ["female", "hyyz_b3", "4/6", ["mengnuwu", "mengjiezhan", "mengxinhuo"], ['die:hyyz_b3_jiziwuliangta']], '柚衣', '尾巴已对技能〖薪火〗〖薪炎〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengnuwu: {
 			audio: 'hyyzxiepin',
 			trigger: {
@@ -3676,7 +3678,7 @@ const characters = {
 		"mengxinhuo_info": "薪火|当你进入濒死状态时，你可以选择一名角色，将〖薪炎〗、所有牌和体力上限转移给该角色。",
 		"mengxinyan_info": "薪炎|锁定技，你使用红色牌时：①增加火属性；②伤害+1；" + get.hyyzIntroduce('背水') + "：" + get.hyyzIntroduce('点燃') + "红色手牌。",
 
-		hyyz_ys_shenlilingren: ['神里绫人', ["male", "hyyz_ys", 3, ["mengwenmou", "menggutu"], []], '微雨', '尾巴已对技能〖稳谋〗〖固图〗进行修改，可联系尾巴复原技能。'],
+		hyyz_ys_shenlilingren: ['神里绫人', ["male", "hyyz_ys", 3, ["mengwenmou", "menggutu"], []], '微雨', '尾巴已对技能〖稳谋〗〖固图〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengwenmou: {
 			audio: 2,
 			trigger: {
@@ -4027,7 +4029,7 @@ const characters = {
 		"mengsheyuan_info": "涉渊|其他角色的回合结束后，你随机展示一张本回合进入弃牌堆的非装备牌，然后重新记录此牌。若如此做，此后你每失去1/2张与〖涉渊〗最后一张记录的牌类型相同/不同的牌后，可以废除一个装备栏（若装备栏均被废除，则不进行失去牌的记录）。若本回合未以此法废除过装备栏，你获得牌堆中两张与〖涉渊〗最后一张记录的牌类型不同的非装备牌。",
 		"mengkanming_info": "堪名|每回合限一次，若你的装备栏均已被废除，你可以将一张牌当〖涉渊〗记录的牌使用。此牌结算结束后，若没有角色因此牌改变体力值，你复原至少一个装备栏。每以此法复原两个装备栏，你回复1点体力或摸一张牌。",
 
-		hyyz_b3_sushang: ['李素裳', ["female", "hyyz_b3", 3, ["mengzhejian", "mengtaixu", "mengjianxin"], []], '微雨', '尾巴已对技能〖太虚〗进行修改，可联系尾巴复原技能。'],//
+		hyyz_b3_sushang: ['李素裳', ["female", "hyyz_b3", 3, ["mengzhejian", "mengtaixu", "mengjianxin"], []], '微雨', '尾巴已对技能〖太虚〗进行修改，若有其他方案可私信尾巴修改。'],//
 		mengzhejian: {
 			audio: 2,
 			trigger: {
@@ -4172,7 +4174,7 @@ const characters = {
 		"mengtaixu_info": "太虚|当你使用一张非虚拟牌指定唯一目标后，若目标角色的武器栏为空，你将此牌置入其武器栏；<br>否则，你改为获得该角色武器栏内的牌并" + get.hyyzIntroduce('冻结') + "其。",
 		"mengjianxin_info": "剑心|锁定技，你没有武器栏。你的武器牌视为无次数限制的【杀】；若此牌的牌名包含“剑”，则此牌无距离限制且改为冰【杀】。",
 
-		hyyz_b3_re_zhongyanzhilvzhe: ['终焉之律者', ["female", "hyyz_b3", 5, ["mengpingji_old", "mengzhaoxi_old", "mengcifan_old"], ['zhu',]], '拾壹', ''],
+		hyyz_b3_re_zhongyanzhilvzhe: ['终焉之律者', ["female", "hyyz_b3", 5, ["mengpingji_old", "mengzhaoxi_old", "mengcifan_old"], ['die:hyyz_b3_zhongyanzhilvzhe']], '拾壹', ''],
 		mengpingji_old: {
 			audio: "mengpingji",
 			trigger: {
@@ -4338,7 +4340,7 @@ const characters = {
 		"mengzhaoxi_old_info": "朝夕|你不于当前回合内获得的牌均视为【火攻】。其他角色于其回合内首次使用目标唯一的牌后，你可以对同一目标使用一张【火攻】。",
 		"mengcifan_old_info": "赐繁|当你使用牌造成伤害后，你可以将此牌置于牌堆顶。一名角色脱离濒死后，你可以视为使用一张【五谷丰登】。",
 
-		hyyz_xt_sb_kafuka: ['卡芙卡', ["female", "hyyz_xt", 3, ["menglaixin", "mengyueluo"], ['die:hyyz_xt_kafuka']], '微雨', '尾巴已对技能〖来信〗〖悦落〗进行修改，可联系尾巴复原技能。'],
+		hyyz_xt_sb_kafuka: ['卡芙卡', ["female", "hyyz_xt", 3, ["menglaixin", "mengyueluo"], ['die:hyyz_xt_kafuka']], '微雨', '尾巴已对技能〖来信〗〖悦落〗进行修改，若有其他方案可私信尾巴修改。'],
 		menglaixin: {
 			audio: 8,
 			logAudio: () => false,
@@ -4488,7 +4490,7 @@ const characters = {
 		"menglaixin_info": "来信|其他角色的回合开始时，你可以交给其一张牌，然后其选择一项：<br>1.与你各失去1点体力，然后将此牌交给你。<br>2.令你摸两张牌并移动场上一张牌。<br>3.与你各摸一张牌，然后本回合不能对你使用牌。",
 		"mengyueluo_info": "悦落|当你于摸牌阶段外不因此技获得牌后，你可以将其中一张红/黑色牌当【乐不思蜀】/【兵粮寸断】置入其他角色的判定区内。若此牌来源不为其他角色，你回复1点体力或摸一张牌，且本轮此技失效；否则，你翻面并减1点体力上限，视为对所有其他角色使用一张雷【杀】。",
 
-		hyyz_b3_luocha: ['罗刹人', ["male", "hyyz_b3", 3, ["mengnishang", "mengshouwang", "mengwenrun"], []], '柚衣', '尾巴已对技能〖温润〗进行修改，可联系尾巴复原技能。'],
+		hyyz_b3_luocha: ['罗刹人', ["male", "hyyz_b3", 3, ["mengnishang", "mengshouwang", "mengwenrun"], []], '柚衣', '尾巴已对技能〖温润〗进行修改，若有其他方案可私信尾巴修改。'],
 		"mengnishang": {
 			audio: 1,
 			mod: {
@@ -4781,6 +4783,7 @@ const characters = {
 			group: 'mengxuexing_ohhh',
 			subSkill: {
 				ohhh: {
+					audio: 'mengxuexing',
 					logAudio: () => [
 						"ext:忽悠宇宙/asset/character/audio/mengxuexing4",
 						"ext:忽悠宇宙/asset/character/audio/mengxuexing5",
@@ -5366,7 +5369,7 @@ const characters = {
 		"mengyuemian_info": "月绵|锁定技，你不能被横置。当有角色受到" + get.hyyzIntroduce('触电') + "伤害后，你摸一张牌或回复1点体力。",
 		"mengyexuan_info": "夜喧|出牌阶段限一次，你可以将至多三张牌置于牌堆顶，然后令等量的其他角色依次进行判定，若结果为：<br>1.红色，你观看并选择其的一张手牌，然后指定另一名角色。若其可以对指定的角色使用此牌，其使用之；否则，你获得此牌并视为其对你指定的角色使用【杀】。<br>2.黑色，令该角色" + get.hyyzIntroduce('触电') + "，然后引爆其的所有dot效果。",
 
-		hyyz_ys_nuoaier: ['诺艾尔', ["female", "hyyz_ys", 3, ["mengchawei", "mengkuangzhu", "mengjianshou"], []], '日玖阳气冲三关', '尾巴已对技能〖匡助〗〖缄守〗进行修改，可联系尾巴复原技能。'],
+		hyyz_ys_nuoaier: ['诺艾尔', ["female", "hyyz_ys", 3, ["mengchawei", "mengkuangzhu", "mengjianshou"], []], '日玖阳气冲三关', '尾巴已对技能〖匡助〗〖缄守〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengchawei: {
 			audio: 4,
 			trigger: {
@@ -5880,6 +5883,7 @@ const characters = {
 			group: 'mengjiaoqi_damage',
 			subSkill: {
 				damage: {
+					audio: 'mengjiaoqi',
 					logAudio: () => [
 						'ext:忽悠宇宙/asset/character/audio/mengjiaoqi3.mp3',
 						'ext:忽悠宇宙/asset/character/audio/mengjiaoqi4.mp3',
@@ -5967,7 +5971,7 @@ const characters = {
 		mengjiaoqi_info: "骄麒|摸牌阶段结束时，你可以将任意手牌当无距离限制的【杀】使用。此【杀】造成伤害后，你失去1点体力并将手牌摸至唯一最多。",
 		mengduanao_info: "断傲|每轮限一次，一名角色/你造成伤害后，你可以摸一张牌并与该角色/受伤角色拼点。若你赢，其" + get.hyyzIntroduce('冻结') + "；若你没赢，你可以弃置一种花色的所有牌，下次发动〖骄麒〗时的“失去”改为“回复”。",
 
-		hyyz_b3_chiyuan: ['赤鸢', ["female", "hyyz_b3", 3, ["mengshuyun", "mengcaixin"], []], '微雨', '尾巴已对技能〖疏云〗进行修改，可联系尾巴复原技能。'],
+		hyyz_b3_chiyuan: ['赤鸢', ["female", "hyyz_b3", 3, ["mengshuyun", "mengcaixin"], []], '微雨', '尾巴已对技能〖疏云〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengshuyun: {
 			audio: 'hyyzfusheng',
 			trigger: {
@@ -6875,7 +6879,7 @@ const characters = {
 		hyyzqushen_info: "驱神|每回合限一次。当一名角色使用基本牌或普通锦囊牌指定自己为唯一目标时，你可以弃置一张牌并为此牌增加一个目标。若此牌为基本牌，目标角色" + get.hyyzIntroduce('净化') + "；否则，此牌不能被【无懈可击】响应。",
 		hyyzsuiyang_info: "岁阳|限定技，出牌阶段，你可以获得一张基本牌，然后失去1点体力。每回合结束时，若你没有〖岁阳〗牌，从牌堆获得之。",
 
-		hyyz_ɸ_yelianna: ['叶莲娜', ["female", "hyyz_ɸ", 4, ["mengdonghen", "mengjiannu", "mengrongyu"], []], '日玖阳气冲三关', '尾巴已对技能〖融语〗进行修改，可联系尾巴复原技能。'],
+		hyyz_ɸ_yelianna: ['叶莲娜', ["female", "hyyz_ɸ", 4, ["mengdonghen", "mengjiannu", "mengrongyu"], []], '日玖阳气冲三关', '尾巴已对技能〖融语〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengdonghen: {
 			mark: true,
 			marktext: "☯",
@@ -8113,7 +8117,7 @@ const characters = {
 		"menggexian_info": "歌仙|回合结束后，令所有与你距离为1的其他角色选择一项：交给你一张牌，你执行首个未执行的阶段：准备、判定、摸牌、出牌、弃牌、结束。",
 		"mengbaizhan_info": "百盏|锁定技，每回合第Y张牌被使用后，你获得之；若来源为你，此牌不计入次数。Y为你的手牌上限。",
 
-		hyyz_ys_abeiduo: ['阿贝多', ["male", "hyyz_ys", 3, ["mengsucheng", "mengchuangsheng", "mengbaie"], []], '微雨', '尾巴已对技能〖塑成〗〖创生〗进行修改，可联系尾巴复原技能。'],
+		hyyz_ys_abeiduo: ['阿贝多', ["male", "hyyz_ys", 3, ["mengsucheng", "mengchuangsheng", "mengbaie"], []], '微雨', '尾巴已对技能〖塑成〗〖创生〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengsucheng: {
 			audio: 3,
 			init(player) {
@@ -8489,7 +8493,7 @@ const characters = {
 		"mengdianci_info": "电刺|出牌阶段限一次，你可以将所有手牌当【杀】对距离为1的角色使用。若此【杀】造成伤害，你根据其实体牌包含的牌型，每有一张：<br>1.基本牌，你视为对其使用一张【杀】。<br>2.锦囊牌，摸一张牌。<br>3.武器牌，获得1点护甲。",
 		"mengwuwei_info": "无畏|锁定技，游戏开始时，你选择一个「决斗」目标且你计算与其的距离为1。当你造成或受到伤害后，若对方为「决斗」目标，你摸一张牌，否则，将「决斗」目标转移给对方。",
 
-		hyyz_xt_wo_danheng: ['我丹恒', ["male", "hyyz_xt", 3, ["menggufeng", "mengqinghua"], []], '七夕月', ''],
+		hyyz_xt_wo_danheng: ['丹恒', ["male", "hyyz_xt", 3, ["menggufeng", "mengqinghua"], []], '七夕月', ''],
 		menggufeng: {
 			audio: 4,
 			mark: true,
@@ -8582,6 +8586,7 @@ const characters = {
 			group: ['menggufeng_view'],
 			subSkill: {
 				view: {
+					audio: 'menggufeng',
 					logAudio(event, player, triggername, indexedData, costResult) {
 						return [
 							'ext:忽悠宇宙/asset/character/audio/menggufeng3.mp3',
@@ -8675,7 +8680,7 @@ const characters = {
 		"menggufeng_info": "古枫|转换技，<br>阳：你可以将X张手牌当数值为X的【酒】使用；<br>阴：你可以将Y张手牌当数值为Y的风【杀】使用。<br>每回合限一次，若你本回合已发动过阴阳两项，你的所有剩余手牌视为一张你上一次使用的单目标锦囊牌。（X为你的手牌数一半且向下取整，Y为你上次发动阳时的X）",
 		"mengqinghua_info": "清化|锁定技，当一名角色连续使用两张转化牌后，若其中有一张牌造成过伤害，你与因此受到伤害的角色各摸一张牌且这两张转化牌均不计入使用次数。",
 
-		hyyz_xt_tuopa: ['托帕', ["female", "hyyz_xt", 3, ["mengzhaiquan", "mengshougou", "mengshicha"], []], '柚衣', '尾巴已对技能〖债权〗〖市察〗进行修改，可联系尾巴复原技能。'],
+		hyyz_xt_tuopa: ['托帕', ["female", "hyyz_xt", 3, ["mengzhaiquan", "mengshougou", "mengshicha"], []], '柚衣', '尾巴已对技能〖债权〗〖市察〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengzhaiquan: {
 			audio: 1,
 			marktext: "债",
@@ -8807,7 +8812,7 @@ const characters = {
 		mengshougou_info: "收购|锁定技，有“债”的角色摸牌阶段结束时，你观看其的手牌并获得其中至多与该角色的“债”等量的牌，然后其移去等量的“债”。",
 		mengshicha_info: "市察|出牌阶段限一次，你可以选择一名角色。你摸X张牌并交给其等量的牌。X为其的体力上限与手牌数的差。",
 
-		hyyz_xt_aisida: ['艾丝妲', ["female", "hyyz_xt", 3, ["menglisi", "mengshanzhi", "mengchuxin"], []], '日玖阳气冲三关', '尾巴已对技能〖缮治〗进行修改，可联系尾巴复原技能。'],
+		hyyz_xt_aisida: ['艾丝妲', ["female", "hyyz_xt", 3, ["menglisi", "mengshanzhi", "mengchuxin"], []], '日玖阳气冲三关', '尾巴已对技能〖缮治〗进行修改，若有其他方案可私信尾巴修改。'],
 		menglisi: {
 			audio: 3,
 			trigger: {
@@ -9151,9 +9156,7 @@ const characters = {
 		} else {
 			阳 = `<span class='firetext'>${阳}</span>`;
 		}
-		let start = "转换技，",
-			end = "";
-		return `${前言}阳：${阳}；阴：${阴}${end}。`;
+		return `${前言}阳：${阳}；阴：${阴}${后语}`;
 	},
 	//塞西莉亚
 	mengxieheng(player) {

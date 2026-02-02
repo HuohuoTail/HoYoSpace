@@ -52,7 +52,31 @@ async function PRECONTENT() {
 			hyyzSort_luoyeqiushuang: '落叶秋霜',
 		},
 		prefix: {
-
+			//hyyz_b3: '崩',
+			hyyz_b3_sp: 'SP',
+			hyyz_b3_re: '界',
+			hyyz_b3_sb: '谋',
+			hyyz_b3_wu: '武',
+			//hyyz_ys: '原',
+			hyyz_ys_sp: 'SP',
+			hyyz_ys_re: '界',
+			hyyz_ys_sb: '谋',
+			hyyz_ys_wu: '武',
+			hyyz_ys_shen: '神',
+			//hyyz_xt: '铁',
+			hyyz_xt_re: '界',
+			hyyz_xt_wo: '我',
+			hyyz_xt_sp: 'SP',
+			hyyz_xt_sb: '谋',
+			hyyz_xt_wu: '武',
+			hyyz_xt_shen: '神',
+			//hyyz_zzz: '绝',
+			hyyz_zzz_sb: '谋',
+			hyyz_ɸ: 'ɸ',
+			hyyz_ɸ_chunjin: 'ɸ纯烬',
+			ym: '梦',
+			ym_re: '梦界',
+			ym_sp: '梦SP',
 		},
 		//所有武将
 		characters: {},
@@ -105,8 +129,13 @@ async function PRECONTENT() {
 			return introduce;
 		}
 	})
-
-
+	if ('新增前缀') {
+		lib.namePrefix.set('ɸ', { color: '#fd8359', nature: 'soilmm', showName: "ɸ" });//武
+		lib.namePrefix.set('ɸ纯烬', { color: '#fd8359', nature: 'soilmm', showName: "ɸ纯烬" });//武
+		lib.namePrefix.set('我', { color: '#1bdeb4', nature: 'soilmm', showName: "我" });//自定义
+		lib.namePrefix.set('梦界', { getSpan: () => `${get.prefixSpan("梦")}${get.prefixSpan("界")}` });
+		lib.namePrefix.set('梦SP', { getSpan: () => `${get.prefixSpan("梦")}${get.prefixSpan("SP")}` });
+	}
 	//——————————————导入CSS文件——————————————//
 	lib.init.css(`${lib.assetURL}extension/忽悠宇宙/other`, `extension`);
 	if ('势力与新属性') {
@@ -550,13 +579,19 @@ const CONFIG = {
 			'2': '按设计师分类',
 		}
 	},
-	huyou: {//忽悠模式
-		name: '弱点+buff系统(即时)',
-		intro: "若开启，角色开局获得两个弱点，部分武将的技能效果消失；若关闭，立即清除场上所有的弱点，新buff不能再被赋予",
+	buff: {//忽悠模式
+		name: 'buff系统(建议打开)',
+		intro: "若关闭，新buff不能再被赋予，部分武将技能效果无法执行",
+		init: true,
+		clear: false,
+	},
+	weakness: {
+		name: '弱点系统(即时)',
+		intro: "若开启，角色开局获得两个弱点；若关闭，立即清除场上所有的弱点",
 		init: true,
 		clear: false,
 		update() {
-			if (lib.config["extension_忽悠宇宙_huyou"] != true && game.filterPlayer2 && lib.element.player.$syncWeakness) game.filterPlayer2((current => {
+			if (lib.config["extension_忽悠宇宙_weakness"] != true && game.filterPlayer2 && lib.element.player.$syncWeakness) game.filterPlayer2((current => {
 				current.$syncWeakness()
 			}))
 		},
