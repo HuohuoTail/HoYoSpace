@@ -1578,7 +1578,7 @@ export const hyyzBuffx = async function () {//———————————�
 		}
 
 
-		//调整体力值至x//(甲,5)//(甲,5,甲,5)
+		//调整体力值至x//(甲,5)//(甲,5,甲,5)//(甲,乙,5,5)
 		game.changeHpTo = function (...args) {
 			let currents = args.filter(i => get.itemtype(i) == 'player'),
 				hps = args.filter(i => typeof i == 'number');
@@ -1596,7 +1596,7 @@ export const hyyzBuffx = async function () {//———————————�
 			while (currents.length != 0 && hps.length != 0) {
 				const current = currents.shift(), hp = hps.shift();
 				if (current.hp != hp) {
-					game.log('<li>', current, '调整体力', `#r${current.hp}`, '至', `#g${hp}${current.maxHp < hp ? `→${Math.min(hp, current.maxHp)}` : ''}`)
+					game.log('<li>', current, '调整体力', `#r${current.hp}`, '至', current.maxHp < hp ? `#g<s>${hp}</s> ${Math.min(hp, current.maxHp)}` : `#g${hp}`)
 					await current.changeHp(hp - current.hp);
 				} else {
 					game.log('<li>', current, '无须调整体力值');

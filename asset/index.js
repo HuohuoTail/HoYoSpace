@@ -165,7 +165,37 @@ game.import("character", () => {
 		characterFilter: {},
 		characterSort: { hyyzCharacter: characterSorts },
 		skill: skills,
-		translate: translates,// 
+		translate: translates,
+		card: {
+			hyyz_mengtaixu: {
+				fullskin: true,
+				image: `ext:忽悠宇宙/asset/card/image/hyyz_mengtaixu.png`,
+				type: "equip",
+				derivation: "hyyz_b3_sushang",
+				fullskin: true,
+				subtype: "equip1",
+				cardPrompt(card) {
+					return '原本是一张普通牌，被置入了武器栏。';
+				},
+				enable: true,
+				selectTarget: -1,
+				filterTarget(card, player, target) {
+					player == target && target.canEquip(card, true)
+				},
+				modTarget: true,
+				allowMultiple: false,
+				content() {
+					//不存在处理区外的牌=全部都在处理区
+					if (!card?.cards.some(card => get.position(card, true) !== "o")) target.equip(card);
+				},
+				toself: true,
+				ai: {
+					basic: {
+						equipValue: 0.1,
+					},
+				},
+			},
+		},
 		dynamicTranslate: dynamicTranslates,
 		characterSubstitute: {
 			hyyz_ys_furina: [

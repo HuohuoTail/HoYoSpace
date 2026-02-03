@@ -1239,7 +1239,7 @@ export const hyyzcards = {
 			},
 		},
 		//其他
-		hyyz_weiba_info: ["尾巴",
+		/*hyyz_weiba_info: ["尾巴",
 			"<li>附生：锁定技，额定回合结束后，你抉择：失去1点体力并执行一个被尾巴控制的回合；尾巴移至随机角色的宝物栏。",
 			"艺海深耕岁月悠，<br>绝技在身意难休。<br>恐其湮没随尘逝，<br>急觅贤徒授秘猷。"],
 		hyyz_weiba: {//0.5-6/2
@@ -1285,7 +1285,7 @@ export const hyyzcards = {
 				},
 			},
 			skills: ["hyyz_weiba_skill"],
-		},
+		},*/
 		hyyz_zhili_info: ["支离剑",
 			"<li>裂骨：此牌的攻击范围视为你已损失的体力值。<li>碎芒：你使用伤害即时牌指定目标后，可以失去1点体力并改为直接结算对应属性的伤害。",
 			"生之来不能却，其去不能止<br>死亡亦如此"],
@@ -1556,21 +1556,8 @@ export const hyyzcards = {
 				},
 			},
 		},
+		//衍生
 		hyyz_mengtaixu_info: ['太虚剑气', '原本是一张普通牌。', ``],
-		hyyz_mengtaixu: {
-			type: "equip",
-			derivation: "hyyz_b3_sushang",
-			fullimage: true,
-			subtype: "equip1",
-			cardPrompt(card) {
-				return '原本是一张普通牌，被置入了武器栏。';
-			},
-			ai: {
-				basic: {
-					equipValue: 0.1,
-				},
-			},
-		},
 	},
 	/**@type { SMap<Skill> } */
 	skill: {
@@ -2258,7 +2245,7 @@ export const hyyzcards = {
 				source: 'damageBefore'
 			},
 			filter(event, player) {
-				if (!event.card && !event.cards) return false;
+				if (!event.card || !event.cards.length) return false;
 				return event.card.name == 'sha' || event.card.name == 'juedou'
 			},
 			prompt2(event, player) {

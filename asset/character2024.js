@@ -4896,7 +4896,7 @@ const characters = {
 				return get.itemtype(event.cards) != 'cards' || !player.hasJudge('lebu');
 			},
 			async content(event, trigger, player) {
-				trigger.card.name = "lebu";
+				if (trigger.cards.length > 0) trigger.card.name = "lebu";
 			},
 		},
 		hyyzxvxing: {
@@ -10286,9 +10286,9 @@ const characters = {
 			<li>每展示一张	<span class='greentext'>黑色</span>/<span class='firetext'>红色</span>牌，<span class='greentext'>你本回合使用【杀】的次数上限+1</span>/<span class='firetext'>目标需要响应的【闪】数+1</span>。回合结束时，若你使用【杀】和目标使用【闪】有未被消耗的次数，各令你摸一张牌。`,
 		hyyzhenchi_info: '恨斥|锁定技，场上的阵亡角色数大于存活角色数时，你受到和造成的伤害+1。',
 
-		hyyz_xt_kafuka: ['卡芙卡', ["female", "hyyz_xt", 3, ['hyyzmosuo', 'hyyzyuemian'], []], '紫灵谷的骊歌', '在星际和平公司的通缉档案里，卡芙卡只留下了名字和「爱好收集大衣」的记录。人们对这位星核猎手所知甚少，只知道她是「命运的奴隶」艾利欧最信任的成员之一。为了到达艾利欧预见的「未来」，卡芙卡开始行动。'],
+		hyyz_xt_kafuka: ['卡芙卡', ["female", "hyyz_xt", 3, ['hyyzmosuo', 'hyyzyanling'], []], '紫灵谷的骊歌', '尾巴已对技能〖摩挲〗进行修改，同时新增技能〖言灵〗，若有其他方案可私信尾巴修改。<br>在星际和平公司的通缉档案里，卡芙卡只留下了名字和「爱好收集大衣」的记录。人们对这位星核猎手所知甚少，只知道她是「命运的奴隶」艾利欧最信任的成员之一。为了到达艾利欧预见的「未来」，卡芙卡开始行动。'],
 		hyyzmosuo: {
-			audio: 4,
+			audio: 'mengyuemian',
 			trigger: {
 				player: 'damageEnd',
 				source: 'damageSource'
@@ -10301,35 +10301,26 @@ const characters = {
 					return event.source.isIn();
 				};
 			},
-			frequent: 'check',
-			check(event, player) {
-				const target = event.player == player ? event.source : event.player;
-				return get.attitude(player, target) < 0;
-			},
+			forced: true,
 			async content(event, trigger, player) {
 				const target = trigger.player == player ? trigger.source : trigger.player;
 				if (target.countCards('ej')) {
 					const cards = target.getCards('ej', (card) => {
-						if (get.position(card) == 'e') return true;
-						return (card.viewAs || card.name) != 'xumou_jsrg';
+						if (get.position(card) == 'e') return !card.isViewAsCard && !card.viewAs
+						if (get.position(card) == 'j') return !card.viewAs
+						return true
 					});
 					for (let card of cards) {
 						await target.addJudge({ name: 'xumou_jsrg' }, [card]);
 					};
-				} else {
-					//await player.addTempSkills(['hyyzyuemian'], { global: 'roundStart' });
-				};
+				}
 
-				if (!target.countCards('ej', (card) => {
-					return ['equip'].includes(lib.card[card.name].type);
-				})) {
-					await target.addhyyzBuff('hyyzBuff_chudian', 1);
-				};
-				if (!target.countCards('ej', (card) => {
-					return ['trick', 'delay'].includes(lib.card[card.name].type);
-				})) {
-					await target.hyyzBang();
-				};
+				const names = target
+					.getCards('j')
+					.map(card => get.type2((card.cards ?? [card])[0]))
+					.unique()
+				if (names.includes('equip')) await target.addhyyzBuff('hyyzBuff_chudian', 1);
+				if (names.includes('trick')) await await target.hyyzBang();
 			},
 			derivation: ['hyyzyuemian'],
 			ai: {
@@ -10351,27 +10342,43 @@ const characters = {
 				}
 			},
 		},
-		hyyzyuemian: {
-			audio: 2,
-			trigger: {
-				player: "linkBegin",
-				global: 'damageEnd'
+		hyyzyanling: {
+			audio: 'mengyexuan',
+			enable: 'phaseUse',
+			usable: 1,
+			filterTarget(card, player, target) {
+				return target.countCards('h') > 0
 			},
-			forced: true,
-			filter(event, player) {
-				console.log(event);
-				if (event.name == 'link') return !player.isLinked();
-				else return event.dotDebuff && event.dotDebuff == 'hyyzBuff_chudian';
-			},
-			content() {
-				if (trigger.name == 'link') trigger.cancel();
-				else {
-					player.chooseDrawRecover(true);
+			async content(event, trigger, player) {
+				const { cards } = await player.choosePlayerCard(event.targets[0], 'h', 'visible')
+					.set('ai', (button) => {
+						let val = get.value(button.link)
+						if (event.targets[0] == player) {
+							val = 10 - val
+							if (get.name(button.link) == 'sha') val += 2;
+						}
+						else {
+							if (get.name(button.link) == 'shan') val += 2;
+						}
+						return val
+					})
+					.forResult();
+				if (cards) {
+					await event.targets[0].addJudge({ name: 'xumou_jsrg' }, cards);
 				}
 			},
+			ai: {
+				order: 10,
+				result: {
+					target(player, target, card) {
+						if (target == player) return player.countCards('h', { name: 'sha' });
+						else return -2
+					},
+				}
+			}
 		},
-		hyyzmosuo_info: `摩挲|当你造成或受到伤害后，你可以令对方“蓄谋”场上的牌。若该角色没有装备/锦囊的蓄谋牌，其${get.hyyzIntroduce('触电')}/${get.hyyzIntroduce('引爆')}。`,
-		hyyzyuemian_info: "月绵|锁定技，你不能被横置。当有角色受到[触电]伤害后，你摸一张牌或回复1点体力。",
+		hyyzmosuo_info: `摩挲|锁定技，当你造成或受到伤害后，令对方“蓄谋”场上的非转化牌。若该角色的判定区有装备/锦囊牌，其${get.hyyzIntroduce('触电')}/${get.hyyzIntroduce('引爆')}。`,
+		hyyzyanling_info: '言灵|出牌阶段限一次，你可以观看一名角色的手牌，然后令其蓄谋之。',
 
 		hyyz_xt_fuxuan: ['符玄', ["female", "hyyz_xt", "2/4", ['hyyzshiying', 'hyyzqiankun', 'hyyzjianzhi'], []], '紫灵谷的骊歌', '「知识要用苦痛来换取。」凭借第三眼与穷观阵为仙舟占算航路，预卜事务吉凶，坚信自己所做的一切便是事情的「最优解」。符玄等待着将军承诺的「退位让贤」，然而这一天的到来…似乎还遥遥无期。'],
 		hyyzshiying: {
@@ -10450,7 +10457,7 @@ const characters = {
 		hyyzqiankun: {
 			audio: 1,
 			trigger: {
-				player: ['loseHpAfter', 'damageAfter']
+				player: ['damageAfter', 'loseHpAfter']
 			},
 			frequent: true,
 			filter(event, player) {
@@ -10458,9 +10465,7 @@ const characters = {
 			},
 			round: 1,
 			async content(event, trigger, player) {
-				const num = player.getDamagedHp() - player.hp;
-				await player.changeHp(num);
-				if (player.hp <= 0) await player.dying();
+				game.changeHpTo(player, player.getDamagedHp())
 			}
 		},
 		hyyzjianzhi: {
@@ -10493,7 +10498,7 @@ const characters = {
 					var type = get.type2(i, null, owner);
 					if (type == "trick") card = i;
 				}
-				player.gain(card, 'gain2');
+				await player.gain(card, 'gain2');
 			},
 		},
 		hyyzshiying_info: "示影|其他角色每回合受到大于1点的伤害时，你可以交给其一张手牌并将多余的伤害转移给你。若你以此法交出过此牌名的牌，你减1点体力上限。",
@@ -10503,7 +10508,12 @@ const characters = {
 		hyyz_xt_heitiane: ['黑天鹅', ["female", "hyyz_xt", 3, ['hyyzyibu', 'hyyzminggan', 'hyyzyuexin'], []], '紫灵谷的骊歌', '「流光忆庭」的忆者，神秘优雅的占卜师。常挂着温柔的微笑，耐心聆听他人的言语，并借此走入「记忆」，掌握全盘信息。热衷于收集独一无二的记忆，背后的想法却难以看透。'],
 		hyyzminggan: {
 			audio: 4,
-			logAudio: (index) => typeof index === 'number' ? `ext:忽悠宇宙/asset/character/audio/hyyzminggan${index}.mp3` : false,
+			logAudio(event, player, triggername, indexedData, costResult) {
+				return [
+					'ext:忽悠宇宙/asset/character/audio/hyyzminggan1.mp3',
+					'ext:忽悠宇宙/asset/character/audio/hyyzminggan2.mp3',
+				]
+			},
 			trigger: {
 				global: ['judge']
 			},
@@ -10512,7 +10522,7 @@ const characters = {
 			},
 			async cost(event, trigger, player) {
 				var next = player.chooseButton([
-					'铭感：选择一种花色',
+					'铭感：选择一种花色尝试改判',
 					[lib.suit.map(i => ['', '', 'lukai_' + i]), 'vcard']
 				]);
 				next.set('forced', false);
@@ -10537,7 +10547,6 @@ const characters = {
 			},
 			logTarget: 'player',
 			async content(event, trigger, player) {
-				player.logSkill("hyyzminggan", player, null, null, [[1, 2].randomGet()]);
 				const name = event.cost_data.name;
 				if (!player.storage.hyyzminggan) player.storage.hyyzminggan = [];
 				player.storage.hyyzminggan.add(name);
@@ -10560,6 +10569,13 @@ const characters = {
 			group: ['hyyzminggan_judge'],
 			subSkill: {
 				judge: {
+					audio: 'hyyzminggan',
+					logAudio(event, player, triggername, indexedData, costResult) {
+						return [
+							'ext:忽悠宇宙/asset/character/audio/hyyzminggan3.mp3',
+							'ext:忽悠宇宙/asset/character/audio/hyyzminggan4.mp3',
+						]
+					},
 					trigger: {
 						player: "gainAfter"
 					},
@@ -10575,21 +10591,24 @@ const characters = {
 						);
 					},
 					async content(event, trigger, player) {
-						player.logSkill("hyyzminggan", player, null, null, [[3, 4].randomGet()]);
+						//player.logSkill("hyyzminggan", player, null, null, [[3, 4].randomGet()]);
 						const evt = trigger.getParent(2);
 						evt.finish();
 
 						const list = trigger.getg(player).filter(
 							cardx => player.countCards('he', (card) => card == cardx) && get.suit(cardx) == evt.card.storage.hyyzminggan
 						), evtJudge = trigger.getParent(8);
-						let { cards } = list.length == 1 ? list : (await player
+						let result = list.length == 1 ? { cards: list } : (await player
 							.chooseCard(`选择一张${get.translation(evt.card.storage.hyyzminggan)}牌进行改判`, 'he', true, (card) => list.includes(card) && get.suit(card) == trigger.getParent(2).card.storage.hyyzminggan)
 							.forResult());
-						await player.respond(cards[0], "hyyzminggan", "highlight", "noOrdering");
-						game.cardsDiscard(evtJudge.player.judging[0]);
-						evtJudge.player.judging[0] = cards[0];
-						evtJudge.orderingCards.addArray(cards);
-						game.log(evtJudge.player, "的判定牌改为", cards[0]);
+						if (result.cards) {
+							const card = result.cards[0];
+							await player.respond(card, "hyyzminggan", "highlight", "noOrdering");
+							game.cardsDiscard(evtJudge.player.judging[0]);
+							evtJudge.player.judging[0] = card;
+							evtJudge.orderingCards.addArray([card]);
+							game.log(evtJudge.player, "的判定牌改为", card);
+						}
 					}
 				}
 			}
@@ -10726,15 +10745,15 @@ const characters = {
 						};
 					};
 				} else {
-					player.draw(2);
+					await player.draw(2);
 					player.getStat().card[trigger.card.name]--;
 				};
 				player.when({
-					global: 'dieAfter'
+					global: 'dieBegin'
 				}).filter((event, player) => {
 					return event.source == player && event.reason && event.reason.cards.some(card => get.name(card) == 'sha');
 				}).then(() => {
-					player.addhyyzBuff('hyyzBuff_jiasu');
+					if (!player.hashyyzBuff('hyyzBuff_jiasu')) player.addhyyzBuff('hyyzBuff_jiasu');
 				})
 			}
 		},
@@ -10743,6 +10762,7 @@ const characters = {
 
 		hyyz_zzz_11: ['11号', ["female", "hyyz_zzz", 4, ['hyyzzhenya', 'hyyzliaoyuan'], []], '紫灵谷的骊歌', '令行禁止，忠于使命的士兵楷模…至少11号是这么要求自己的。<br>武器不需要情绪，只要切实地执行命令…至少11号是这么告诫自己的。<br> 不论遭遇何种强敌，都只需要点火、举剑、迎击…至少11号一直是这么做的。<br>软弱已随名字一起舍弃，只留下了坚定的内心…至少11号是这么认为的。'],
 		hyyzzhenya: {
+			audio: 10,
 			init(player) {
 				player.storage.hyyzzhenya = false;
 				player.storage.hyyzzhenya_zhou = 0;
@@ -10836,7 +10856,7 @@ const characters = {
 			},
 		},
 		hyyzliaoyuan: {
-			unique: true,
+			audio: 2,
 			mark: true,
 			skillAnimation: true,
 			animationColor: "fire",
@@ -10853,7 +10873,7 @@ const characters = {
 				player.addTempSkill('hyyzliaoyuan_on');
 			},
 			ai: {
-				order: 1,
+				order: 10,
 				result: {
 					player: 1,
 				},
@@ -10869,7 +10889,7 @@ const characters = {
 	2407: {
 		hyyz_xt_wu_liuying: ['流萤', ['female', 'hyyz_xt', '3/4', ['mengliuguangzhuhuo', 'mengranquyingshen', 'mengmengguihechu'], []], '昨夜流萤'],
 		mengliuguangzhuhuo: {
-			audio: 9,
+			audio: 'hyyzranshang',
 			nobracket: true,
 			trigger: {
 				player: ['phaseJudgeBegin', 'phaseDrawBegin', 'phaseUseBegin', 'phaseDiscardBegin'],
@@ -10925,7 +10945,7 @@ const characters = {
 			}
 		},
 		mengranquyingshen: {
-			audio: 'mengliuguangzhuhuo',
+			audio: 'hyyzyingzhu',
 			nobracket: true,
 			trigger: {
 				source: 'damageBegin1',
@@ -10935,7 +10955,7 @@ const characters = {
 				return true;
 			},
 			forced: true,
-			content() {
+			async content(event, trigger, player) {
 				let suits = [];
 				game.countPlayer(current => {
 					current.getHistory('sourceDamage', (evt) => {
@@ -10949,7 +10969,7 @@ const characters = {
 			}
 		},
 		mengmengguihechu: {
-			audio: 5,
+			audio: 'hyyzyingzhu',
 			nobracket: true,
 			trigger: {
 				player: 'dying'
@@ -10964,21 +10984,37 @@ const characters = {
 				return skills.length > 0;
 			},
 			forced: true,
-			content() {
-				player.recover(1 - player.hp);
-				let skills = player.getSkills(null, false, false).filter((skill) => {
-					var info = get.info(skill);
-					if (!info || info.charlotte || !get.is.locked(skill) || get.skillInfoTranslation(skill, player).length == 0 ||
-						(info.inherit && info.inherit == 'mengcanshi')) return false;
-					return true;
-				});
-				const name = skills[0] + '_canshi';
-				lib.skill[name] = {};
-				Object.assign(lib.skill[name], lib.skill['mengcanshi']);
-				lib.translate[name] = lib.translate['mengcanshi'];
-				lib.translate[name + '_info'] = lib.translate['mengcanshi_info'];
-				player.removeSkill(skills[0]);
-				player.addSkill(name);
+			async content(event, trigger, player) {
+				await player.recover(1 - player.hp);
+				const nowSKill = player.getSkills(null, false, false)
+					.filter((skill) => {
+						var info = get.info(skill);
+						if (!info || info.charlotte || !get.is.locked(skill)) return false;
+						return true;
+					});
+				const lockedSkills = player.getSkills(null, false, false)
+					.filter((skill) => {
+						var info = get.info(skill);
+						if (!info || info.charlotte || !get.is.locked(skill) || get.skillInfoTranslation(skill, player).length == 0 ||
+							(info.inherit && info.inherit == 'mengcanshi')) return false;
+						return true;
+					});
+				const createSkill = function (oldName) {
+					const name = oldName + '_canshi';
+					lib.skill[name] = {};
+					Object.assign(lib.skill[name], lib.skill['mengcanshi']);
+					lib.translate[name] = lib.translate['mengcanshi'];
+					lib.translate[name + '_info'] = lib.translate['mengcanshi_info'];
+					return name
+				}
+				const newSkill = createSkill(nowSKill[0])
+
+				const addSkills = nowSKill.slice(0);
+				addSkills.splice(0, 1, newSkill)
+				console.log(nowSKill, addSkills);
+
+				await player.removeSkills(nowSKill);
+				await player.addSkills(addSkills);
 			}
 		},
 		mengcanshi: {
@@ -11036,7 +11072,7 @@ const characters = {
 
 		hyyz_xt_re_liuying: ['流萤', ["female", "hyyz_xt", 4, ["mengshangjin", "mengranhuang"], []], '五雷正心', ''],
 		"mengshangjin": {
-			audio: 'mengliuguangzhuhuo',
+			audio: 'hyyzranshang',
 			forced: true,
 			trigger: {
 				player: ["phaseZhunbeiEnd", "phaseJudgeEnd", "phaseDrawEnd", "phaseUseEnd", "phaseDiscardEnd", "phaseJieshuEnd"],
@@ -11062,8 +11098,7 @@ const characters = {
 					return get.position(card, true) == 'd' && get.type(card) == 'equip' && player.hasUseTarget(card2);
 				});
 			},
-			forced: true,
-			direct: true,
+			silent: true,
 			async content(event, trigger, player) {
 				const cards = trigger.getl(player).cards2.filter(card => get.position(card, true) == 'd' && get.type(card) == 'equip');
 				for (let i of cards) {
@@ -11075,7 +11110,7 @@ const characters = {
 			},
 		},
 		"mengranhuang": {
-			audio: 'mengmengguihechu',
+			audio: 'hyyzyingzhu',
 			unique: true,
 			limited: true,
 			init(player) {
@@ -11110,9 +11145,7 @@ const characters = {
 			trigger: {
 				player: ["huogongBegin", "huogongAfter"]
 			},
-			forced: true,
-			locked: false,
-			popup: false,
+			silent: true,
 			filter(event, player) {
 				return event.skill == 'mengranhuang';
 			},
@@ -11121,10 +11154,11 @@ const characters = {
 					trigger.setContent(lib.skill.mengranhuang2.huogongContent);
 				} else {
 					const { targets } = await player.chooseTarget('分配“燃煌”', true, lib.filter.notMe)
+						.set('ai', (target) => get.attitude2(target))
 						.forResult();
 					if (targets) {
-						player.removeSkills(['mengranhuang']);
-						targets[0].addSkills(['mengranhuang']);
+						await player.removeSkills(['mengranhuang']);
+						await targets[0].addSkills(['mengranhuang']);
 					}
 				}
 			},

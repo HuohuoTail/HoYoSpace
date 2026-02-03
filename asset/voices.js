@@ -1144,7 +1144,6 @@ const hyyzvoices = {
 		'hyyzyingzhu4': '（萨姆&流萤）飞萤扑火，向死而生。',
 		'hyyzyingzhu5': '（萨姆&流萤）我为自我而战，（流萤）直至一切…燃烧殆尽！',
 
-
 		'hyyz_xt_botiou': '呵呵……好枪法……',
 		'hyyzduizhi1': '来吧！公平决斗。',
 		'hyyzduizhi2': '放马过来，宝贝！',
@@ -1161,12 +1160,6 @@ const hyyzvoices = {
 		'hyyzhenchi2': '人能不能活下去，靠的就是这个。',
 
 		'hyyz_xt_kafuka': '这还……不是结局……',
-		'hyyzmosuo1': '索性都干掉吧！',
-		'hyyzmosuo2': '记住还能呼吸的感觉。',
-		'hyyzmosuo3': '猎物落网咯。',
-		'hyyzmosuo4': '美妙的时光总有尽头，该说再见了。',
-		'hyyzyuemian1': '放轻松。',
-		'hyyzyuemian2': '站好咯。',
 
 		'hyyz_xt_fuxuan': '事已前定…么……',
 		'hyyzshiying1': '相与为一。',
@@ -1192,7 +1185,19 @@ const hyyzvoices = {
 		'hyyzlixing4': '随蝴蝶一起消散吧！',
 		'hyyzlixing5': '旧世的幻影！',
 
-		hyyz_zzz_11: '',
+		hyyz_zzz_11: '不可能，我还没有……',
+		hyyzzhenya1: '喝！',
+		hyyzzhenya2: '喝！',
+		hyyzzhenya3: '嗒！',
+		hyyzzhenya4: '喝！',
+		hyyzzhenya5: '哈！',
+		hyyzzhenya6: '喝啊！',
+		hyyzzhenya7: '嘿呀！',
+		hyyzzhenya8: '燃烧！',
+		hyyzzhenya9: '火力准备！',
+		hyyzzhenya10: '火焰，听从我！',
+		hyyzliaoyuan1: '燎原之火！',
+		hyyzliaoyuan2: '火，还不够旺！',
 	},
 	...{//202407
 		hyyz_xt_wu_liuying: '任务……终止……',

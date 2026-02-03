@@ -171,6 +171,56 @@ async function PRECONTENT() {
 			lineColor: [0, 100, 200],
 			color: [0, 100, 200],
 		});
+		lib.translate.hyyz_water = '水'
+		lib.skill._hyyz_water = {
+			trigger: {
+				player: "damageBegin4"
+			},
+			forced: true,
+			priority: -Infinity,
+			popup: false,
+			filter(event, player) {
+				if (!event.hasNature('hyyz_water')) return false;
+				return event.source?.getSeatNum() != undefined && player.countCards('e') > 0;
+			},
+			async content(event, trigger, player) {
+				debugger
+				let card;
+				for (let i of [5, 4, 3, 2, 1]) {
+					const cards = player.getEquips('equip' + i)
+					if (cards.length > 0) {
+						card = cards[0]
+						break;
+					}
+				}
+				if (!card || get.itemtype(card) != 'card') return;
+				/**来源的座次 */
+				const source = trigger.source;
+				/**总人数 */
+				const MAX = game.players.concat(game.dead).length;
+				/**两名角色之间的间隔 */
+				const length = function (player, target) {
+					const x = Math.abs(player.getSeatNum() - target.getSeatNum());
+					return x > MAX / 2 ? MAX - x : x;
+				}
+				let target;
+				if (length(source, player.next) > length(source, player.previous)) {
+					target = player.next;
+				} else if (length(source, player.next) < length(source, player.previous)) {
+					target = player.previous;
+				}
+				if (target?.isIn() && target.hasEmptySlot(get.subtype(card))) {
+					game.log('#g「水熵」', player, '的', get.translation(card), '随波逐流了');
+					await target.equip(card);
+					player.$give(card, target);
+					player.line(target, "hyyz_water");
+				} else {
+					game.log('#g「水熵」', player, '的', get.translation(card), '随流水逝去');
+					source.line(player, 'hyyz_water')
+					await player.discard(card).set('discarder', source)
+				}
+			},
+		};
 		game.addNature('fire', '火焰', {
 			audio: undefined,
 			linked: true,
@@ -722,21 +772,23 @@ const HELP = {
             <li><b style="color:#ff6666">[冻结]debuff</b>当前回合内不能使用、打出或弃置手牌。</li>
             <li><b style="color:#ff6666">[禁锢]debuff</b>使用的下一张牌无效。</li>
             <li><b style="color:#ff6666">[纠缠]debuff</b>下次成为即时牌的目标后，重铸一张相同类型的牌，否则此牌结算两次。</li>
-            <li><b style="color:#ff6666">[裂伤]dotdebuff</b>每层令此角色使用牌指定其他角色后<span style="color:#f40cf0">失去1点体力</span>。</li>
-            <li><b style="color:#ff6666">[灼烧]dotdebuff</b>每层令此角色<span style="color:#f40cf0">[点燃]区域内随机两张牌（优先手牌）</span>。</li>
-            <li><b style="color:#ff6666">[风化]dotdebuff</b>准备阶段，每层使此角色<span style="color:#f40cf0">受到1点风蚀伤害</span>。</li>
-            <li><b style="color:#ff6666">[触电]dotdebuff</b>始终横置；每层使此角色使用或打出无目标的牌后<span style="color:#f40cf0">受到1点雷电伤害</span>。</li>
+            <li><b style="color:#ff6666">[裂伤]dotdebuff</b>（每层）该角色使用牌指定其他角色后<span style="color:#f40cf0">失去1点体力</span>。</li>
+            <li><b style="color:#ff6666">[灼烧]dotdebuff</b>（每层）该角色<span style="color:#f40cf0">[点燃]区域内随机两张牌（优先手牌）</span>。</li>
+            <li><b style="color:#ff6666">[风化]dotdebuff</b>（每层）准备阶段，该角色<span style="color:#f40cf0">受到1点风蚀伤害</span>。</li>
+            <li><b style="color:#ff6666">[触电]dotdebuff</b>（每层）始终横置；该角色使用或打出无目标的牌后，<span style="color:#f40cf0">受到1点雷电伤害</span>。</li>
         </ul>`,
 
 	'忽悠<span style="color:#07a6f0">属性</span>':
 		`<div style="margin:10px">关于<b style="color: #008cff">新属性</b></div>
 		<ul>
-            <li><span style="text-shadow: 1px 1px 2px #0aba0a,0 0 8px #018801;color: white">“风蚀”hyyz_wind</span>。</li>
-            <li>一名角色受到<span style="text-shadow: 1px 1px 2px #0aba0a,0 0 8px #018801;color: white">风蚀</span>伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。</li>
-            <li><span style="text-shadow: 1px 1px 2px #07a6f0,0 0 8px #0a1bb9;color: white">“量子”hyyz_quantum</span>。</li>
-            <li>一名角色使用<span style="text-shadow: 1px 1px 2px #07a6f0,0 0 8px #0a1bb9;color: white">量子</span>【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。</li>
-            <li><span style="text-shadow: 1px 1px 2px #ffee00,0 0 8px #ccaa11;color: white">“虚数”hyyz_imaginary</span>。</li>
-            <li>一名角色受到<span style="text-shadow: 1px 1px 2px #ffee00,0 0 8px #ccaa11;color: white">虚数</span>伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。</li>
+            <li><span style="text-shadow: 1px 1px 2px rgb(0, 255, 0),0 0 8px rgb(80, 220, 80);color: white">“风蚀”hyyz_wind</span>。</li>
+            一名角色受到<span style="text-shadow: 1px 1px 2px rgb(0, 255, 0),0 0 8px rgb(80, 220, 80);color: white">风蚀</span>伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。<li></li>
+            <li><span style="text-shadow: 1px 1px 2px rgb(115, 0, 255),0 0 8px rgb(80, 0, 180);color: white">“量子”hyyz_quantum</span>。</li>
+            一名角色使用<span style="text-shadow: 1px 1px 2px rgb(115, 0, 255),0 0 8px rgb(80, 0, 180);color: white">量子</span>【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。<li></li>
+            <li><span style="text-shadow: 1px 1px 2px rgb(255, 250, 0),0 0 8px rgb(255, 250, 0);color: white">“虚数”hyyz_imaginary</span>。</li>
+            一名角色受到<span style="text-shadow: 1px 1px 2px rgb(255, 250, 0),0 0 8px rgb(255, 250, 0);color: white">虚数</span>伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。<li></li>
+            <li><span style="text-shadow: 1px 1px 2px rgb(0, 128, 255),0 0 8px rgb(0, 100, 200);color: white">“水熵”hyyz_water</span>。</li>
+            一名角色受到<span style="text-shadow: 1px 1px 2px rgb(0, 128, 255),0 0 8px rgb(0, 100, 200);color: white">水熵</span>伤害时，将最后一件装备牌向远离伤害来源的座次方向移动一位。若没有合法空置区域，改为弃置之。<li></li>
         </ul>`,
 }
 export { ARENAREADY, PREPARE, PRECONTENT, CONTENT, CONFIG, HELP };
