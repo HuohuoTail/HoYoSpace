@@ -123,7 +123,7 @@ async function PRECONTENT() {
 				追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
 				法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
 				否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
-				装备栏异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
+				异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
 			}
 			for (let i in introduce) introduce[i] = '<li>' + introduce[i];
 			return introduce;
@@ -161,10 +161,22 @@ async function PRECONTENT() {
 			image: 'ext:忽悠宇宙/other/qhly/hyyz_ɸ.png'
 		});
 
-
 		//——————————————新属性——————————————//
 		game.addNature('hyyz_water', '水熵', {
-			audio: undefined,
+			audio: {
+				damage: {
+					hyyz_water: {
+						1: '../extension/忽悠宇宙/other/audio/damage_hyyz_water.mp3',
+						2: '../extension/忽悠宇宙/other/audio/damage_hyyz_water2.mp3',
+					}
+				},
+				hujia_damage: {
+					hyyz_water: {
+						1: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_water.mp3',
+						2: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_water2.mp3',
+					}
+				}
+			},
 			linked: true,
 			order: 10,
 			background: 'extension/忽悠宇宙/asset/card/image/hyyz_water.png',
@@ -174,7 +186,7 @@ async function PRECONTENT() {
 		lib.translate.hyyz_water = '水'
 		lib.skill._hyyz_water = {
 			trigger: {
-				player: "damageBegin4"
+				player: "damageBegin3"
 			},
 			forced: true,
 			priority: -Infinity,
@@ -184,7 +196,6 @@ async function PRECONTENT() {
 				return event.source?.getSeatNum() != undefined && player.countCards('e') > 0;
 			},
 			async content(event, trigger, player) {
-				debugger
 				let card;
 				for (let i of [5, 4, 3, 2, 1]) {
 					const cards = player.getEquips('equip' + i)
@@ -210,19 +221,19 @@ async function PRECONTENT() {
 					target = player.previous;
 				}
 				if (target?.isIn() && target.hasEmptySlot(get.subtype(card))) {
-					game.log('#g「水熵」', player, '的', get.translation(card), '随波逐流了');
+					game.log('#g「水熵」', player, '的', card, '随波逐流了');
 					await target.equip(card);
 					player.$give(card, target);
 					player.line(target, "hyyz_water");
 				} else {
-					game.log('#g「水熵」', player, '的', get.translation(card), '随流水逝去');
+					game.log('#g「水熵」', player, '的', card, '随流水逝去');
 					source.line(player, 'hyyz_water')
 					await player.discard(card).set('discarder', source)
 				}
 			},
 		};
 		game.addNature('fire', '火焰', {
-			audio: undefined,
+			//audio: 'default',
 			linked: true,
 			order: 20,
 			background: 'extension/忽悠宇宙/asset/card/image/fire.png',
@@ -230,7 +241,7 @@ async function PRECONTENT() {
 			color: [255, 0, 0],
 		});
 		game.addNature('thunder', '雷电', {
-			audio: undefined,
+			//audio: 'default',
 			linked: true,
 			order: 30,
 			background: 'extension/忽悠宇宙/asset/card/image/thunder.png',
@@ -238,7 +249,7 @@ async function PRECONTENT() {
 			color: [180, 0, 180],
 		});
 		game.addNature('ice', '冰冻', {
-			audio: undefined,
+			//audio: 'default',
 			linked: true,
 			order: 40,
 			background: 'extension/忽悠宇宙/asset/card/image/ice.png',
@@ -246,7 +257,20 @@ async function PRECONTENT() {
 			color: [70, 170, 170],
 		});
 		game.addNature('hyyz_wind', '风蚀', {
-			audio: undefined,
+			audio: {
+				damage: {
+					hyyz_wind: {
+						1: '../extension/忽悠宇宙/other/audio/damage_hyyz_wind.mp3',
+						2: '../extension/忽悠宇宙/other/audio/damage_hyyz_wind2.mp3',
+					}
+				},
+				hujia_damage: {
+					hyyz_wind: {
+						1: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_wind.mp3',
+						2: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_wind2.mp3',
+					}
+				}
+			},
 			linked: true,
 			order: 70,
 			background: 'extension/忽悠宇宙/asset/card/image/hyyz_wind.png',
@@ -255,11 +279,10 @@ async function PRECONTENT() {
 		});
 		lib.skill._hyyz_wind = {
 			trigger: {
-				player: "damageBegin4"
+				player: "damageBegin3"
 			},
-			forced: true,
+			silent: true,
 			priority: -Infinity,
-			popup: false,
 			filter(event, player) {
 				return player.countCards('he') > 0 && event.hasNature('hyyz_wind');
 			},
@@ -294,7 +317,20 @@ async function PRECONTENT() {
 			}
 		}
 		game.addNature('hyyz_quantum', '量子', {
-			audio: undefined,
+			audio: {
+				damage: {
+					hyyz_quantum: {
+						1: '../extension/忽悠宇宙/other/audio/damage_hyyz_quantum.mp3',
+						2: '../extension/忽悠宇宙/other/audio/damage_hyyz_quantum2.mp3',
+					}
+				},
+				hujia_damage: {
+					hyyz_quantum: {
+						1: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_quantum.mp3',
+						2: '../extension/忽悠宇宙/other/audio/hujia_damage_hyyz_quantum2.mp3',
+					}
+				}
+			},
 			linked: true,
 			order: 80,
 			background: 'extension/忽悠宇宙/asset/card/image/hyyz_quantum.png',
@@ -331,7 +367,14 @@ async function PRECONTENT() {
 			},
 		}
 		game.addNature('hyyz_imaginary', '虚数', {
-			audio: undefined,
+			audio: {
+				damage: {
+					hyyz_imaginary: {
+						1: '../extension/忽悠宇宙/other/audio/damage_hyyz_imaginary.mp3',
+						2: '../extension/忽悠宇宙/other/audio/damage_hyyz_imaginary2.mp3',
+					}
+				}
+			},
 			linked: true,
 			order: 90,
 			background: 'extension/忽悠宇宙/asset/card/image/hyyz_imaginary.png',
@@ -340,7 +383,7 @@ async function PRECONTENT() {
 		});
 		lib.skill._hyyz_imaginary = {
 			trigger: {
-				player: ["damageBegin4", "useCardToPlayered"],
+				player: ["damageBegin3", "useCardToPlayered"],
 			},
 			forced: true,
 			priority: -Infinity,
@@ -571,19 +614,19 @@ async function CONTENT(config, pack) {
 	if ('强度评级') {
 		//sss传说，极致的强度
 		lib.rank.rarity['legend'].addArray([
-
+			'hyyz_xt_ren', 'hyyz_b3_hua', 'hyyz_b3_re_zhongyanzhilvzhe', 'hyyz_xt_sb_kafuka', 'hyyz_ys_wu_xiaogong', 'hyyz_b3_re_xinyanzhilvzhe', 'hyyz_b3_paduo', 'hyyz_xt_lingke', 'hyyz_xt_wu_liuying', 'hyyz_xt_liuying', 'hyyz_ɸ_mansui', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//ss史诗，均衡强，或偶尔极致
 		lib.rank.rarity['epic'].addArray([
-
+			'hyyz_xt_jingyuan', 'hyyz_xt_welt', 'hyyz_xt_yinlang', 'hyyz_xt_jizi', 'hyyz_xt_sp_sushang', 'hyyz_xt_bronya', 'hyyz_xt_sushang', 'hyyz_xt_kelala', 'hyyz_b3_sp_xier', 'hyyz_b3_kiana', 'hyyz_b3_sb_jiziwuliangta', 'hyyz_xt_danhengyinyue', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilingren', 'hyyz_b3_sushang', 'hyyz_ys_shenlilinghua', 'hyyz_ys_nuoaier', 'hyyz_xt_huohuo', 'hyyz_ys_sp_wendy', 'hyyz_ys_abeiduo', 'hyyz_ɸ_zhaoxing', 'hyyz_xt_aisida', 'hyyz_xt_ruanmei', 'hyyz_xt_yinzhi', 'hyyz_b3_aiyi', 'hyyz_xt_sp_jingyuan', 'hyyz_xt_guinaifen', 'hyyz_ys_zhongli', 'hyyz_xt_zhenliyisheng', 'hyyz_b3_jiziwuliangta', 'hyyz_xt_sp_huohuo', 'hyyz_ɸ_pink', 'hyyz_xt_wangxiayitong', 'hyyz_xt_sb_jingliu', 'hyyz_b3_ailixiya', 'hyyz_b3_geleixiu', 'hyyz_b3_wu_hua', 'hyyz_b3_sp_kaiwen', 'hyyz_b3_qianjie', 'hyyz_b3_su', 'hyyz_b3_shiyuanzhilvzhe', 'hyyz_b3_yidian', 'hyyz_ɸ_luotianyi', 'hyyz_xt_huangquan', 'hyyz_xt_botiou', 'hyyz_xt_fuxuan', 'hyyz_b3_leidianyayi', 'hyyz_ys_sb_zhongli', 'hyyz_ɸ_quancong', 'hyyz_ys_fukaluosi', 'hyyz_xt_sb_fuxuan', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//a+s精品，普通武将
 		lib.rank.rarity['rare'].addArray([
-
+			'hyyz_xt_qingque', 'hyyz_xt_bailu', 'hyyz_xt_luocha', 'hyyz_xt_sp_bronya', 'hyyz_ɸ_xierde', 'hyyz_b3_kaiwen', 'hyyz_ɸ_shaoxia', 'hyyz_b3_luocha', 'hyyz_ɸ_kuisangti', 'hyyz_xt_sp_kafuka', 'hyyz_ys_qingqizhe', 'hyyz_xt_yanqing', 'hyyz_b3_chiyuan', 'hyyz_b3_shuoyeguanxing', 'hyyz_xt_jingliu', 'hyyz_ɸ_yelianna', 'hyyz_ys_laiyila', 'hyyz_ys_aierhaisen', 'hyyz_b3_xier', 'hyyz_xt_tuopa', 'hyyz_ys_hutao', 'hyyz_xt_sp_ruanmei', 'hyyz_xt_luka', 'hyyz_ys_baizhu', 'hyyz_xt_sp_fuxuan', 'hyyz_ys_sb_nahida', 'hyyz_ys_furina', 'hyyz_ys_nahida', 'hyyz_xt_danhengbailu', 'hyyz_ys_shanhugongxinhai', 'hyyz_xt_sp_luocha', 'hyyz_b3_zhongyanzhilvzhe', 'hyyz_b3_xinyanzhilvzhe', 'hyyz_xt_shiwaluo', 'hyyz_xt_sp_heitiane', 'hyyz_xt_sangbo', 'hyyz_b3_aboniya', 'hyyz_b3_kesimo', 'hyyz_b3_meibiwusi', 'hyyz_b3_sp_weierwei', 'hyyz_b3_ying', 'hyyz_xt_huahuo', 'hyyz_xt_sp_shajin', 'hyyz_xt_shajin', 'hyyz_xt_kafuka', 'hyyz_xt_heitiane', 'hyyz_xt_xier', 'hyyz_zzz_11', 'hyyz_xt_re_liuying', 'hyyz_ys_sp_leidianying', 'hyyz_ɸ_liang', 'hyyz_xt_sb_ruanmei', 'hyyz_ys_xiaogong', 'meng_feixiao', 'hyyz_xt_sp_sanyueqi', 'hyyz_ɸ_chunjin_aiyafala', 'hyyz_ɸ_xi', 'hyyz_xt_sb_fuxuan', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//a平凡，天牢，强度拉稀
 		lib.rank.rarity['junk'].addArray([
-
+			'hyyz_ys_kalilu', 'hyyz_b3_saixiliya', 'hyyz_xt_wo_danheng', 'hyyz_xt_natasha', 'hyyz_ys_leidianzhen', 'hyyz_ys_sp_furina', 'hyyz_ys_sp_zhongli', 'hyyz_ys_sp_nahida', 'hyyz_xt_sp_botiou', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 	}
 	if ('武将包') {

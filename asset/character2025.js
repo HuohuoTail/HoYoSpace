@@ -169,7 +169,6 @@ const characters = {
 
 				const result = await next.forResult();
 				if (result && result.bool) {
-					console.log(result);
 					if (result.result == 'shaned' || result.card.name == 'shan' || result.card.name == 'wuxie')
 						player.chooseUseTarget(trigger.card, true, false);
 				}

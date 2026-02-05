@@ -276,6 +276,29 @@ export const hyyzcards = {
 				},
 			},
 		},
+		//hyyz_weiba_info: ["尾巴", "<li>附生：出牌阶段，将此牌当【杀】蓄谋；回合外，此牌视为【闪】。", "艺海深耕岁月悠，<br>绝技在身意难休。<br>恐其湮没随尘逝，<br>急觅贤徒授秘猷。"],
+		/**@type { Skill } */
+		//hyyz_weiba: {
+		//	legend: true,
+		//	fullskin: true,
+		//	type: 'basic',
+		//	enable: true,
+		//	selectTarget: -1,
+		//	filterTarget(card, player, target) {
+		//		return target === player && !target.isDisabledJudge();
+		//	},
+		//	modTarget(card, player, target) {
+		//		return !target.isDisabledJudge();
+		//	},
+		//	async content(event, trigger, player) {
+		//		if (event.cards.length > 0) {
+		//			for (let card of event.cards) {
+		//				const viewCard = get.autoViewAs({ name: 'sha', cards: [card] }, [card]);
+		//				await player.addJudge({ name: 'jsrg_xumou' }, [viewCard])
+		//			}
+		//		}
+		//	}
+		//},
 		//锦囊牌
 		hyyz_zisu_info: ["自塑尘脂",
 			"<li>抽卡：出牌阶段，对你使用。目标角色声明牌的主类别及检索方向，然后检索之。若失败，则改为摸两张牌。",
@@ -1102,7 +1125,7 @@ export const hyyzcards = {
 		},
 		hyyz_taixv_info: ["太虚之握",
 			`<li>阴阳：每回合限一次，你于出牌阶段外造成伤害后，对受伤角色造成1点${get.hyyzIntroduce('附魔')}任一出现过的属性的伤害。`,
-			"支配之键·支配"],
+			"Ⅹ支配之键·支配"],
 		hyyz_taixv: {//2.5-3.5/2.5
 			epic: true,
 			fullskin: true,
@@ -1239,53 +1262,6 @@ export const hyyzcards = {
 			},
 		},
 		//其他
-		/*hyyz_weiba_info: ["尾巴",
-			"<li>附生：锁定技，额定回合结束后，你抉择：失去1点体力并执行一个被尾巴控制的回合；尾巴移至随机角色的宝物栏。",
-			"艺海深耕岁月悠，<br>绝技在身意难休。<br>恐其湮没随尘逝，<br>急觅贤徒授秘猷。"],
-		hyyz_weiba: {//0.5-6/2
-			legend: true,
-			fullskin: true,
-			type: "equip",
-			subtype: "equip5",
-			ai: {
-				order: 1,
-				equipValue(card, player) {
-					if (player.hasSkillTag('save')) return 6;
-					if (player.hp <= 2) return -1;
-					return 0.5;
-				},
-				basic: {
-					equipValue: 2,
-					order(card, player) {
-						if (player && player.hasSkillTag('reverseEquip')) {
-							return 8.5 - get.equipValue(card, player) / 20;
-						}
-						else {
-							return 8 + get.equipValue(card, player) / 20;
-						}
-					},
-					useful: 8,
-					value: (card, player, index, method) => {
-						if (!player.getCards('e').includes(card) && !player.canEquip(card, true)) return 0.01;
-						const info = get.info(card), current = player.getEquip(info.subtype), value = current && card != current && get.value(current, player);
-						let equipValue = info.ai.equipValue || info.ai.basic.equipValue;
-						if (typeof equipValue == 'function') {
-							if (method == 'raw') return equipValue(card, player);
-							if (method == 'raw2') return equipValue(card, player) - value;
-							return Math.max(0.1, equipValue(card, player) - value);
-						}
-						if (typeof equipValue != 'number') equipValue = 0;
-						if (method == 'raw') return equipValue;
-						if (method == 'raw2') return equipValue - value;
-						return Math.max(0.1, equipValue - value);
-					},
-				},
-				result: {
-					target: (player, target, card) => get.equipResult(player, target, card.name),
-				},
-			},
-			skills: ["hyyz_weiba_skill"],
-		},*/
 		hyyz_zhili_info: ["支离剑",
 			"<li>裂骨：此牌的攻击范围视为你已损失的体力值。<li>碎芒：你使用伤害即时牌指定目标后，可以失去1点体力并改为直接结算对应属性的伤害。",
 			"生之来不能却，其去不能止<br>死亡亦如此"],
@@ -2082,7 +2058,7 @@ export const hyyzcards = {
 			equipSkill: true,
 			mod: {
 				maxHandcard(player, num) {
-					return num + player.getEquips('5').filter(i => i.name.startsWith('hyyz_yvdu')).length * 2;
+					return num + player.getEquips('equip5').filter(i => i.name.startsWith('hyyz_yvdu')).length * 2;
 				},
 			},
 			ai: {
@@ -2365,59 +2341,6 @@ export const hyyzcards = {
 			}
 		},
 		//其他装备
-		hyyz_weiba_skill: {
-			equipSkill: true,
-			trigger: {
-				player: 'phaseAfter'
-			},
-			filter(event, player) {
-				return event.skill != 'hyyz_weiba_skill';
-			},
-			forced: true,
-			async content(event, trigger, player) {
-				const { bool } = await player
-					.chooseBool(get.prompt('hyyz_weiba_skill') + '失去1点体力，让尾巴大爷代你玩一回合；或让尾巴大爷伤心离开')
-					.set('ai', () => {
-						return player.hp > 2
-					})
-					.forResult();
-				if (bool) {
-					await player.loseHp();
-					player.when({
-						player: ["loseAfter", "phaseAfter"],
-						global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
-					}).filter((event) => {
-						if (event.name == 'phase') return event.skill == 'hyyz_weiba_skill';
-						const evt = event.getl(player);
-						return evt && (evt.es.length || evt.cards2.length > 1) &&
-							(evt.es.includes(card => card.name.startsWith('hyyz_weiba')) || evt.cards2.includes(card => card.name.startsWith('hyyz_weiba')));
-					}).then(() => {
-						game.log('#r尾巴被', player, '#r暂时封印')
-						ui.auto.show();
-						if (player == game.me && (ui.auto.innerHTML == '托管' || _status.auto == true)) {
-							_status.auto = false;
-							player.say("蟹蟹尾巴大爷！");
-						}
-					})
-					game.log('#g尾巴控制了', player)
-					if (player == game.me) {
-						_status.auto = true;
-						ui.auto.hide();
-						player.say("让老子来！");
-					};
-					player.insertPhase('hyyz_weiba_skill')
-				} else {
-					const card = player.getCards('e', (card) => {
-						return card.name.startsWith('hyyz_weiba')
-					})[0];
-					const target = game.filterPlayer(current => !current.isMin() && player != current && current.canEquip(card)).randomGet();
-					if (!target) return;
-					target.equip(card);
-					player.$give(card, target);
-					player.line(target, "green");
-				}
-			},
-		},
 		hyyz_zhili_skill: {
 			equipSkill: true,
 			trigger: {
@@ -2914,7 +2837,6 @@ export const hyyzcards = {
 		hyyz_youda_skill: "神恩结界",
 		hyyz_dizang_skill: "御魂", hyyzwuming: '无明', hyyzwuming_info: '锁定技，你的黑色牌视为风【杀】。',
 
-		hyyz_weiba_skill: '附生',
 		hyyz_zhili_skill: "碎芒",
 		visible_hyyz_qiongguan: '预',
 
@@ -2924,16 +2846,15 @@ export const hyyzcards = {
 		hyyz_mengxiangyixin_skill2: "无限の一刀",
 	},
 	list: [
-		//量子杀*5（黑桃） 虚数杀*5（黑桃1红桃3方块1） 风蚀杀*5（梅花）
 		//戳戳*6（黑桃1红桃3方块2）
 
-		//量子杀全部是黑桃*质数 1 3 5 7 11
+		//量子杀*5=黑桃*质数 1 3 5 7 11
 		["spade", 1, "sha", "hyyz_quantum"],
 		["spade", 2, "hyyz_qianjie"],//2千界一乘
 		["spade", 3, "sha", "hyyz_quantum"],
-		["spade", 4, "hyyz_weiba"],//------------尾巴
+		//["spade", 4, "hyyz_weiba"],//------------尾巴
 		["spade", 5, "sha", "hyyz_quantum"],
-		["spade", 6, "hyyz_heiyuan"],//6黑渊
+		["spade", 6, "hyyz_heiyuan"],//6黑渊//hyyz_heiyuanbaihua
 		["spade", 7, "sha", "hyyz_quantum"],
 		["spade", 8, "hyyz_bushi"],//8不识时务
 		["spade", 9, "hyyz_xinghai"],//9星海谐律
@@ -2942,7 +2863,8 @@ export const hyyzcards = {
 		//["spade", 12, "hyyz_dizang"],//12地藏御魂
 		["spade", 13, "hyyz_zhili"],//-------支离剑
 
-		//风杀全是梅花*偶数 2 4 6 8 10
+		//风杀*5=梅花*偶数 2 4 6 8 10
+		//穷观阵*4=梅花 7 9 12 13
 		["club", 1, "hyyz_xvkong"],//1虚空万藏
 		["club", 2, "sha", "hyyz_wind"],
 		["club", 3, "hyyz_dizui"],//3涤罪七雷
@@ -2957,8 +2879,8 @@ export const hyyzcards = {
 		["club", 12, "hyyz_qiongguan"],
 		["club", 13, "hyyz_qiongguan"],
 
-		//灵符全部是红桃*前五 1 2 3 4 5
-		//戳戳全部是红桃*后五 9 10 11 12 13
+		//灵符*5=红桃*前五 1 2 3 4 5
+		//戳戳*5=红桃*后五 9 10 11 12 13
 		["heart", 1, "hyyz_lingfu"],
 		["heart", 2, "hyyz_lingfu"],
 		["heart", 3, "hyyz_lingfu"],
@@ -2973,8 +2895,8 @@ export const hyyzcards = {
 		["heart", 12, "hyyz_chuochuo"],
 		["heart", 13, "hyyz_chuochuo"],
 
-		//虚数杀全部是方块*奇数 1 3 5 7 9
-		//自塑尘脂全部是方块 2 6 10 11 12 13
+		//虚数杀*5=方块*奇数 1 3 5 7 9
+		//自塑尘脂*6=方块 2 6 8 11 12 13
 		["diamond", 1, "sha", "hyyz_imaginary"],
 		["diamond", 2, "hyyz_zisu"],
 		["diamond", 3, "sha", "hyyz_imaginary"],
@@ -2984,17 +2906,19 @@ export const hyyzcards = {
 		["diamond", 7, "sha", "hyyz_imaginary"],
 		["diamond", 8, "hyyz_zisu"],
 		["diamond", 9, "sha", "hyyz_imaginary"],
-		["diamond", 10, "hyyz_taixv"],
+		["diamond", 10, "hyyz_taixv"],//10太虚之握
 		["diamond", 11, "hyyz_zisu"],
 		["diamond", 12, "hyyz_zisu"],
 		["diamond", 13, "hyyz_zisu"],
 
-		["club", 1, "sha"],
-		["club", 2, "sha"],
-		["club", 3, "sha"],
-		["club", 4, "sha"],
-		["club", 5, "sha"],
-		["club", 6, "sha"],
+		//水熵杀*5=红桃*前五 1 2 3 4 5
+		//冰冻杀*5=黑桃 7 8 9 10 11
+		["heart", 1, "sha", "hyyz_water"],
+		["heart", 2, "sha", "hyyz_water"],
+		["heart", 3, "sha", "hyyz_water"],
+		["heart", 4, "sha", "hyyz_water"],
+		["heart", 5, "sha", "hyyz_water"],
+		//["club", 6, "sha"],
 		["spade", 7, "sha", "ice"],
 		["spade", 8, "sha", "ice"],
 		["spade", 9, "sha", "ice"],

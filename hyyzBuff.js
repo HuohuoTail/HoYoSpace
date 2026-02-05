@@ -689,7 +689,7 @@ export const hyyzBuffx = async function () {//———————————�
 			for (let i in removeBuff) {
 				if (!lib.hyyz.buff.has(i) || !this.hashyyzBuff(i)) delete removeBuff[i];
 			}
-			const next = game.createEvent("changehyyzBuff", false);
+			const next = game.createEvent("changehyyzBuff");
 			next.player = this;
 			//next.forceDie = true;
 			next.addBuff = Object.assign({}, addBuff);
@@ -698,8 +698,6 @@ export const hyyzBuffx = async function () {//———————————�
 			return next;
 		}
 		lib.element.content.changehyyzBuff = async function (event, trigger, player) {
-			await event.trigger("changehyyzBuffBefore");
-			await event.trigger("changehyyzBuffBegin");
 			event.result = {
 				bool: true,
 				addBuff: event.addBuff,
@@ -782,8 +780,6 @@ export const hyyzBuffx = async function () {//———————————�
 				await event.trigger("removeBuffEnd");
 				await event.trigger("removeBuffAfter");
 			}
-			await event.trigger("changehyyzBuffEnd");
-			await event.trigger("changehyyzBuffAfter");
 		}
 		/**是否可以净化武将牌
 		 * 始终会净化普通debuff
@@ -825,7 +821,7 @@ export const hyyzBuffx = async function () {//———————————�
 				game.log(this, '不需要被', '#g[净化]')
 				return;
 			}
-			const next = game.createEvent("hyyzJinghua", false);
+			const next = game.createEvent("hyyzJinghua");
 			next.player = this;
 			for (let i = 0; i < arguments.length; i++) {
 				if (arguments[i] == 'nolink') next.link = false;
@@ -845,8 +841,6 @@ export const hyyzBuffx = async function () {//———————————�
 			return next;
 		}
 		lib.element.content.hyyzJinghua = async function (event, trigger, player) {
-			await event.trigger("hyyzJinghuaBefore");
-			await event.trigger("hyyzJinghuaBegin");
 			event.result = {};
 			game.log(player, '被', '#g[净化]')
 			//净化必须解除debuff
@@ -882,8 +876,6 @@ export const hyyzBuffx = async function () {//———————————�
 				player.removeGaintag('_hyyz_fireCard');
 				player.unmarkAuto('_hyyz_fireCard', cards);
 			}
-			await event.trigger("hyyzJinghuaEnd");
-			await event.trigger("hyyzJinghuaAfter");
 		}
 		/**是否可以驱散正面buff
 		 */
@@ -902,14 +894,12 @@ export const hyyzBuffx = async function () {//———————————�
 				game.log(this, '不需要被', '#g[驱散]')
 				return;
 			}
-			const next = game.createEvent("hyyzQvsan", false);
+			const next = game.createEvent("hyyzQvsan");
 			next.player = this;
 			next.setContent("hyyzQvsan");
 			return next;
 		}
 		lib.element.content.hyyzQvsan = async function (event, trigger, player) {
-			await event.trigger("hyyzQvsanBefore");
-			await event.trigger("hyyzQvsanBegin");
 			event.result = {};
 			game.log(player, '被', '#g[驱散]')
 			if (player.hashyyzBuff('buff')) {
@@ -917,8 +907,6 @@ export const hyyzBuffx = async function () {//———————————�
 				event.result.buff = player.gethyyzBuff('buff', null, true);
 				player.removehyyzBuff(player.gethyyzBuff('buff', null, true));
 			}
-			await event.trigger("hyyzQvsanEnd");
-			await event.trigger("hyyzQvsanAfter");
 		}
 		/**引爆dotdebuff
 		 * @param  { boolean | 'dotDebuff' | hyyzBuff | hyyzBuff[] | Map<hyyzBuff,number> | } args 默认全部引爆，不移除dotdebuff
@@ -937,7 +925,7 @@ export const hyyzBuffx = async function () {//———————————�
 				game.log('未开启buff系统！无法引爆！')
 				return;
 			}
-			const next = game.createEvent("hyyzBang", false);
+			const next = game.createEvent("hyyzBang");
 			next.player = this;
 			next.buffs = [];
 			for (let i = 0; i < arguments.length; i++) {
@@ -963,8 +951,6 @@ export const hyyzBuffx = async function () {//———————————�
 			return next;
 		}
 		lib.element.content.hyyzBang = async function (event, trigger, player) {
-			await event.trigger("hyyzBangBefore");
-			await event.trigger("hyyzBangBegin");
 			event.result = {};
 			event.buffs = event.buffs.filter(buff => player.hashyyzBuff(buff, null));
 			const buffs = event.buffs;
@@ -988,8 +974,6 @@ export const hyyzBuffx = async function () {//———————————�
 					await player.removehyyzBuff(buff, 9999);
 				}
 			}
-			await event.trigger("hyyzBangEnd");
-			await event.trigger("hyyzBangAfter");
 		}
 		//冻结动画,目标效果是冻结，默认检测hyyzBuff_dongjie
 		lib.element.player.$hyyzBuff_dongjie = function (bool) {
@@ -1004,6 +988,7 @@ export const hyyzBuffx = async function () {//———————————�
 		}
 	}
 
+	/**player.hyyz_weakness=[] */
 	if ('weakness，感谢 冰雪雨柔《民间卡牌》的ui动画') {
 		lib.hyyz.weakness = new Map([
 			//['弱点名', ['汉语', '击破debuff']],
@@ -1068,8 +1053,8 @@ export const hyyzBuffx = async function () {//———————————�
 		 * @returns {Array[]}
 		 */
 		lib.element.player.getWeakness = function () {
-			if (!this.weakness || !Array.isArray(this.weakness)) return [];
-			return this.weakness.filter(i => lib.hyyz.weakness.has(i));
+			if (!this.hyyz_weakness || !Array.isArray(this.hyyz_weakness)) return [];
+			return this.hyyz_weakness.filter(i => lib.hyyz.weakness.has(i));
 		};
 		/**角色的弱点数目（lib）
 		 * @returns {number}
@@ -1188,7 +1173,7 @@ export const hyyzBuffx = async function () {//———————————�
 				game.log('未开启弱点系统，无法更改弱点！')
 				return;
 			}
-			const next = game.createEvent("changeWeakness", false);
+			const next = game.createEvent("changeWeakness");
 			next.player = this;
 			next.log = log;
 			next.addWeakness = addWeakness.filter(i => get.weakness().includes(i) && !this.hasWeakness(i));
@@ -1197,9 +1182,8 @@ export const hyyzBuffx = async function () {//———————————�
 			return next;
 		};
 		lib.element.content.changeWeakness = async function (event, trigger, player) {
-			event.trigger('changeWeaknessBefore')
 			//初始化
-			if (!player.hasWeakness()) player.weakness = [];
+			if (!player.hasWeakness()) player.hyyz_weakness = [];
 			event.result = {
 				bool: false,
 				addWeakness: [],
@@ -1209,7 +1193,7 @@ export const hyyzBuffx = async function () {//———————————�
 			if (event.addWeakness?.length) {
 				event.trigger('addWeaknessBefore')
 				event.trigger('addWeaknessBegin')
-				player.weakness.addArray(event.addWeakness);
+				player.hyyz_weakness.addArray(event.addWeakness);
 				event.result.bool = true;
 				event.result.addWeakness = event.addWeakness;
 				game.log(player, '暴露了', event.addWeakness.map(i => i + '_logo'))
@@ -1219,7 +1203,7 @@ export const hyyzBuffx = async function () {//———————————�
 			if (event.removeWeakness?.length) {
 				event.trigger('removeWeaknessBefore')
 				event.trigger('removeWeaknessBegin')
-				player.weakness.removeArray(event.removeWeakness);
+				player.hyyz_weakness.removeArray(event.removeWeakness);
 				event.result.bool = true;
 				event.result.removeWeakness = event.removeWeakness;
 				if (event.log) {
@@ -1234,27 +1218,24 @@ export const hyyzBuffx = async function () {//———————————�
 				event.trigger('removeWeaknessEnd')
 				event.trigger('removeWeaknessAfter')
 			}
-			player.weakness = player.weakness
+			player.hyyz_weakness = player.hyyz_weakness
 				.filter(i => get.weakness().includes(i))
 				.sort((a, b) => {
 					return get.weakness().indexOf(a) - get.weakness().indexOf(b)
 				})
 			player.$syncWeakness();
-			event.trigger('changeWeaknessBegin')
-			event.result.weakness = player.weakness;
-			event.trigger('changeWeaknessEnd')
-			event.trigger('changeWeaknessAfter')
+			event.result.weakness = player.hyyz_weakness;
 		};
 		//刷新一下弱点显示
 		lib.element.player.$syncWeakness = function () {
 			//如果没有弱点或者未开启，直接清空
 			if (!this.hasWeakness() || lib.config["extension_忽悠宇宙_weakness"] != true) {
 				game.log(this, '的弱点已被清空')
-				this.weakness = [];
+				this.hyyz_weakness = [];
 			}
 
-			if (!this.weaknessBox) this.weaknessBox = ui.create.div('.weakness', this);
-			if (!this.weaknessLogo) this.weaknessLogo = ui.create.div('.weakness2', this.weaknessBox);
+			if (!this.hyyz_weaknessBox) this.hyyz_weaknessBox = ui.create.div('.hyyz_weakness', this);
+			if (!this.hyyz_weaknessLogo) this.hyyz_weaknessLogo = ui.create.div('.hyyz_weakness2', this.hyyz_weaknessBox);
 			const weakness = this.getWeakness(),
 				/**武将牌的宽度
 				 * - 单将是自身宽度
@@ -1308,8 +1289,8 @@ export const hyyzBuffx = async function () {//———————————�
 					break;
 				}
 			}
-			this.weaknessBox.style.top = ally + 'px'
-			this.weaknessBox.style.left = allx + 'px'
+			this.hyyz_weaknessBox.style.top = ally + 'px'
+			this.hyyz_weaknessBox.style.left = allx + 'px'
 			/**确定一下相对武将牌坐标原点的铺开方向
 			 * 上下放置，则横向铺开left
 			 * 左右放置，则纵向铺开top
@@ -1321,7 +1302,7 @@ export const hyyzBuffx = async function () {//———————————�
 				image += `<img style = 'position: absolute; width: ${logo_short}px; ${center}: ${count * logo_short + (count + 1) * 0.02 * logo_short}px;'`
 				image += `src= '${lib.assetURL}extension/忽悠宇宙/other/image/${weakness[count]}.png'>`//图片
 			}
-			this.weaknessLogo.innerHTML = image;
+			this.hyyz_weaknessLogo.innerHTML = image;
 			ui.updatem(this);
 		};
 		//弱点击破-99
@@ -1330,7 +1311,7 @@ export const hyyzBuffx = async function () {//———————————�
 				player: 'damageBegin4'
 			},
 			forced: true,
-			priority: -99,
+			priority: -Infinity,
 			filter(event, player) {
 				if (event.dotDebuff) return false;
 				return get.natureList(event).length > 0 ?
@@ -1354,6 +1335,7 @@ export const hyyzBuffx = async function () {//———————————�
 			firstDo: true,
 			priority: Infinity,
 			filter(event, player) {
+				if (lib.config['extension_忽悠宇宙_weakness'] != true) return false;
 				if (!(event.name != 'phase' || game.phaseNumber == 0)) return false;
 				return ['boss', 'identity', 'doudizhu', 'single', 'brawl'].includes(get.mode())
 			},
@@ -1362,7 +1344,9 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 		}
 	}
-
+	/**player.hyyz_phaseList=[]
+	 * player.hyyzminHp=1
+	 */
 	if ('尾巴自写的概念，部分机制由《大宝规则集》（萨巴鲁酱整理编写）提供设计支持') {
 		/**中央区的牌（原来无名杀本身就有啊）
 		 * @param { Boolean } boolean 是否只要弃牌堆
@@ -1382,20 +1366,131 @@ export const hyyzBuffx = async function () {//———————————�
 			});
 			return cardx;
 		}
-		lib.translate.notime = "即时"
-		lib.translate.time = "延时"
-		/**牌的延时/即时类型
-		 * @param {card|string} obj 牌
-		 * @param {'trick'} method 延时锦囊也算trick
-		 * @param {player} player 来源
-		 * @returns {'time'|'notime'|undefined}
-		 */
-		get.timetype = function (obj, method, player) {
-			if (['delay', 'equip'].includes(get.type(obj, method, player))) return 'time';
-			if (['trick', 'basic'].includes(get.type(obj, method, player))) return 'notime';
-			return undefined;
-		}
 
+		/**一般人体力下限是1，hp<=0濒死；hp>=1存活
+		 * - 也就是说，hp<=player.gethyyzMinHp()-1濒死；
+		 * - hp>=player.gethyyzMinHp()存活
+		 */
+		lib.translate.hyyzminHp = '体力下限';
+		lib.skill._hyyzminHp = {
+			marktext: '💔',
+			intro: {
+				name: '体力下限',
+				markcount(storage, player) {
+					return `${player.gethyyzMinHp()}/${player.hp}/${player.maxHp}`;
+				},
+				content(storage, player) {
+					return `
+					<li>体力上限：${player.maxHp}
+					<li>当前体力值：${player.hp}
+					<li>体力下限：${player.gethyyzMinHp()}
+					<br>
+					<li>体力下限是存活状态的最小体力，默认为1；低于体力下限时濒死。
+					`
+				},
+			},
+			trigger: {
+				player: ['dyingBefore', 'changeHp'],
+			},
+			silent: true,
+			priority: -Infinity,
+			filter(event, player) {
+				player.$synchyyzMinHp();
+				if (event.name == 'dying') return player.hp >= player.gethyyzMinHp();//大于下限濒死取消
+				return player.hp < player.gethyyzMinHp();//小于下限立即濒死
+			},
+			async content(event, trigger, player) {
+				if (trigger.name == 'dying') trigger.cancel();
+				else {
+					//自定义一个濒死函数
+					if (player.nodying || player.hp > player.gethyyzMinHp() - 1 || player.isDying()) return;//替换this.hp > 0
+					const next = game.createEvent("dying");
+					next.player = player;
+					next.reason = trigger;
+					if (trigger.source) next.source = trigger.source;
+					next.setContent(lib.skill._hyyzminHp.dyingContent);//替换'dying'
+					next.filterStop = function () {
+						if (this.player.hp > this.player.gethyyzMinHp() - 1 || this.nodying) {
+							delete this.filterStop;
+							return true;
+						}
+					};
+				}
+			},
+			async dyingContent(event, trigger, player) {
+				event.forceDie = true;
+				if (player.isDying() || player.hp > player.gethyyzMinHp() - 1) {
+					event.finish();
+					return;
+				}
+				_status.dying.unshift(player);
+				game.broadcast(function (list) {
+					_status.dying = list;
+				}, _status.dying);
+				game.log(player, "濒死");
+				await event.trigger("dying");
+
+				delete event.filterStop;//此处替换  >0
+				if (player.hp > player.gethyyzMinHp() - 1 || event.nodying) {
+					_status.dying.remove(player);
+					game.broadcast(function (list) {
+						_status.dying = list;
+					}, _status.dying);
+					event.finish();
+					return;
+				} else if (!event.skipTao) {
+					const next = game.createEvent("_save");
+					var start = false;
+					var starts = [_status.currentPhase, event.source, event.player, game.me, game.players[0]];
+					for (var i = 0; i < starts.length; i++) {
+						if (get.itemtype(starts[i]) == "player") {
+							start = starts[i];
+							break;
+						}
+					}
+					next.player = start;
+					next._trigger = event;
+					next.triggername = "_save";
+					next.forceDie = true;
+					next.setContent("_save");
+					await next;//增加异步停顿
+				}
+
+				_status.dying.remove(player);
+				game.broadcast(function (list) {
+					_status.dying = list;
+				}, _status.dying);//修改 <=0
+				if (player.hp <= player.gethyyzMinHp() - 1 && !event.nodying && !player.nodying) player.die(event.reason);
+			},
+		}
+		/**角色改变自己的体力下限 */
+		lib.element.player.changeMinHp = function (num) {
+			const next = game.createEvent('changeMinHp')
+			next.num = num
+			next.player = this
+			next.setContent("changeMinHp");
+			return next;
+		}
+		lib.element.content.changeMinHp = async function (event, trigger, player) {
+			if (!player.hashyyzMinHp()) player.hyyzminHp = 1//凡是需要用到这个函数的，都初始化minHp
+			player.hyyzminHp += event.num;
+			player.$synchyyzMinHp();
+		}
+		/**获取角色的体力下限，总有返回值
+		 * - player.hashyyzMinHp()==false时，返回1
+		 */
+		lib.element.player.gethyyzMinHp = function () { return this.hashyyzMinHp() ? this.hyyzminHp : 1 }
+		/**查找角色是否被设置了体力下限 */
+		lib.element.player.hashyyzMinHp = function () { return (typeof this.hyyzminHp == 'number') }
+		/**刷新一下角色的体力下限标志 */
+		lib.element.player.$synchyyzMinHp = function () {
+			if (this.gethyyzMinHp() == 1) {
+				delete this.hyyzminHp;
+				this.unmarkSkill('_hyyzminHp');
+			} else {
+				this.markSkill('_hyyzminHp');
+			}
+		}
 
 		lib.translate._hyyz_fireCard = "🔥"
 		/**每回合结束后弃置点燃牌 */
@@ -1407,12 +1502,12 @@ export const hyyzBuffx = async function () {//———————————�
 			silent: true,
 			priority: -Infinity,
 			async content(event, trigger, player) {
-				const players = game.filterPlayer(current => current.getStorage('_hyyz_fireCard')?.length);
+				const players = game.filterPlayer(current => current.countCards('hej', card => card.hasGaintag('_hyyz_fireCard')));
 				for (let current of players) {
 					const cards = current.getCards('hej', (card) => card.hasGaintag('_hyyz_fireCard'));
 					if (cards.length) {
 						game.log(current, '#r[点燃]', '的', cards.length, '张牌化为了灰烬');
-						current.discard(cards);
+						await current.discard(cards);
 					}
 				}
 			},
@@ -1463,14 +1558,13 @@ export const hyyzBuffx = async function () {//———————————�
 				game.log(this, '没有可被', '#r[点燃]', '的牌')
 				return;
 			}
-			const next = game.createEvent("hyyzDianran", false);
+			const next = game.createEvent("hyyzDianran");
 			next.player = this;
 			next.cards = cards;
 			next.setContent("hyyzDianran");
 			return next;
 		}
 		lib.element.content.hyyzDianran = async function (event, trigger, player) {
-			await event.trigger("hyyzDianranBegin");
 			const cards = event.cards;
 			event.result = {
 				bool: false,
@@ -1480,9 +1574,27 @@ export const hyyzBuffx = async function () {//———————————�
 				js: cards.filter(card => player.countCards('j', cardx => cardx == card).length > 0),
 				cards2: cards.filter(card => player.countCards('he', cardx => cardx == card).length > 0),
 			};
+			game.playAudio('..', 'audio', 'skill', 'zhuque_skill');//朱雀羽扇的
 			game.log(player, '#r[点燃]', '了', event.cards.length, '张牌');
-			this.addGaintag(cards, '_hyyz_fireCard');
-			await event.trigger("hyyzDianranEnd");
+			player.addGaintag(cards, '_hyyz_fireCard');
+		}
+
+
+		/**部分武将修改自己回合的阶段 */
+		lib.skill._hyyz_phaseList = {
+			charlotte: true,
+			silent: true,
+			trigger: {
+				player: 'phaseBefore'
+			},
+			priority: Infinity,
+			filter(event, player) {
+				return player.hyyz_phaseList && Array.isArray(player.hyyz_phaseList);
+			},
+			async content(event, trigger, player) {
+				game.log('<li>', player, '因技能机制修改了', '#b阶段排布')
+				trigger.phaseList = player.hyyz_phaseList;
+			},
 		}
 
 
@@ -1500,15 +1612,13 @@ export const hyyzBuffx = async function () {//———————————�
 		 * @param {target} target 目标
 		 */
 		lib.element.player.chooseDantiao = function (target) {
-			var next = game.createEvent('chooseDantiao');
+			var next = game.createEvent('chooseDantiao', false);//false不设置时机
 			next.player = this;
 			next.target = target;
 			next.setContent('chooseDantiao');
 			return next;
 		}
 		lib.element.content.chooseDantiao = async function (event, trigger, player) {
-			event.trigger("chooseDantiaoBegin");
-
 			if (event.player == event.target) {
 				game.log('不可以伤害自己喵！')
 				event.finish();
@@ -1528,8 +1638,6 @@ export const hyyzBuffx = async function () {//———————————�
 					return;
 				}
 			}
-
-			event.trigger("chooseDantiaoAfter");
 		}
 		lib.skill.dantiao = {//给移除的角色，封印所有非单挑技能
 			dantiao: true,
@@ -1582,15 +1690,13 @@ export const hyyzBuffx = async function () {//———————————�
 		game.changeHpTo = function (...args) {
 			let currents = args.filter(i => get.itemtype(i) == 'player'),
 				hps = args.filter(i => typeof i == 'number');
-			const next = game.createEvent('changeHpTo', false);
+			const next = game.createEvent('changeHpTo');
 			next.currents = currents;
 			next.hps = hps;
 			next.setContent('changeHpTo')
 			return next;
 		}
 		lib.element.content.changeHpTo = async function (event, trigger, player) {
-			event.trigger('changeHpToBefore')
-			event.trigger('changeHpToBegin')
 			let currents = event.currents.slice(0, Math.min(event.currents.length, event.hps.length)),
 				hps = event.hps.slice(0, Math.min(event.currents.length, event.hps.length))
 			while (currents.length != 0 && hps.length != 0) {
@@ -1603,29 +1709,8 @@ export const hyyzBuffx = async function () {//———————————�
 				}
 				if (current.hp <= 0) await current.dying();
 			}
-			event.trigger('changeHpToEnd')
-			event.trigger('changeHpToAfter')
 
 		}
-
-
-		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
-		game.hyyzSkillAudio = function (skillname = '', ...args) {
-			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
-			return arguments
-		}
-		//检测一个扩展是否开启（未启用）
-		game.hyyz_hasExtension = function (str) {
-			if (!str || typeof str != 'string') return false;
-			if (lib.config && lib.config.extensions) {
-				for (var i of lib.config.extensions) {
-					if (i.indexOf(str) == 0) {
-						if (lib.config['extension_' + i + '_enable']) return true;
-					}
-				}
-			}
-			return false;
-		};
 
 
 		//进入隐匿（未启用）
@@ -1693,15 +1778,13 @@ export const hyyzBuffx = async function () {//———————————�
 
 		//调整手牌至x
 		lib.element.player.changeCardTo = function (num) {
-			let next = game.createEvent('changeCardTo', false);
+			let next = game.createEvent('changeCardTo');
 			next.player = this;
 			next.num = num;
 			next.setContent("changeCardTo");
 			return next;
 		}
 		lib.element.content.changeCardTo = async function (event, trigger, player) {
-			event.trigger('changeCardToBefore')
-			event.trigger('changeCardToBegin')
 			let cards = player.getCards('h');
 			if (typeof event.num != 'number') {
 				event.result = { bool: false }
@@ -1736,8 +1819,6 @@ export const hyyzBuffx = async function () {//———————————�
 					}
 				}
 			}
-			event.trigger('changeCardToEnd')
-			event.trigger('changeCardToAfter')
 		}
 
 
@@ -1859,23 +1940,9 @@ export const hyyzBuffx = async function () {//———————————�
 		}
 
 
-		/**获取若干有花色有点数的影（未启用）
-		 * @param {number} count 数量
-		 * @returns {cards}
-		 */
-		get.hyyzYing = function (count) {
-			var cards = [];
-			if (typeof count != 'number') count = 1;
-			while (count--) {
-				let card = game.createCard('ying', ['spade', 'heart', 'club', 'diamond'].randomGet(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].randomGet());
-				cards.push(card);
-			}
-			return cards;
-		}
-
 		/**进行一次座次排布（未启用） */
 		lib.element.player.chooseToSwapSeat = function () {
-			let next = game.createEvent("chooseToSwapSeat", false);
+			let next = game.createEvent("chooseToSwapSeat", false);//false不设置时机，只能自己加。但是自己加的只能在content里面，不写默认true，可以在运行content之外先触发时机。
 			next.player = this;
 			next.setContent('chooseToSwapSeat');
 			return next;
@@ -2253,6 +2320,57 @@ export const hyyzBuffx = async function () {//———————————�
 		lib.element.content.enableHand = async function (event, trigger, player) {
 			delete player.storage._disableHand
 			game.log(player, "恢复了", "#g手牌区");
+		}
+
+	}
+	/**工具 */
+	if ('工具函数') {
+		lib.translate.notime = "即时"
+		lib.translate.time = "延时"
+		/**牌的延时/即时类型
+		 * @param {card|string} obj 牌
+		 * @param {'trick'} method 延时锦囊也算trick
+		 * @param {player} player 来源
+		 * @returns {'time'|'notime'|undefined}
+		 */
+		get.timetype = function (obj, method, player) {
+			if (['delay', 'equip'].includes(get.type(obj, method, player))) return 'time';
+			if (['trick', 'basic'].includes(get.type(obj, method, player))) return 'notime';
+			return undefined;
+		}
+
+
+		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
+		game.hyyzSkillAudio = function (skillname = '', ...args) {
+			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
+			return arguments
+		}
+		//检测一个扩展是否开启（未启用）
+		game.hyyz_hasExtension = function (str) {
+			if (!str || typeof str != 'string') return false;
+			if (lib.config && lib.config.extensions) {
+				for (var i of lib.config.extensions) {
+					if (i.indexOf(str) == 0) {
+						if (lib.config['extension_' + i + '_enable']) return true;
+					}
+				}
+			}
+			return false;
+		};
+
+
+		/**获取若干有花色有点数的影（未启用）
+		 * @param {number} count 数量
+		 * @returns {cards}
+		 */
+		get.hyyzYing = function (count) {
+			var cards = [];
+			if (typeof count != 'number') count = 1;
+			while (count--) {
+				let card = game.createCard('ying', ['spade', 'heart', 'club', 'diamond'].randomGet(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].randomGet());
+				cards.push(card);
+			}
+			return cards;
 		}
 
 	}

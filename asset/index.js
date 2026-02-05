@@ -207,9 +207,14 @@ game.import("character", () => {
 				['hyyz_ys_leidianying', ['die:hyyz_ys_leidianying', 'img:hyyz_ys_leidianying']],
 			],
 			hyyz_zzz_sb_bonisi: [
-				["mengrongyan", ["ext:忽悠宇宙/other/skin/image/hyyz_zzz_sb_bonisi/mengrongyan.jpg",]],
+				["mengrongyan", ["ext:忽悠宇宙/other/skin/image/hyyz_zzz_sb_bonisi/mengrongyan.jpg"]],
 				["hyyz_zzz_sb_bonisi", ["img:hyyz_zzz_sb_bonisi",]],
 			],
+			hyyz_ys_sp_furina: [
+				["mengjvxing_achieve", ["ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/mengjvxing_achieve.jpg"]],
+				["mengjvxing_fail", ["ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/mengjvxing_fail.jpg"]],
+				//['hyyz_ys_sp_furina', ['ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/hyyz_ys_furina1.jpg']]
+			]
 		},
 	}
 })
