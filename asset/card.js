@@ -1724,7 +1724,8 @@ export const hyyzcards = {
 				return player != target && player.previous != target;
 			},
 			async content(event, trigger, player) {
-				const card = player.getEquip(4).find((card) => card.name.includes('hyyz_qianjie'));
+				const card = player.getEquips(4)
+					.find((card) => card.name.includes('hyyz_qianjie'));
 				await player.loseToDiscardpile([card]);
 				while (player.previous != event.targets[0]) {
 					game.swapSeat(player, player.next, false, false);
@@ -2402,12 +2403,12 @@ export const hyyzcards = {
 			forced: true,
 			priority: 6,
 			filter(event, player, name) {
-				return player.countCards('hes', (card) => get.name(card) == 'hyyz_qiongguan' && lib.filter.cardEnabled(card, player, 'forceEnable'))
+				return player.countCards('h', (card) => get.name(card) == 'hyyz_qiongguan' && lib.filter.cardEnabled(card, player, 'forceEnable'))
 			},
 			async content(event, trigger, player) {
 				const next = player.chooseToUse();
 				next.set('prompt', get.translation(trigger.player) + '的' + (trigger.judgestr || '') + '判定为' + get.translation(trigger.player.judging[0]) + '，' + '使用【穷观阵】修改此判定？');
-				next.set('filterCard', (card, player) => get.name(card) == 'hyyz_qiongguan' && lib.filter.cardEnabled(card, player, 'forceEnable'));
+				next.set('filterCard', (card, player) => get.position(card) == 'h' && get.name(card) == 'hyyz_qiongguan' && lib.filter.cardEnabled(card, player, 'forceEnable'));
 				next.set("respondTo", [trigger.player, trigger.player.judging[0]])
 				next.set('ai1', function (card) {
 					const player = _status.event.player;

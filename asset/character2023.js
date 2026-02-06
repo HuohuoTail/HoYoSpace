@@ -4,7 +4,7 @@ import { lib, game, ui, get, ai, _status } from '../../../noname.js';
 /**@type { SMap < SMap< [String, Character, String, String] | Skill | String>> } */
 const characters = {
 	2306: {
-		hyyz_xt_jingyuan: ['景元', ["male", "hyyz_xt", 4, ["hyyzshenjun", "hyyzzhankan", "hyyzshence"], ['zhu']], '紫灵谷的骊歌', '仙舟联盟帝弓七天将之一，负责节制罗浮云骑军的「神策将军」。师从前代「罗浮」剑首，但并不显名于武力。'],
+		hyyz_xt_jingyuan: ['景元', ["male", "hyyz_xt", 4, ["hyyzshenjun", "hyyzzhankan", "hyyzshence"], ['zhu', 'name:景|元']], '紫灵谷的骊歌', '仙舟联盟帝弓七天将之一，负责节制罗浮云骑军的「神策将军」。师从前代「罗浮」剑首，但并不显名于武力。'],
 		hyyzshenjun: {
 			init: (player) => player.storage.hyyzshenjun = 0,
 			audio: 2,
@@ -4752,8 +4752,8 @@ const characters = {
 					if (targets) {
 						const { control } = await player.chooseControl('此牌无效', '摸一张牌').forResult()
 						if (control == '此牌无效') {
-							game.log('#g【顷姿】', '此牌对', event.targets, '无效');
-							trigger.excluded.add(event.targets[0]);
+							game.log('#g【顷姿】', '此牌对', targets, '无效');
+							trigger.excluded.add(targets);
 						} else {
 							targets[0].draw();
 						}
@@ -6009,7 +6009,7 @@ const characters = {
 							.chooseToDiscard('he', { suit: suit })
 							.set('prompt', str)
 							.set('ai', function (card) {
-								return get.attitude(player, trigger.player) * (8 - get.value(card))
+								if (get.attitude(player, trigger.player)) return 8 - get.value(card)
 							})
 							.forResult()
 						if (cards) {

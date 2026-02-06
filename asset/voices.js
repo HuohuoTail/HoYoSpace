@@ -1286,8 +1286,6 @@ const hyyzvoices = {
 		mengwuguiWGR2: '生命纵如微尘，亦能翩然起舞。',
 
 		hyyz_xt_sb_shajin: '满盘皆输啊……',
-		mengcifu1: '骰子已经掷下。',
-		mengcifu2: '哼，一无所有，或者，赢下所有！',
 
 		hyyz_ɸ_cuicui: '',
 
@@ -1310,7 +1308,7 @@ const hyyzvoices = {
 		mengchenling_hyyz_zzz_xingjianya3: '吾心如明镜。',
 		mengchenling_hyyz_zzz_xingjianya4: '半明半昧半尺间！',
 
-		meng_xier: '不，布洛妮娅姐姐，我……',
+		//meng_xier: '不，布洛妮娅姐姐，我……',
 
 		hyyz_xt_sp_daheita: '我还会回来……',
 		mengqiuda1: '新世界的大门',
@@ -1321,14 +1319,8 @@ const hyyzvoices = {
 		mengqiuda6: '谜题千千万万，但谜底却是…乌有之物。',
 
 		'hyyz_xt_sp_zhigengniao': '演出……还没……',
-		menghesong1: '请安静下来。',
-		menghesong2: '谐乐，即将齐奏。',
-		menghesong3: '今夜，灵魂彼此相拥。',
-		menghesong4: '万籁，再次共鸣。',
-		menghesong5: '今夜，群星因我回响。',
-		mengxiezou1: '愿你能在歌中寻得安宁。',
-		mengxiezou2: '愿歌声为我们带来胜利。',
-		mengxiezou3: '希望世间纷争不再。',
+
+		hyyz_b3_sp_qingque: '不想……回去工作……',
 	},
 	...{//2501
 		hyyz_xt_yvkong: '我无颜面对……',
@@ -1353,7 +1345,15 @@ const hyyzvoices = {
 
 		hyyz_ɸ_anjielina: '',
 
-		hyyz_xt_sp_tingyun: '命定如此吗……',
+		hyyz_xt_sp_tingyun: '命定如此吗……',//忘归人的
+		//meng_tingyun: '时运…不济啊…',
+		menghuqi5: '客人嘛，岂有不招待的道理？',
+		menghuqi1: '诸邪回避~',
+		menghuqi2: '万事顺意~',
+		menghuqi3: '趁此机会，一举拿下吧~',
+		menghuqi4: '消消火气。',
+		menghuqi6: '就以奇珍万千，给各位鼓劲啦~',
+		menghuqi7: '百事贞吉，一心同归。',
 
 		hyyz_zzz_sb_bonisi: '',
 
@@ -1372,6 +1372,23 @@ const hyyzvoices = {
 
 	},
 	...{//2502
+		'hyyz_xt_sp_yinzhi': '没找到……「祂」……',
+
+		hyyz_ɸ_caiwenji: '命运……弄人……',
+
+		hyyz_xt_shen_nikaduoli: '（阵亡）',
+		menghunqvmingzhichishenbumie1: '(语气词)',
+		menghunqvmingzhichishenbumie2: '(语气词)',
+		menghunqvmingzhichishenbumie3: '(语气词)',
+		menghunqvmingzhichishenbumie4: '(泰坦语)',
+		menghunqvmingzhichishenbumie5: '(二阶段)',
+		menghunqvmingzhichishenbumie6: '(二阶段)',
+		menghunqvmingzhichishenbumie7: '(泰坦语)点燃高山的坟堆',
+		menghunqvmingzhichishenbumie8: '(泰坦语)点燃高山的坟堆',
+		menghunqvmingzhichishenbumie9: '(泰坦语)将生者掀入死水',
+		menghunqvmingzhichishenbumie10: '(泰坦语)将生者掀入死水',
+		menghunqvmingzhichishenbumie11: '(语气词)',
+		menghunqvmingzhichishenbumie12: '(语气词)',
 		mengsimingzhangluyixiebozhi1: '千邦荡平，万军成灰',
 		mengsimingzhangluyixiebozhi2: '千邦荡平，万军成灰',
 		mengtianchiwuxingbingxianqianli1: '天谴降，皆奠纷争昂藏',
@@ -1380,6 +1397,7 @@ const hyyzvoices = {
 		mengtianchiwuxingbingxianqianli4: '天谴降，皆奠纷争昂藏',
 	},
 	...{//2503
+		hyyz_ɸ_shengongbao: '',
 		mengchongshi1: '仙宫中也和人间一样，有高低贵贱之分。',
 		mengchongshi2: '就因为我是豹子精修炼成人，是是门中唯一的异类！',
 		mengchongshi3: '我虽然出身妖族，身份卑贱，却有一颗得道成仙的心。',
@@ -1388,6 +1406,10 @@ const hyyzvoices = {
 		mengkunmiu3: '即使我已经位列仙班，但依旧摆脱不了妖的标签。',
 		mengkunmiu4: '要凭借自身优秀，改变人心中的成见，但我每一次得到的都是失望。',
 		mengkunmiu5: '他总是赐给我师兄太乙真人数不尽的法宝，而我只有一根铁棍！',
+
+		hyyz_ɸ_guanzhe: '',
+
+		hyyz_ys_youla: '',
 
 		hyyz_ys_youla: "罪人的结局吗……",
 		mengzuchou1: '求饶吧。',
@@ -1407,6 +1429,8 @@ const hyyzvoices = {
 		mengkanpo2: '崩——剑——斩！',
 		mengkanpo3: '截云，断岳！',
 		mengkanpo4: '剑出，山倾！',
+
+		hyyz_xt_sp_zhenliyisheng: '庸人吗……',
 	},
 	...{//2504
 		hyyz_ys_yianshan: '这下练出事了...',
@@ -1429,7 +1453,13 @@ const hyyzvoices = {
 		mengjinhui3: '形与味，进发！',
 	},
 	...{//2505
+		hyyz_b3_sp_kiana: '不可能！绝对不可能……！',
+
+		hyyz_ɸ_peiyuanshao: '',
+
 		hyyz_xt_sb_daheita: '我还会回来……',
+
+		hyyz_ɸ_jiguoyuanyi: '',
 	},
 	...{//2506
 		hyyz_ys_sikeke: '星海默然，覆灭无声…',
@@ -1457,11 +1487,16 @@ const hyyzvoices = {
 		mengqianmeng2: '来吧，小安，小彻。',
 		mengqianmeng3: '「..晓时枕醒春风。」',
 
-		hyyz_xt_saifeier: '',
+		hyyz_xt_saifeier: '这就是……逐火……',
 		mengfanfei1: '财宝...让我吸吸！',
 		mengfanfei2: '猫咪...大开口！',
 		mengfanfei3: '随便玩玩的把戏结束了。',
 		mengfanfei4: '一人传虚，万人传实。骗到你咯~',
+	},
+	...{//2601
+		hyyz_xt_jingliu: '终于……解脱了……',
+
+		hyyz_b3_re_hua: '轩辕……终于可以……',
 	},
 	...{//ym
 		ym_zilinggudelige: '白天爆肝，晚上圆梦，粉丝白嫖，万万不可呀',

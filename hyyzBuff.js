@@ -1,5 +1,5 @@
 import { lib, game, ui, get, ai, _status } from '../../noname.js';
-export const hyyzBuffx = async function () {//————————————————————————————//
+export const hyyzBuffx = async function () {
 	if ('hyyzBuff，感谢 寰宇星城《玄武江湖》系统原型') {
 		lib.hyyz.buff = new Map([
 			//['buff名',['汉语','类型']],
@@ -988,8 +988,7 @@ export const hyyzBuffx = async function () {//———————————�
 		}
 	}
 
-	/**player.hyyz_weakness=[] */
-	if ('weakness，感谢 冰雪雨柔《民间卡牌》的ui动画') {
+	if ('weakness，感谢 冰雪雨柔《民间卡牌》的ui动画') {//player.hyyz_weakness=[]
 		lib.hyyz.weakness = new Map([
 			//['弱点名', ['汉语', '击破debuff']],
 			['fire', ['火', 'hyyzBuff_zhuoshao']],
@@ -1344,10 +1343,319 @@ export const hyyzBuffx = async function () {//———————————�
 			}
 		}
 	}
-	/**player.hyyz_phaseList=[]
-	 * player.hyyzminHp=1
-	 */
-	if ('尾巴自写的概念，部分机制由《大宝规则集》（萨巴鲁酱整理编写）提供设计支持') {
+
+	//——————————————尾巴自写的概念，部分机制由《大宝规则集》（萨巴鲁酱整理编写）提供设计支持——————————————//
+	if ('函数封装，代码私用') {
+		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
+		game.hyyzSkillAudio = function (skillname = '', ...args) {
+			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
+			return arguments
+		}
+		//检测一个扩展是否开启（未启用）
+		game.hyyz_hasExtension = function (str) {
+			if (!str || typeof str != 'string') return false;
+			if (lib.config && lib.config.extensions) {
+				for (var i of lib.config.extensions) {
+					if (i.indexOf(str) == 0) {
+						if (lib.config['extension_' + i + '_enable']) return true;
+					}
+				}
+			}
+			return false;
+		}
+		//调整手牌至x
+		lib.element.player.changeCardTo = function (num) {
+			let next = game.createEvent('changeCardTo');
+			next.player = this;
+			next.num = num;
+			next.setContent("changeCardTo");
+			return next;
+		}
+		lib.element.content.changeCardTo = async function (event, trigger, player) {
+			let cards = player.getCards('h');
+			if (typeof event.num != 'number') {
+				event.result = { bool: false }
+				return;
+			}
+			let change = event.num - cards.length;
+			if (change == 0) {
+				event.result = { bool: false }
+				return;
+			}
+			if (change > 0) {
+				const result = await player.draw(change)
+					.forResult();
+				if (result.length) {
+					event.result = {
+						bool: true,
+						cards: result,
+						num: change,
+						type: 'draw'
+					}
+				}
+			} else {
+				const result = await player
+					.chooseToDiscard('须调整牌至' + event.num, 'h', -change, true)
+					.forResult();
+				if (result.bool) {
+					event.result = {
+						bool: true,
+						cards: result.cards,
+						num: change,
+						type: 'chooseToDiscard'
+					}
+				}
+			}
+		}
+		//把num张牌放在牌堆顶/牌堆底（'bottom'）的第No张；返回放置的牌
+		//可以放指定的牌为参数//参考赛飞儿
+		lib.element.player.chooseCardToPile = function (...args) {
+			const next = game.createEvent("chooseCardToPile");
+			next.player = this;
+			if (args.length == 1 && get.is.object(args[0])) {
+				for (const i in args[0][i])
+					next[i] = args[0][i]
+			} else {
+				for (const arg of args) {
+					if (get.itemtype(arg) == 'card') {
+						if (!next.cards) next.cards = [arg]//如果指定了要放的牌
+						next.cards.add(arg)
+					} else if (get.itemtype(arg) == 'cards') {
+						if (!next.cards) next.cards = arg//如果指定了要放的牌
+						next.cards.addArray(arg)
+					} else if (typeof arg == "number") {//数字
+						next.selectCard = [arg, arg];
+					} else if (get.itemtype(arg) == "select") {//两元素数组
+						next.selectCard = arg;
+					} else if (typeof arg == "boolean") {//锁定
+						next.forced = arg;
+					} else if (get.itemtype(arg) == "position") {//区域
+						next.position = arg;
+					} else if (typeof arg == "function") {//条件函数
+						if (next.filterCard) {//卡牌》ai
+							next.ai = arg;
+						} else {
+							next.filterCard = arg;
+						}
+					} else if (typeof arg == "object" && arg) {//对象{type:'basic'}
+						next.filterCard = get.filter(arg);
+					} else if (typeof arg == "string") {//字符串
+						if (arg == 'bottom') next.bottom = true;
+						else get.evtprompt(next, arg);
+					}
+					if (arg === null) {
+						console.log(args);
+					}
+				}
+			}
+			if (next.filterCard == undefined) {
+				next.filterCard = lib.filter.all;
+			}
+			if (next.selectCard == undefined) {
+				next.selectCard = [1, 1];
+			}
+			if (next.position == undefined) {
+				next.position = "h";
+			}
+			if (next.ai == undefined) {
+				next.ai = get.unuseful;
+			}
+			if (next.No == undefined) {
+				next.No = 1;
+			}
+			if (next.cards == undefined) {//如果指定了要放的牌
+				next.cards = []
+			}
+			next.setContent("chooseCardToPile");
+			next._args = args;
+			return next;
+		}
+		lib.element.content.chooseCardToPile = async function (event, trigger, player) {
+			event.result = {
+				bool: true,
+				cards: [],
+			};
+			let cards = [];
+			if (event.cards.length > 0) {
+				cards = event.cards;
+			} else {
+				let str = '';
+				if (event.selectCard.length == 2) {
+					if (player.countCards(event.position) < event.selectCard[0]) {
+						console.log(player, '执行chooseCardToPile时' + event.position + '区域的牌不足' + event.selectCard[0]);
+						event.finish();
+						return;
+					}
+					if (event.selectCard[1] == event.selectCard[0]) str = get.strNumber(event.selectCard[0])
+					if (event.selectCard[1] > event.selectCard[0])
+						str = (
+							event.selectCard[0] > 1 ? `${get.strNumber(event.selectCard[0])}至` : '至多'
+						) + get.strNumber(event.selectCard[1])
+				}
+				if (!event.prompt) event.prompt = `将${str}张牌置于牌堆${event.bottom == true ? '底' : '顶'}${event.No == 1 ? '' : '第' + event.No + '张'}（先选择的在上）`;
+				const { cards: cardsx } = await player.chooseCard(event.position, event.selectCard, event.filterCard, event.ai, event.forced)
+					.set('prompt', event.prompt)
+					.set('prompt2', event.prompt2)
+					.forResult();
+				cards = cardsx
+			}
+			if (cards) {
+				event.result.cards = cards;
+				if (cards.some(i => get.owner(i) == player)) await player.lose(cards.filter(i => get.owner(i) == player), ui.cardPile);
+				if (event.bottom == true) {
+					for (let i = 0; i < cards.length; i++) {
+						const card = cards[i];
+						card.fix();
+						ui.cardPile.insertBefore(card, ui.cardPile.children[ui.cardPile.childNodes.length - event.No + 1])
+					}
+					game.log(player, "将", cards, "置于了牌堆底", event.No == 1 ? '' : '第' + event.No + '张');
+				} else {
+					cards.reverse();
+					if (cards.some(i => get.owner(i) == player)) await player.lose(cards.filter(i => get.owner(i) == player), ui.cardPile);
+					for (let i = 0; i < cards.length; i++) {
+						const card = cards[i];
+						card.fix();
+						ui.cardPile.appendChild(card);
+						ui.cardPile.insertBefore(card, ui.cardPile.children[event.No - 1]);
+					}
+					//在弃牌堆
+					//await game.cardsGotoPile(cards, "insert");
+					game.log(player, "将", cards, "置于了牌堆顶", event.No == 1 ? '' : '第' + event.No + '张');
+				}
+			}
+		}
+		//调整体力值至x//(甲,5)//(甲,5,甲,5)//(甲,乙,5,5)
+		game.changeHpTo = function (...args) {
+			let currents = args.filter(i => get.itemtype(i) == 'player'),
+				hps = args.filter(i => typeof i == 'number');
+			const next = game.createEvent('changeHpTo');
+			next.currents = currents;
+			next.hps = hps;
+			next.setContent('changeHpTo')
+			return next;
+		}
+		lib.element.content.changeHpTo = async function (event, trigger, player) {
+			let currents = event.currents.slice(0, Math.min(event.currents.length, event.hps.length)),
+				hps = event.hps.slice(0, Math.min(event.currents.length, event.hps.length))
+			while (currents.length != 0 && hps.length != 0) {
+				const current = currents.shift(), hp = hps.shift();
+				if (current.hp != hp) {
+					game.log('<li>', current, '调整体力', `#r${current.hp}`, '至', current.maxHp < hp ? `#g<s>${hp}</s> ${Math.min(hp, current.maxHp)}` : `#g${hp}`)
+					await current.changeHp(hp - current.hp);
+				} else {
+					game.log('<li>', current, '无须调整体力值');
+				}
+				if (current.hp <= 0) await current.dying();
+			}
+
+		}
+		//进入隐匿
+		lib.element.player.hyyzUnseen = async function (noChange) {
+			game.log(this, '隐匿');
+			const name = this.name || this.name1;//名字
+			const skillName = "hyyzUnseen_" + name;//不改变标记
+			if (noChange != false) {//不改变体力和上限
+				lib.skill[skillName] = {//做个技能记录隐匿前的体力
+					charlotte: true,
+					mark: true,
+					intro: {
+						content: "隐匿前体力值",
+					},
+				};
+				lib.translate[skillName] = `${this.hp}/${this.maxHp}`;//技能的翻译
+				this.storage[skillName] = {//技能的内容
+					hp: this.hp,
+					maxHp: this.maxHp,
+				};
+				this.addTempSkill(skillName, { player: "showCharacterAfter" });//获得这个技能直到亮将
+				this.when("showCharacterAfter")//亮将后，把当前记录的恢复。
+					.vars({
+						hp: this.hp,
+						maxHp: this.maxHp,
+						skillName: skillName,
+					}).then(() => {
+						player.hp = hp;
+						player.maxHp = maxHp;
+						player.update();
+						delete player.storage[skillName];
+					});
+			}
+			if (name && lib.character[name]) {//如果有武将的名字
+				this.storage.rawHp = this.hp;//默认的参数记录一下
+				this.storage.rawMaxHp = this.maxHp;
+				this.hp = 1;//变成隐匿1
+				this.maxHp = 1;
+				this.update();
+				let skills = lib.character[name][3];//技能组
+				if (this.name2 && lib.character[this.name2]?.[3]) skills.addArray(lib.character[this.name2][3]);
+				skills = skills.filter(skill => lib.translate[skill + "_info"]);
+				this.removeSkill(skills);//把当前的技能全部移除
+				if (!this.hiddenSkills) this.hiddenSkills = [];//初始化隐藏技能
+				this.hiddenSkills.addArray(skills);//塞进去
+				//手动隐匿
+				this.classList.add("unseen");
+				if (this.name2) this.classList.add("unseen2");
+				this.name = "unknown";
+
+				if (!this.node.name_seat && !_status.video) {
+					this.node.name_seat = ui.create.div(".name.name_seat", get.verticalStr(get.translation(this.name)), this);
+					this.node.name_seat.dataset.nature = get.groupnature(this.group);
+				}
+				//默认男性不显示体力
+				this.sex = "male";
+				this.storage.nohp = true;
+				this.node.hp.hide();
+				this.update();
+			}
+			if (noChange != false && document.querySelector(".mark-text.small-text"))
+				document.querySelector(".mark-text.small-text").textContent = lib.translate[skillName];
+		};
+		/**获取若干有花色有点数的影
+		 * @param {number} count 数量
+		 * @returns {cards}
+		 */
+		get.hyyzYing = function (count) {
+			var cards = [];
+			if (typeof count != 'number') count = 1;
+			while (count--) {
+				let card = game.createCard('ying', ['spade', 'heart', 'club', 'diamond'].randomGet(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].randomGet());
+				cards.push(card);
+			}
+			return cards;
+		}
+	}
+	if ('修改自己回合的阶段') {//player.hyyz_phaseList=[]
+		/**部分武将修改自己回合的阶段 */
+		lib.skill._hyyz_phaseList = {
+			charlotte: true,
+			silent: true,
+			trigger: {
+				player: 'phaseBefore'
+			},
+			priority: Infinity,
+			filter(event, player) {
+				return player.hyyz_phaseList && Array.isArray(player.hyyz_phaseList);
+			},
+			async content(event, trigger, player) {
+				game.log('<li>', player, '因技能机制修改了', '#b阶段排布')
+				trigger.phaseList = player.hyyz_phaseList;
+			},
+		}
+	}
+	if ('封装') {
+		lib.translate.notime = "即时"
+		lib.translate.time = "延时"
+		/**牌的延时/即时类型
+		 * @param {card|string} obj 牌
+		 * @param {'trick'} method 延时锦囊也算trick
+		 * @param {player} player 来源
+		 * @returns {'time'|'notime'|undefined}
+		 */
+		get.timetype = function (obj, method, player) {
+			if (['delay', 'equip'].includes(get.type(obj, method, player))) return 'time';
+			if (['trick', 'basic'].includes(get.type(obj, method, player))) return 'notime';
+			return undefined;
+		}
 		/**中央区的牌（原来无名杀本身就有啊）
 		 * @param { Boolean } boolean 是否只要弃牌堆
 		 * @returns {card[]}
@@ -1366,11 +1674,11 @@ export const hyyzBuffx = async function () {//———————————�
 			});
 			return cardx;
 		}
-
-		/**一般人体力下限是1，hp<=0濒死；hp>=1存活
-		 * - 也就是说，hp<=player.gethyyzMinHp()-1濒死；
-		 * - hp>=player.gethyyzMinHp()存活
-		 */
+	}
+	if ('体力下限') {//player.hyyz_hyyzminHp
+		//一般人体力下限是1，hp<=0濒死；hp>=1存活
+		//也就是说，hp<=player.gethyyzMinHp()-1濒死；
+		//hp>=player.gethyyzMinHp()存活
 		lib.translate.hyyzminHp = '体力下限';
 		lib.skill._hyyzminHp = {
 			marktext: '💔',
@@ -1491,7 +1799,8 @@ export const hyyzBuffx = async function () {//———————————�
 				this.markSkill('_hyyzminHp');
 			}
 		}
-
+	}
+	if ('点燃机制') {//card.gaintag = ['_hyyz_fireCard']
 		lib.translate._hyyz_fireCard = "🔥"
 		/**每回合结束后弃置点燃牌 */
 		lib.skill._hyyz_fireCard1 = {
@@ -1578,368 +1887,8 @@ export const hyyzBuffx = async function () {//———————————�
 			game.log(player, '#r[点燃]', '了', event.cards.length, '张牌');
 			player.addGaintag(cards, '_hyyz_fireCard');
 		}
-
-
-		/**部分武将修改自己回合的阶段 */
-		lib.skill._hyyz_phaseList = {
-			charlotte: true,
-			silent: true,
-			trigger: {
-				player: 'phaseBefore'
-			},
-			priority: Infinity,
-			filter(event, player) {
-				return player.hyyz_phaseList && Array.isArray(player.hyyz_phaseList);
-			},
-			async content(event, trigger, player) {
-				game.log('<li>', player, '因技能机制修改了', '#b阶段排布')
-				trigger.phaseList = player.hyyz_phaseList;
-			},
-		}
-
-
-		/**可以发起单挑
-		 * 角色超过2，未处于单挑状态（记录了移除的角色）
-		 * @returns {boolean}
-		 */
-		lib.element.player.canDantiao = function () {
-			if (game.players.length <= 2) return false;
-			if (game.countPlayer() <= 2) return false;
-			if (game.dantiao) return false;
-			return true;
-		}
-		/**对一名角色发起单挑
-		 * @param {target} target 目标
-		 */
-		lib.element.player.chooseDantiao = function (target) {
-			var next = game.createEvent('chooseDantiao', false);//false不设置时机
-			next.player = this;
-			next.target = target;
-			next.setContent('chooseDantiao');
-			return next;
-		}
-		lib.element.content.chooseDantiao = async function (event, trigger, player) {
-			if (event.player == event.target) {
-				game.log('不可以伤害自己喵！')
-				event.finish();
-				return;
-			} else {
-				const otherPlayers = game.filterPlayer((current) => current != event.player && current != event.target);
-				if (otherPlayers.length > 0) {
-					game.dantiao = otherPlayers;
-					otherPlayers.forEach(current => {
-						current.addTempSkill('dantiao');
-						current.classList.add('hidden');
-						game.players.remove(current);
-					});
-				} else {
-					game.log('这点人还单挑什么喵？直接开干吧！');
-					event.finish();
-					return;
-				}
-			}
-		}
-		lib.skill.dantiao = {//给移除的角色，封印所有非单挑技能
-			dantiao: true,
-			forceDie: true,
-			forced: true,
-			charlotte: true,
-			init(player, skill) {
-				player.addSkillBlocker(skill);
-			},
-			onremove(player, skill) {
-				player.removeSkillBlocker(skill);
-			},
-			skillBlocker(skill, player) {
-				return !lib.skill[skill].dantiao;
-			},
-			mod: {
-				cardDiscardable: () => false,
-				cardEnabled: () => false,
-				cardEnabled2: () => false,
-				cardUsable: () => false,
-				cardRespondable: () => false,
-				cardSavable: () => false,
-			},
-		}
-		lib.skill._dantiao = {/**有人死亡或者有回合结束，复原所有单挑场景 */
-			siodu: true,
-			charlotte: true,
-			forceDie: true,
-			forced: true,
-			priority: 888,
-			trigger: {
-				player: ['dieBegin', 'phaseEnd']
-			},
-			filter(event, player) {
-				if (!game.dantiao) return false;
-				return game.dantiao.length > 0 && game.dantiao.length > 0;
-			},
-			async content(event, trigger, player) {
-				game.dantiao.forEach(current => {
-					current.removeSkill('dantiao');
-					current.classList.remove('hidden');
-					game.players.add(current);
-				});
-				delete game.dantiao;
-			}
-		}
-
-
-		//调整体力值至x//(甲,5)//(甲,5,甲,5)//(甲,乙,5,5)
-		game.changeHpTo = function (...args) {
-			let currents = args.filter(i => get.itemtype(i) == 'player'),
-				hps = args.filter(i => typeof i == 'number');
-			const next = game.createEvent('changeHpTo');
-			next.currents = currents;
-			next.hps = hps;
-			next.setContent('changeHpTo')
-			return next;
-		}
-		lib.element.content.changeHpTo = async function (event, trigger, player) {
-			let currents = event.currents.slice(0, Math.min(event.currents.length, event.hps.length)),
-				hps = event.hps.slice(0, Math.min(event.currents.length, event.hps.length))
-			while (currents.length != 0 && hps.length != 0) {
-				const current = currents.shift(), hp = hps.shift();
-				if (current.hp != hp) {
-					game.log('<li>', current, '调整体力', `#r${current.hp}`, '至', current.maxHp < hp ? `#g<s>${hp}</s> ${Math.min(hp, current.maxHp)}` : `#g${hp}`)
-					await current.changeHp(hp - current.hp);
-				} else {
-					game.log('<li>', current, '无须调整体力值');
-				}
-				if (current.hp <= 0) await current.dying();
-			}
-
-		}
-
-
-		//进入隐匿（未启用）
-		lib.element.player.hyyzUnseen = async function (noChange) {
-			game.log(this, '隐匿');
-			const name = this.name || this.name1;//名字
-			const skillName = "hyyzUnseen_" + name;//不改变标记
-			if (noChange != false) {//不改变体力和上限
-				lib.skill[skillName] = {//做个技能记录隐匿前的体力
-					charlotte: true,
-					mark: true,
-					intro: {
-						content: "隐匿前体力值",
-					},
-				};
-				lib.translate[skillName] = `${this.hp}/${this.maxHp}`;//技能的翻译
-				this.storage[skillName] = {//技能的内容
-					hp: this.hp,
-					maxHp: this.maxHp,
-				};
-				this.addTempSkill(skillName, { player: "showCharacterAfter" });//获得这个技能直到亮将
-				this.when("showCharacterAfter")//亮将后，把当前记录的恢复。
-					.vars({
-						hp: this.hp,
-						maxHp: this.maxHp,
-						skillName: skillName,
-					}).then(() => {
-						player.hp = hp;
-						player.maxHp = maxHp;
-						player.update();
-						delete player.storage[skillName];
-					});
-			}
-			if (name && lib.character[name]) {//如果有武将的名字
-				this.storage.rawHp = this.hp;//默认的参数记录一下
-				this.storage.rawMaxHp = this.maxHp;
-				this.hp = 1;//变成隐匿1
-				this.maxHp = 1;
-				this.update();
-				let skills = lib.character[name][3];//技能组
-				if (this.name2 && lib.character[this.name2]?.[3]) skills.addArray(lib.character[this.name2][3]);
-				skills = skills.filter(skill => lib.translate[skill + "_info"]);
-				this.removeSkill(skills);//把当前的技能全部移除
-				if (!this.hiddenSkills) this.hiddenSkills = [];//初始化隐藏技能
-				this.hiddenSkills.addArray(skills);//塞进去
-				//手动隐匿
-				this.classList.add("unseen");
-				if (this.name2) this.classList.add("unseen2");
-				this.name = "unknown";
-
-				if (!this.node.name_seat && !_status.video) {
-					this.node.name_seat = ui.create.div(".name.name_seat", get.verticalStr(get.translation(this.name)), this);
-					this.node.name_seat.dataset.nature = get.groupnature(this.group);
-				}
-				//默认男性不显示体力
-				this.sex = "male";
-				this.storage.nohp = true;
-				this.node.hp.hide();
-				this.update();
-			}
-			if (noChange != false && document.querySelector(".mark-text.small-text"))
-				document.querySelector(".mark-text.small-text").textContent = lib.translate[skillName];
-		};
-
-
-		//调整手牌至x
-		lib.element.player.changeCardTo = function (num) {
-			let next = game.createEvent('changeCardTo');
-			next.player = this;
-			next.num = num;
-			next.setContent("changeCardTo");
-			return next;
-		}
-		lib.element.content.changeCardTo = async function (event, trigger, player) {
-			let cards = player.getCards('h');
-			if (typeof event.num != 'number') {
-				event.result = { bool: false }
-				return;
-			}
-			let change = event.num - cards.length;
-			if (change == 0) {
-				event.result = { bool: false }
-				return;
-			}
-			if (change > 0) {
-				const result = await player.draw(change)
-					.forResult();
-				if (result.length) {
-					event.result = {
-						bool: true,
-						cards: result,
-						num: change,
-						type: 'draw'
-					}
-				}
-			} else {
-				const result = await player
-					.chooseToDiscard('须调整牌至' + event.num, 'h', -change, true)
-					.forResult();
-				if (result.bool) {
-					event.result = {
-						bool: true,
-						cards: result.cards,
-						num: change,
-						type: 'chooseToDiscard'
-					}
-				}
-			}
-		}
-
-
-		//把num张牌放在牌堆顶/牌堆底（'bottom'）的第No张；返回放置的牌
-		//可以放指定的牌为参数//参考赛飞儿
-		lib.element.player.chooseCardToPile = function (...args) {
-			const next = game.createEvent("chooseCardToPile");
-			next.player = this;
-			if (args.length == 1 && get.is.object(args[0])) {
-				for (const i in args[0][i])
-					next[i] = args[0][i]
-			} else {
-				for (const arg of args) {
-					if (get.itemtype(arg) == 'card') {
-						if (!next.cards) next.cards = [arg]//如果指定了要放的牌
-						next.cards.add(arg)
-					} else if (get.itemtype(arg) == 'cards') {
-						if (!next.cards) next.cards = arg//如果指定了要放的牌
-						next.cards.addArray(arg)
-					} else if (typeof arg == "number") {//数字
-						next.selectCard = [arg, arg];
-					} else if (get.itemtype(arg) == "select") {//两元素数组
-						next.selectCard = arg;
-					} else if (typeof arg == "boolean") {//锁定
-						next.forced = arg;
-					} else if (get.itemtype(arg) == "position") {//区域
-						next.position = arg;
-					} else if (typeof arg == "function") {//条件函数
-						if (next.filterCard) {//卡牌》ai
-							next.ai = arg;
-						} else {
-							next.filterCard = arg;
-						}
-					} else if (typeof arg == "object" && arg) {//对象{type:'basic'}
-						next.filterCard = get.filter(arg);
-					} else if (typeof arg == "string") {//字符串
-						if (arg == 'bottom') next.bottom = true;
-						else get.evtprompt(next, arg);
-					}
-					if (arg === null) {
-						console.log(args);
-					}
-				}
-			}
-			if (next.filterCard == undefined) {
-				next.filterCard = lib.filter.all;
-			}
-			if (next.selectCard == undefined) {
-				next.selectCard = [1, 1];
-			}
-			if (next.position == undefined) {
-				next.position = "h";
-			}
-			if (next.ai == undefined) {
-				next.ai = get.unuseful;
-			}
-			if (next.No == undefined) {
-				next.No = 1;
-			}
-			if (next.cards == undefined) {//如果指定了要放的牌
-				next.cards = []
-			}
-			next.setContent("chooseCardToPile");
-			next._args = args;
-			return next;
-		}
-		lib.element.content.chooseCardToPile = async function (event, trigger, player) {
-			event.result = {
-				bool: true,
-				cards: [],
-			};
-			let cards = [];
-			if (event.cards.length > 0) {
-				cards = event.cards;
-			} else {
-				let str = '';
-				if (event.selectCard.length == 2) {
-					if (player.countCards(event.position) < event.selectCard[0]) {
-						console.log(player, '执行chooseCardToPile时' + event.position + '区域的牌不足' + event.selectCard[0]);
-						event.finish();
-						return;
-					}
-					if (event.selectCard[1] == event.selectCard[0]) str = get.strNumber(event.selectCard[0])
-					if (event.selectCard[1] > event.selectCard[0])
-						str = (
-							event.selectCard[0] > 1 ? `${get.strNumber(event.selectCard[0])}至` : '至多'
-						) + get.strNumber(event.selectCard[1])
-				}
-				if (!event.prompt) event.prompt = `将${str}张牌置于牌堆${event.bottom == true ? '底' : '顶'}${event.No == 1 ? '' : '第' + event.No + '张'}（先选择的在上）`;
-				cards = await player.chooseCard(event.position, event.selectCard, event.filterCard, event.ai, event.forced)
-					.set('prompt', event.prompt)
-					.set('prompt2', event.prompt2)
-					.forResultCards();
-			}
-			if (cards) {
-				event.result.cards = cards;
-				if (cards.some(i => get.owner(i) == player)) await player.lose(cards.filter(i => get.owner(i) == player), ui.cardPile);
-				if (event.bottom == true) {
-					for (let i = 0; i < cards.length; i++) {
-						const card = cards[i];
-						card.fix();
-						ui.cardPile.insertBefore(card, ui.cardPile.children[ui.cardPile.childNodes.length - event.No + 1])
-					}
-					game.log(player, "将", cards, "置于了牌堆底", event.No == 1 ? '' : '第' + event.No + '张');
-				} else {
-					cards.reverse();
-					if (cards.some(i => get.owner(i) == player)) await player.lose(cards.filter(i => get.owner(i) == player), ui.cardPile);
-					for (let i = 0; i < cards.length; i++) {
-						const card = cards[i];
-						card.fix();
-						ui.cardPile.appendChild(card);
-						ui.cardPile.insertBefore(card, ui.cardPile.children[event.No - 1]);
-					}
-					//在弃牌堆
-					//await game.cardsGotoPile(cards, "insert");
-					game.log(player, "将", cards, "置于了牌堆顶", event.No == 1 ? '' : '第' + event.No + '张');
-				}
-			}
-		}
-
-
+	}
+	if ('扩展装备栏') {//player.expandedSlots = object
 		/**进行一次座次排布（未启用） */
 		lib.element.player.chooseToSwapSeat = function () {
 			let next = game.createEvent("chooseToSwapSeat", false);//false不设置时机，只能自己加。但是自己加的只能在content里面，不写默认true，可以在运行content之外先触发时机。
@@ -2235,15 +2184,15 @@ export const hyyzBuffx = async function () {//———————————�
 			if (!player.countExpandedSlot()) player.unmarkSkill('expandedSlots');
 			if (discards.length > 0) player.loseToDiscardpile(discards);
 		}
-		/**废除手牌区 */
-		lib.element.player.disableHand = function () {
+	}
+	if ('废除手牌区') {//player.storage._disableHand = boolean
+		/**废除手牌区
+		 * @param { Player } source 来源，默认当前时机角色
+		 */
+		lib.element.player.disableHand = function (source) {
 			var next = game.createEvent('disableHand');
 			next.player = this;
-			for (var i = 0; i < arguments.length; i++) {
-				if (get.itemtype(arguments[i]) == 'player') {
-					next.source = arguments[i];
-				}
-			}
+			next.source = source
 			if (!next.source) next.source = _status.event.player;
 			next.setContent('disableHand');
 			return next;
@@ -2257,6 +2206,7 @@ export const hyyzBuffx = async function () {//———————————�
 				player.$disableHand();
 			}, player);
 		}
+		/**刷新（无用） */
 		lib.element.player.$disableHand = function () { }
 		lib.skill._hyyz_disableHand = {
 			mark: true,
@@ -2301,6 +2251,7 @@ export const hyyzBuffx = async function () {//———————————�
 				refuseGifts: true,
 			},
 		}
+		/**角色是否已废除手牌区 */
 		lib.element.player.isDisabledHand = function () {
 			return this.storage._disableHand
 		}
@@ -2321,57 +2272,93 @@ export const hyyzBuffx = async function () {//———————————�
 			delete player.storage._disableHand
 			game.log(player, "恢复了", "#g手牌区");
 		}
-
 	}
-	/**工具 */
-	if ('工具函数') {
-		lib.translate.notime = "即时"
-		lib.translate.time = "延时"
-		/**牌的延时/即时类型
-		 * @param {card|string} obj 牌
-		 * @param {'trick'} method 延时锦囊也算trick
-		 * @param {player} player 来源
-		 * @returns {'time'|'notime'|undefined}
+	if ('波提欧发起单挑') {
+		/**可以发起单挑
+		 * 角色超过2，未处于单挑状态（记录了移除的角色）
+		 * @returns {boolean}
 		 */
-		get.timetype = function (obj, method, player) {
-			if (['delay', 'equip'].includes(get.type(obj, method, player))) return 'time';
-			if (['trick', 'basic'].includes(get.type(obj, method, player))) return 'notime';
-			return undefined;
+		lib.element.player.canDantiao = function () {
+			if (game.players.length <= 2) return false;
+			if (game.countPlayer() <= 2) return false;
+			if (game.dantiao) return false;
+			return true;
 		}
-
-
-		//方便管理（主要是更改文件地址方面），批量使用忽悠宇宙语音调用方法
-		game.hyyzSkillAudio = function (skillname = '', ...args) {
-			game.playAudio('..', 'extension', '忽悠宇宙', 'asset', 'character', 'audio', skillname + (args.length > 0 ? args.randomGet() : ''));
-			return arguments
+		/**对一名角色发起单挑
+		 * @param {target} target 目标
+		 */
+		lib.element.player.chooseDantiao = function (target) {
+			var next = game.createEvent('chooseDantiao', false);//false不设置时机
+			next.player = this;
+			next.target = target;
+			next.setContent('chooseDantiao');
+			return next;
 		}
-		//检测一个扩展是否开启（未启用）
-		game.hyyz_hasExtension = function (str) {
-			if (!str || typeof str != 'string') return false;
-			if (lib.config && lib.config.extensions) {
-				for (var i of lib.config.extensions) {
-					if (i.indexOf(str) == 0) {
-						if (lib.config['extension_' + i + '_enable']) return true;
-					}
+		lib.element.content.chooseDantiao = async function (event, trigger, player) {
+			if (event.player == event.target) {
+				game.log('不可以伤害自己喵！')
+				event.finish();
+				return;
+			} else {
+				const otherPlayers = game.filterPlayer((current) => current != event.player && current != event.target);
+				if (otherPlayers.length > 0) {
+					game.dantiao = otherPlayers;
+					otherPlayers.forEach(current => {
+						current.addTempSkill('dantiao');
+						current.classList.add('hidden');
+						game.players.remove(current);
+					});
+				} else {
+					game.log('这点人还单挑什么喵？直接开干吧！');
+					event.finish();
+					return;
 				}
 			}
-			return false;
-		};
-
-
-		/**获取若干有花色有点数的影（未启用）
-		 * @param {number} count 数量
-		 * @returns {cards}
-		 */
-		get.hyyzYing = function (count) {
-			var cards = [];
-			if (typeof count != 'number') count = 1;
-			while (count--) {
-				let card = game.createCard('ying', ['spade', 'heart', 'club', 'diamond'].randomGet(), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].randomGet());
-				cards.push(card);
-			}
-			return cards;
 		}
-
+		lib.skill.dantiao = {//给移除的角色，封印所有非单挑技能
+			dantiao: true,
+			forceDie: true,
+			forced: true,
+			charlotte: true,
+			init(player, skill) {
+				player.addSkillBlocker(skill);
+			},
+			onremove(player, skill) {
+				player.removeSkillBlocker(skill);
+			},
+			skillBlocker(skill, player) {
+				return !lib.skill[skill].dantiao;
+			},
+			mod: {
+				cardDiscardable: () => false,
+				cardEnabled: () => false,
+				cardEnabled2: () => false,
+				cardUsable: () => false,
+				cardRespondable: () => false,
+				cardSavable: () => false,
+			},
+		}
+		lib.skill._dantiao = {/**有人死亡或者有回合结束，复原所有单挑场景 */
+			siodu: true,
+			charlotte: true,
+			forceDie: true,
+			forced: true,
+			priority: 888,
+			trigger: {
+				player: ['dieBegin', 'phaseEnd']
+			},
+			filter(event, player) {
+				if (!game.dantiao) return false;
+				return game.dantiao.length > 0 && game.dantiao.length > 0;
+			},
+			async content(event, trigger, player) {
+				game.dantiao.forEach(current => {
+					current.removeSkill('dantiao');
+					current.classList.remove('hidden');
+					game.players.add(current);
+				});
+				delete game.dantiao;
+			}
+		}
 	}
 }

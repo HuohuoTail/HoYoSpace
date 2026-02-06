@@ -96,7 +96,7 @@ for (let data in allCharacter) {//键：日期
 			else if (lib.config['extension_忽悠宇宙_type'] == '1') characterSorts[sortName(name)].add(name)
 			/**剩余包含三元素的数组 */
 			let temps = values.filter(i => typeof i == 'string');
-			if (!characters[name][4].some(str => str.startsWith('ext:忽悠宇宙'))) characters[name][4].add(`ext:忽悠宇宙/asset/character/image/${name}.jpg`);//导入原画
+			if (!characters[name][4].some(str => (str.startsWith('ext:忽悠宇宙') || str.startsWith('img:')))) characters[name][4].add(`ext:忽悠宇宙/asset/character/image/${name}.jpg`);//导入原画
 			if (!characters[name][4].some(str => str.startsWith('die:'))) characters[name][4].add(`die:ext:忽悠宇宙/asset/character/audio:true`);//导入阵亡语音
 			if (temps[0]) {//名字
 				//批量导入
@@ -162,7 +162,11 @@ game.import("character", () => {
 		character: characters,
 		characterTitle: characterTitles,
 		characterIntro: characterIntros,
-		characterFilter: {},
+		characterFilter: {
+			hyyz_ys_aikefei(mode) {
+				if (lib.config.extensions?.includes('十周年UI') && lib.config['extension_十周年UI_enable'] == true) return false
+			}
+		},
 		characterSort: { hyyzCharacter: characterSorts },
 		skill: skills,
 		translate: translates,
@@ -214,6 +218,10 @@ game.import("character", () => {
 				["mengjvxing_achieve", ["ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/mengjvxing_achieve.jpg"]],
 				["mengjvxing_fail", ["ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/mengjvxing_fail.jpg"]],
 				//['hyyz_ys_sp_furina', ['ext:忽悠宇宙/other/skin/image/hyyz_ys_furina/hyyz_ys_furina1.jpg']]
+			],
+			hyyz_ɸ_miyali: [
+				['hyyz_ɸ_miyali1', ['ext:忽悠宇宙/asset/character/image/hyyz_ɸ_miyali1.jpg']],
+				['hyyz_ɸ_miyali2', ['ext:忽悠宇宙/asset/character/image/hyyz_ɸ_miyali2.jpg']],
 			]
 		},
 	}
