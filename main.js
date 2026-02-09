@@ -6,57 +6,19 @@ async function ARENAREADY() { }
 async function PREPARE() { }
 /** @type { importCharacterConfig['skill'] } */
 async function PRECONTENT() {
+	lib.hyyz ??= {}
 	//——————————————军八座位次上限——————————————//
 	_status.maximumNumberOfPlayers ??= 30
 
 
-	//——————————————忽悠宇宙特有存储空间——————————————//
-	lib.hyyz ??= {}
-	Object.assign(lib.hyyz, {
-		authors: {
-			hyyzSort_lige: '紫灵谷的骊歌',
-			hyyzSort_huohuoTail: '尾巴酱',
-			hyyzSort_canghaiyisu: '沧海依酥',
-			hyyzSort_menghai: '梦海离殇',
-			hyyzSort_miealiei: '咩阿栗诶',
-			hyyzSort_youyi: '柚衣',
-			hyyzSort_xiao: '魈',
-			hyyzSort_fushengyi: '浮生亦',
-			hyyzSort_lalalala: '啦啦啦啦',
-			hyyzSort_rijiu: '日玖阳气冲三关',
-			hyyzSort_xilin: '西琳',
-			hyyzSort_weiyu: '微雨',
-			hyyzSort_miao: '埋埋埋埋喵',
-			hyyzSort_lengruohan: '冷若寒',
-			hyyzSort_xinzhi: '心之所向_星之所向',
-			hyyzSort_mushancai: '木善才',
-			hyyzSort_zhouwang: '纣王',
-			hyyzSort_yuezhou: '樾舟',
-			//无自设
-			hyyzSort_feisesu: '绯色愫',
-			hyyzSort_shiyi: '拾壹',
-			hyyzSort_muci: '慕辞',
-			hyyzSort_liuying: '流萤一生推',
-			hyyzSort_qixiyue: '七夕月',
-			hyyzSort_sabalujiang: '萨巴鲁酱',
-			hyyzSort_zuoyeliuying: '昨夜流萤',
-			hyyzSort_qianqiuwanye: '千秋万叶',
-			hyyzSort_huangliangjiu: '黄粱酒温梦',
-			hyyzSort_yishuizhian: '奕水之安',
-			hyyzSort_zhushang: '一般路过の祝商',
-			hyyzSort_huidanglingjueding: '会当凌绝顶喵',
-			hyyzSort_yayiyuanfei: '鸦懿鸢霏',
-			hyyzSort_wuleizhengxin: '五雷正心',
-			hyyzSort_dengjie: '灯姐',
-			hyyzSort_sanqiu: '三秋',
-			hyyzSort_luoyeqiushuang: '落叶秋霜',
-		},
-		prefix: {
+	if ('新增前缀') {
+		lib.hyyz.prefix = {
 			//hyyz_b3: '崩',
 			hyyz_b3_sp: 'SP',
 			hyyz_b3_re: '界',
 			hyyz_b3_sb: '谋',
 			hyyz_b3_wu: '武',
+			hyyz_b3_wo: '我',
 			//hyyz_ys: '原',
 			hyyz_ys_sp: 'SP',
 			hyyz_ys_re: '界',
@@ -70,6 +32,16 @@ async function PRECONTENT() {
 			hyyz_xt_sb: '谋',
 			hyyz_xt_wu: '武',
 			hyyz_xt_shen: '神',
+			hyyz_xt_huimie: '毁灭',
+			hyyz_xt_xunlie: '巡猎',
+			hyyz_xt_zhishi: '智识',
+			hyyz_xt_tongxie: '同谐',
+			hyyz_xt_xvwu: '虚无',
+			hyyz_xt_cunhu: '存护',
+			hyyz_xt_fengrao: '丰饶',
+			hyyz_xt_jiyi: '记忆',
+			hyyz_xt_huanyv: '欢愉',
+			hyyz_xt_fanyv: '繁育',
 			//hyyz_zzz: '绝',
 			hyyz_zzz_sb: '谋',
 			hyyz_ɸ: 'ɸ',
@@ -77,64 +49,28 @@ async function PRECONTENT() {
 			ym: '梦',
 			ym_re: '梦界',
 			ym_sp: '梦SP',
-		},
-		//所有武将
-		characters: {},
-		//注释
-		get introduce() {
-			const introduce = {
-				生息: "特有概念：buff，加2点体力上限，下次受到伤害后，回复1点体力。失去此效果的回合结束后，减2点体力上限。",
-				//属性
-				风蚀: `特有概念：一名角色受到风蚀伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。`,
-				量子: `特有概念：一名角色使用量子【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。`,
-				虚数: `特有概念：一名角色受到虚数伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。`,
-				//buff
-				效果: "特有概念：分为增益[效果]-buff和负面[效果]-debuff，其中debuff包含持续[效果]-dotdebuff。<li>净化：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。<li>驱散：移除所有buff。<li>引爆：立即结算dotdebuff中的高亮效果。",
-				净化: "特有概念：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。",
-				驱散: "特有概念：移除对象所有buff。",
-				引爆: "特有概念：立即结算对象拥有的dotdebuff中的高亮效果。",
-				//buff
-				加速: "特有概念：buff，下个弃牌阶段开始前，插入一个出牌阶段。",
-				//debuff
-				重伤: "特有概念：debuff，下次受到的伤害+1。",
-				虚弱: "特有概念：debuff，下次造成的伤害-1。",
-				减速: "特有概念：debuff，下个出牌阶段开始前，插入一个弃牌阶段。",
-				冻结: "特有概念：debuff，当前回合内不能使用、打出或弃置手牌。",
-				禁锢: "特有概念：debuff，使用的下一张牌无效。",
-				纠缠: "特有概念：debuff，下次成为即时牌的目标后，重铸一张相同类型的牌，否则此牌结算两次。",
-				//dotdebuff
-				裂伤: "特有概念：dotdebuff，每层令此角色使用牌指定其他角色后失去1点体力。",
-				灼烧: "特有概念：dotdebuff，每层令此角色[点燃]区域内随机两张牌（优先手牌）",
-				风化: "特有概念：dotdebuff，准备阶段，每层使此角色受到1点风蚀伤害。",
-				触电: "特有概念：dotdebuff，始终横置；每层使此角色使用或打出无目标的牌后受到1点雷电伤害",
-				//弱点
-				弱点: "特有概念：弱点击破后会触发对应的击破debuff，受到非dotdeubff伤害将被击破弱点。",
 
-				//宝集
-				中央区: "封装概念：本回合进入弃牌堆的牌。",
-				即时牌: "封装概念：基本牌和普通锦囊牌；装备牌和延时锦囊牌称为非即时牌。",
-				周始: "封装概念：转换技或多选项技能完成一轮循环后触发的效果。",
-				附魔: "封装概念：为一项事物增加额外效果。<li>属性：新增该附魔词条。<li>牌：牌生效后，执行该附魔词条中的效果。<li>技能或效果：令附魔对象的拥有者/使用者在结算中视为拥有附魔词条中包含的技能或效果。",
-				滞留牌: '封装概念：此刻没有合法目标的手牌（即不能点击的手牌）。',
-				点燃: "封装概念：被点燃的牌使用时无距离和次数限制且不计入次数上限；每回合结束后弃置之。",
-				断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
-				背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
-				单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
-				追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
-				法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
-				否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
-				异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
-			}
-			for (let i in introduce) introduce[i] = '<li>' + introduce[i];
-			return introduce;
+			hyyz_ys_die: '🦋',
+			hyyz_xt_die: '🦋',
+			hyyz_zzz_die: '🦋',
+			hyyz_ceshi: '测试·',
 		}
-	})
-	if ('新增前缀') {
 		lib.namePrefix.set('ɸ', { color: '#fd8359', nature: 'soilmm', showName: "ɸ" });//武
 		lib.namePrefix.set('ɸ纯烬', { color: '#fd8359', nature: 'soilmm', showName: "ɸ纯烬" });//武
 		lib.namePrefix.set('我', { color: '#1bdeb4', nature: 'soilmm', showName: "我" });//自定义
 		lib.namePrefix.set('梦界', { getSpan: () => `${get.prefixSpan("梦")}${get.prefixSpan("界")}` });
 		lib.namePrefix.set('梦SP', { getSpan: () => `${get.prefixSpan("梦")}${get.prefixSpan("SP")}` });
+		//css里面第一个颜色
+		lib.namePrefix.set('毁灭', { color: '#ff0000', nature: 'soilmm', showName: "毁灭" });
+		lib.namePrefix.set('巡猎', { color: '#09ff00', nature: 'soilmm', showName: "巡猎" });
+		lib.namePrefix.set('智识', { color: '#00ffb3', nature: 'soilmm', showName: "智识" });
+		lib.namePrefix.set('同谐', { color: '#c000fa', nature: 'soilmm', showName: "同谐" });
+		lib.namePrefix.set('虚无', { color: '#5ca2df', nature: 'soilmm', showName: "虚无" });
+		lib.namePrefix.set('存护', { color: '#0c89d6', nature: 'soilmm', showName: "存护" });
+		lib.namePrefix.set('丰饶', { color: '#fff266', nature: 'soilmm', showName: "丰饶" });
+		lib.namePrefix.set('记忆', { color: '#cc8316', nature: 'soilmm', showName: "记忆" });
+		lib.namePrefix.set('欢愉', { color: '#c000fa', nature: 'soilmm', showName: "欢愉" });
+		lib.namePrefix.set('繁育', { color: '#ea059e', nature: 'soilmm', showName: "繁育" });
 	}
 	//——————————————导入CSS文件——————————————//
 	lib.init.css(`${lib.assetURL}extension/忽悠宇宙/other`, `extension`);
@@ -392,7 +328,7 @@ async function PRECONTENT() {
 				if (event.name == 'damage') {
 					return !player.hasSkill('hyyz_imaginary_buff') && event.hasNature('hyyz_imaginary')
 				} else {
-					return event.targets.some(current => !current.hasSkill('hyyz_imaginary_buff')) && game.hasNature(event.card, "hyyz_imaginary");
+					return event.targets?.some(current => !current.hasSkill('hyyz_imaginary_buff')) && game.hasNature(event.card, "hyyz_imaginary");
 				}
 			},
 			async content(event, trigger, player) {
@@ -558,9 +494,52 @@ async function PRECONTENT() {
 		})
 	}
 
-
-
 	//——————————————详情介绍——————————————//
+	let introduce = {
+		生息: "特有概念：buff，加2点体力上限，下次受到伤害后，回复1点体力。失去此效果的回合结束后，减2点体力上限。",
+		//属性
+		风蚀: `特有概念：一名角色受到风蚀伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。`,
+		量子: `特有概念：一名角色使用量子【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。`,
+		虚数: `特有概念：一名角色受到虚数伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。`,
+		//buff
+		效果: "特有概念：分为增益[效果]-buff和负面[效果]-debuff，其中debuff包含持续[效果]-dotdebuff。<li>净化：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。<li>驱散：移除所有buff。<li>引爆：立即结算dotdebuff中的高亮效果。",
+		净化: "特有概念：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。",
+		驱散: "特有概念：移除对象所有buff。",
+		引爆: "特有概念：立即结算对象拥有的dotdebuff中的高亮效果。",
+		//buff
+		加速: "特有概念：buff，下个弃牌阶段开始前，插入一个出牌阶段。",
+		//debuff
+		重伤: "特有概念：debuff，下次受到的伤害+1。",
+		虚弱: "特有概念：debuff，下次造成的伤害-1。",
+		减速: "特有概念：debuff，下个出牌阶段开始前，插入一个弃牌阶段。",
+		冻结: "特有概念：debuff，当前回合内不能使用、打出或弃置手牌。",
+		禁锢: "特有概念：debuff，使用的下一张牌无效。",
+		纠缠: "特有概念：debuff，下次成为即时牌的目标后，重铸一张相同类型的牌，否则此牌结算两次。",
+		//dotdebuff
+		裂伤: "特有概念：dotdebuff，每层令此角色使用牌指定其他角色后失去1点体力。",
+		灼烧: "特有概念：dotdebuff，每层令此角色[点燃]区域内随机两张牌（优先手牌）",
+		风化: "特有概念：dotdebuff，准备阶段，每层使此角色受到1点风蚀伤害。",
+		触电: "特有概念：dotdebuff，始终横置；每层使此角色使用或打出无目标的牌后受到1点雷电伤害",
+		//弱点
+		弱点: "特有概念：弱点击破后会触发对应的击破debuff，受到非dotdeubff伤害将被击破弱点。",
+
+		//宝集
+		中央区: "封装概念：本回合进入弃牌堆的牌。",
+		即时牌: "封装概念：基本牌和普通锦囊牌；装备牌和延时锦囊牌称为非即时牌。",
+		周始: "封装概念：转换技或多选项技能完成一轮循环后触发的效果。",
+		附魔: "封装概念：为一项事物增加额外效果。<li>属性：新增该附魔词条。<li>牌：牌生效后，执行该附魔词条中的效果。<li>技能或效果：令附魔对象的拥有者/使用者在结算中视为拥有附魔词条中包含的技能或效果。",
+		滞留牌: '封装概念：此刻没有合法目标的手牌（即不能点击的手牌）。',
+		点燃: "封装概念：被点燃的牌使用时无距离和次数限制且不计入次数上限；每回合结束后弃置之。",
+		断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
+		背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
+		单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
+		追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
+		法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
+		否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
+		异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
+	}
+	for (let i in introduce) introduce[i] = '<li>' + introduce[i];
+	lib.hyyz.introduce = introduce;
 	/**感谢钫酸酱、沐如风晨-创造一个窗口用于显示
 	 * - 只是{@link hyyzIntroduce}的狗而已
 	 * @param {string} str 被显示的字符串
@@ -614,19 +593,19 @@ async function CONTENT(config, pack) {
 	if ('强度评级') {
 		//sss传说，极致的强度
 		lib.rank.rarity['legend'].addArray([
-			'hyyz_xt_ren', 'hyyz_b3_hua', 'hyyz_b3_re_zhongyanzhilvzhe', 'hyyz_xt_sb_kafuka', 'hyyz_ys_wu_xiaogong', 'hyyz_b3_re_xinyanzhilvzhe', 'hyyz_b3_paduo', 'hyyz_xt_lingke', 'hyyz_xt_wu_liuying', 'hyyz_xt_liuying', 'hyyz_ɸ_mansui', 'hyyz_zzz_xingjianya', 'hyyz_xt_sb_shajin', 'hyyz_xt_sp_zhigengniao', 'hyyz_xt_yvkong', 'hyyz_zzz_sb_bonisi', 'hyyz_ɸ_huyouyvzhou', 'hyyz_ɸ_huyouzongzu', 'ym_yanfeng', 'ym_lengruohan', 'ym_zhouwang', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+			'hyyz_xt_ren', 'hyyz_b3_hua', 'hyyz_b3_re_zhongyanzhilvzhe', 'hyyz_xt_sb_kafuka', 'hyyz_ys_wu_xiaogong', 'hyyz_b3_re_xinyanzhilvzhe', 'hyyz_b3_paduo', 'hyyz_xt_lingke', 'hyyz_xt_wu_liuying', 'hyyz_xt_liuying', 'hyyz_ɸ_mansui', 'hyyz_zzz_xingjianya', 'hyyz_xt_sb_shajin', 'hyyz_xt_sp_zhigengniao', 'hyyz_xt_yvkong', 'hyyz_zzz_sb_bonisi', 'hyyz_ɸ_huyouyvzhou', 'hyyz_ɸ_huyouzongzu', 'ym_yanfeng', 'ym_lengruohan', 'ym_zhouwang', 'hyyz_xt_kelala', 'hyyz_b3_kiana', 'hyyz_b3_qianjie', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//ss史诗，均衡强，或偶尔极致
 		lib.rank.rarity['epic'].addArray([
-			'hyyz_xt_jingyuan', 'hyyz_xt_welt', 'hyyz_xt_yinlang', 'hyyz_xt_jizi', 'hyyz_xt_sp_sushang', 'hyyz_xt_bronya', 'hyyz_xt_sushang', 'hyyz_xt_kelala', 'hyyz_b3_sp_xier', 'hyyz_b3_kiana', 'hyyz_b3_sb_jiziwuliangta', 'hyyz_xt_danhengyinyue', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilingren', 'hyyz_b3_sushang', 'hyyz_ys_shenlilinghua', 'hyyz_ys_nuoaier', 'hyyz_xt_huohuo', 'hyyz_ys_sp_wendy', 'hyyz_ys_abeiduo', 'hyyz_ɸ_zhaoxing', 'hyyz_xt_aisida', 'hyyz_xt_ruanmei', 'hyyz_xt_yinzhi', 'hyyz_b3_aiyi', 'hyyz_xt_sp_jingyuan', 'hyyz_xt_guinaifen', 'hyyz_ys_zhongli', 'hyyz_xt_zhenliyisheng', 'hyyz_b3_jiziwuliangta', 'hyyz_xt_sp_huohuo', 'hyyz_ɸ_pink', 'hyyz_xt_wangxiayitong', 'hyyz_xt_sb_jingliu', 'hyyz_b3_ailixiya', 'hyyz_b3_geleixiu', 'hyyz_b3_wu_hua', 'hyyz_b3_sp_kaiwen', 'hyyz_b3_qianjie', 'hyyz_b3_su', 'hyyz_b3_shiyuanzhilvzhe', 'hyyz_b3_yidian', 'hyyz_ɸ_luotianyi', 'hyyz_xt_huangquan', 'hyyz_xt_botiou', 'hyyz_xt_fuxuan', 'hyyz_b3_leidianyayi', 'hyyz_ys_sb_zhongli', 'hyyz_ɸ_quancong', 'hyyz_ys_fukaluosi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_luanpo', 'hyyz_b3_sp_hua', 'hyyz_b3_weierwei', 'hyyz_ɸ_dinyi', 'hyyz_b3_sp_qingque', 'hyyz_ɸ_king', 'hyyz_ɸ_peiyuanshao', 'hyyz_xt_tibao', 'hyyz_ɸ_caiwenji', 'hyyz_xt_shen_nikaduoli', 'hyyz_ys_sikeke', 'hyyz_b3_re_hua', 'ym_zilinggudelige', 'ym_weibajiang', 'ym_canghaiyisu', 'ym_miealiei', 'ym_fushengyi', 'ym_lalalala', 'ym_rijiu', 'ym_zhongshiweiyu', 'ym_daowuji', 'ym_sp_daowuji', 'ym_mushancai', 'ym_xiaohuanxiong', 'hyyz_xt_sb_daheita', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+			'hyyz_xt_jingyuan', 'hyyz_xt_welt', 'hyyz_xt_yinlang', 'hyyz_xt_jizi', 'hyyz_xt_sp_sushang', 'hyyz_xt_bronya', 'hyyz_xt_sushang', 'hyyz_b3_sp_xier', 'hyyz_b3_sb_jiziwuliangta', 'hyyz_xt_danhengyinyue', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilingren', 'hyyz_b3_sushang', 'hyyz_ys_shenlilinghua', 'hyyz_ys_nuoaier', 'hyyz_xt_huohuo', 'hyyz_ys_sp_wendy', 'hyyz_ys_abeiduo', 'hyyz_ɸ_zhaoxing', 'hyyz_xt_aisida', 'hyyz_xt_ruanmei', 'hyyz_xt_yinzhi', 'hyyz_b3_aiyi', 'hyyz_xt_sp_jingyuan', 'hyyz_xt_guinaifen', 'hyyz_ys_zhongli', 'hyyz_xt_zhenliyisheng', 'hyyz_b3_jiziwuliangta', 'hyyz_xt_sp_huohuo', 'hyyz_ɸ_pink', 'hyyz_xt_wangxiayitong', 'hyyz_xt_sb_jingliu', 'hyyz_b3_ailixiya', 'hyyz_b3_geleixiu', 'hyyz_b3_wu_hua', 'hyyz_b3_sp_kaiwen', 'hyyz_b3_su', 'hyyz_b3_shiyuanzhilvzhe', 'hyyz_b3_yidian', 'hyyz_ɸ_luotianyi', 'hyyz_xt_huangquan', 'hyyz_xt_botiou', 'hyyz_xt_fuxuan', 'hyyz_b3_leidianyayi', 'hyyz_ys_sb_zhongli', 'hyyz_ɸ_quancong', 'hyyz_ys_fukaluosi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_luanpo', 'hyyz_b3_wo_hua', 'hyyz_b3_wo_weierwei', 'hyyz_ɸ_dinyi', 'hyyz_b3_sp_qingque', 'hyyz_ɸ_king', 'hyyz_ɸ_peiyuanshao', 'hyyz_xt_tibao', 'hyyz_ɸ_caiwenji', 'hyyz_xt_shen_nikaduoli', 'hyyz_ys_sikeke', 'hyyz_b3_re_hua', 'ym_zilinggudelige', 'ym_weibajiang', 'ym_canghaiyisu', 'ym_miealiei', 'ym_fushengyi', 'ym_lalalala', 'ym_rijiu', 'ym_zhongshiweiyu', 'ym_daowuji', 'ym_sp_daowuji', 'ym_mushancai', 'ym_xiaohuanxiong', 'hyyz_xt_sb_daheita', 'hyyz_b3_lizhilvzhe', 'hyyz_xt_huimie_kaituozhe', 'hyyz_xt_cunhu_kaituozhe', 'hyyz_xt_tongxie_kaituozhe', 'hyyz_sp_qingque', 'hyyz_ɸ_zhipeizhilvzhe', 'hyyz_ɸ_shalangbaizi', 'hyyz_ɸ_xierde', 'hyyz_ɸ_yelianna', 'hyyz_xt_sp_daheita', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//a+s精品，普通武将
 		lib.rank.rarity['rare'].addArray([
-			'hyyz_xt_qingque', 'hyyz_xt_bailu', 'hyyz_xt_luocha', 'hyyz_xt_sp_bronya', 'hyyz_ɸ_xierde', 'hyyz_b3_kaiwen', 'hyyz_ɸ_shaoxia', 'hyyz_b3_luocha', 'hyyz_ɸ_kuisangti', 'hyyz_xt_sp_kafuka', 'hyyz_ys_qingqizhe', 'hyyz_xt_yanqing', 'hyyz_b3_chiyuan', 'hyyz_b3_shuoyeguanxing', 'hyyz_xt_jingliu', 'hyyz_ɸ_yelianna', 'hyyz_ys_laiyila', 'hyyz_ys_aierhaisen', 'hyyz_b3_xier', 'hyyz_xt_tuopa', 'hyyz_ys_hutao', 'hyyz_xt_sp_ruanmei', 'hyyz_xt_luka', 'hyyz_ys_baizhu', 'hyyz_xt_sp_fuxuan', 'hyyz_ys_sb_nahida', 'hyyz_ys_furina', 'hyyz_ys_nahida', 'hyyz_xt_danhengbailu', 'hyyz_ys_shanhugongxinhai', 'hyyz_xt_sp_luocha', 'hyyz_b3_zhongyanzhilvzhe', 'hyyz_b3_xinyanzhilvzhe', 'hyyz_xt_shiwaluo', 'hyyz_xt_sp_heitiane', 'hyyz_xt_sangbo', 'hyyz_b3_aboniya', 'hyyz_b3_kesimo', 'hyyz_b3_meibiwusi', 'hyyz_b3_sp_weierwei', 'hyyz_b3_ying', 'hyyz_xt_huahuo', 'hyyz_xt_sp_shajin', 'hyyz_xt_shajin', 'hyyz_xt_kafuka', 'hyyz_xt_heitiane', 'hyyz_xt_xier', 'hyyz_zzz_11', 'hyyz_xt_re_liuying', 'hyyz_ys_sp_leidianying', 'hyyz_ɸ_liang', 'hyyz_xt_sb_ruanmei', 'hyyz_ys_xiaogong', 'meng_feixiao', 'hyyz_xt_sp_sanyueqi', 'hyyz_ɸ_chunjin_aiyafala', 'hyyz_ɸ_xi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_zhigengniao', 'hyyz_xt_kekena', 'hyyz_xt_moze', 'hyyz_xt_heita', 'hyyz_ys_kaqina', 'hyyz_ys_xigewen', 'hyyz_ɸ_cuicui', 'hyyz_xt_sp_daheita', 'hyyz_ɸ_miyali', 'hyyz_ɸ_anjielina', 'hyyz_xt_sp_tingyun', 'hyyz_xt_sp_yinzhi', 'hyyz_ɸ_shengongbao', 'hyyz_ɸ_guanzhe', 'hyyz_ys_youla', 'hyyz_xt_yunli', 'hyyz_xt_sp_zhenliyisheng', 'hyyz_ys_yianshan', 'hyyz_ys_aikefei', 'hyyz_b3_sp_kiana', 'hyyz_ɸ_jiguoyuanyi', 'hyyz_xt_fengjin', 'hyyz_ys_mengjianyueruixi', 'hyyz_xt_saifeier', 'hyyz_xt_sp_jingliu', 'ym_re_canghaiyisu', 'ym_menghai', 'ym_sp_menghai', 'ym_sp_miealiei', 'ym_re_miealiei', 'ym_youyi', 'ym_xilin', 'ym_xinzhi', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+			'hyyz_xt_qingque', 'hyyz_xt_bailu', 'hyyz_xt_luocha', 'hyyz_xt_sp_bronya', 'hyyz_b3_kaiwen', 'hyyz_ɸ_shaoxia', 'hyyz_b3_luocha', 'hyyz_ɸ_kuisangti', 'hyyz_xt_sp_kafuka', 'hyyz_ys_qingqizhe', 'hyyz_xt_yanqing', 'hyyz_b3_chiyuan', 'hyyz_b3_shuoyeguanxing', 'hyyz_xt_jingliu', 'hyyz_ys_laiyila', 'hyyz_ys_aierhaisen', 'hyyz_b3_xier', 'hyyz_xt_tuopa', 'hyyz_ys_hutao', 'hyyz_xt_sp_ruanmei', 'hyyz_xt_luka', 'hyyz_ys_baizhu', 'hyyz_xt_sp_fuxuan', 'hyyz_ys_sb_nahida', 'hyyz_ys_furina', 'hyyz_ys_nahida', 'hyyz_xt_danhengbailu', 'hyyz_ys_shanhugongxinhai', 'hyyz_xt_sp_luocha', 'hyyz_b3_zhongyanzhilvzhe', 'hyyz_b3_xinyanzhilvzhe', 'hyyz_xt_shiwaluo', 'hyyz_xt_sp_heitiane', 'hyyz_xt_sangbo', 'hyyz_b3_aboniya', 'hyyz_b3_kesimo', 'hyyz_b3_meibiwusi', 'hyyz_b3_weierwei', 'hyyz_xt_huahuo', 'hyyz_xt_sp_shajin', 'hyyz_xt_shajin', 'hyyz_xt_kafuka', 'hyyz_xt_heitiane', 'hyyz_xt_xier', 'hyyz_zzz_11', 'hyyz_xt_re_liuying', 'hyyz_ys_sp_leidianying', 'hyyz_ɸ_liang', 'hyyz_xt_sb_ruanmei', 'hyyz_ys_xiaogong', 'hyyz_xt_sp_feixiao', 'hyyz_xt_xunlie_sanyueqi', 'hyyz_ɸ_chunjin_aiyafala', 'hyyz_ɸ_xi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_zhigengniao', 'hyyz_xt_kekena', 'hyyz_xt_moze', 'hyyz_xt_wo_heita', 'hyyz_ys_kaqina', 'hyyz_ys_xigewen', 'hyyz_ɸ_cuicui', 'hyyz_ɸ_miyali', 'hyyz_ɸ_anjielina', 'hyyz_xt_sp_tingyun', 'hyyz_xt_sp_yinzhi', 'hyyz_ɸ_shengongbao', 'hyyz_ɸ_guanzhe', 'hyyz_ys_youla', 'hyyz_xt_yunli', 'hyyz_xt_sp_zhenliyisheng', 'hyyz_ys_yianshan', 'hyyz_ys_aikefei', 'hyyz_b3_sp_kiana', 'hyyz_ɸ_jiguoyuanyi', 'hyyz_xt_fengjin', 'hyyz_ys_mengjianyueruixi', 'hyyz_xt_saifeier', 'hyyz_xt_sp_jingliu', 'ym_re_canghaiyisu', 'ym_menghai', 'ym_sp_menghai', 'ym_sp_miealiei', 'ym_re_miealiei', 'ym_youyi', 'ym_xilin', 'ym_xinzhi', 'hyyz_ys_yanfei', 'hyyz_xt_huanyv_qingque', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//a平凡，天牢，强度拉稀
 		lib.rank.rarity['junk'].addArray([
-			'hyyz_ys_kalilu', 'hyyz_b3_saixiliya', 'hyyz_xt_wo_danheng', 'hyyz_xt_natasha', 'hyyz_ys_leidianzhen', 'hyyz_ys_sp_furina', 'hyyz_ys_sp_zhongli', 'hyyz_ys_sp_nahida', 'hyyz_xt_sp_botiou', 'hyyz_b3_sp_meibiwusi', 'hyyz_xt_wangguiren', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',
+			'hyyz_ys_kalilu', 'hyyz_b3_saixiliya', 'hyyz_xt_wo_danheng', 'hyyz_xt_natasha', 'hyyz_ys_leidianzhen', 'hyyz_ys_sp_furina', 'hyyz_ys_sp_zhongli', 'hyyz_ys_sp_nahida', 'hyyz_xt_xunlie_botiou', 'hyyz_b3_sp_meibiwusi', 'hyyz_xt_wangguiren', 'hyyz_b3_ying', '', '', '', '', '', '', '', '', '',
 		])
 	}
 	if ('武将包') {

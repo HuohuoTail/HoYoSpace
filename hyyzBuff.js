@@ -1623,8 +1623,23 @@ export const hyyzBuffx = async function () {
 			}
 			return cards;
 		}
+		/**获取有图案的花色
+		 * @param { Card | String } suit
+		 * @param { Player } player
+		 */
+		get.hyyzSuit = function (suit, player) {
+			if (get.itemtype(suit) == 'card') suit = get.suit(suit, player)
+			let map = {
+				heart: '♥️',
+				club: '♣️',
+				spade: '♠️',
+				diamond: '♦️',
+				none: '◈'
+			}
+			return map[suit]
+		}
 	}
-	if ('修改自己回合的阶段') {//player.hyyz_phaseList=[]
+	if ('修改自己回合的阶段') {//设置player.hyyz_phaseList=[]后，自动在回合开始前替换
 		/**部分武将修改自己回合的阶段 */
 		lib.skill._hyyz_phaseList = {
 			charlotte: true,
@@ -1674,6 +1689,33 @@ export const hyyzBuffx = async function () {
 			});
 			return cardx;
 		}
+	}
+	if ('获得勾玉') {
+		lib.element.player.addGouyu = function () {
+			var next = game.createEvent("addGouyu", false);//false不设置时机
+			next.player = this;
+			next.setContent("addGouyu");
+			return next;
+		};
+		lib.element.content.addGouyu = function () {
+			if (lib.config.background_audio) {
+				game.playAudio("effect", "recover");
+			}
+			game.broadcast(function () {
+				if (lib.config.background_audio) {
+					game.playAudio("effect", "recover");
+				}
+			});
+			game.broadcastAll(function (player) {
+				if (lib.config.animation && !lib.config.low_performance) {
+					player.$recover();
+				}
+			}, player);
+			player.$damagepop(num, "wood");
+			game.log(player, "获得了" + get.cnNumber(1) + "枚勾玉");
+			player.maxHp += 1;
+			player.changeHp(1, false);
+		};
 	}
 	if ('体力下限') {//player.hyyz_hyyzminHp
 		//一般人体力下限是1，hp<=0濒死；hp>=1存活

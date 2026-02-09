@@ -344,6 +344,7 @@ const characters = {
 			derivation: 'hyyzshengxi',
 		},
 		hyyzshengxi: {
+			audio: 2,
 			mark: true,
 			marktext: "生",
 			intro: {
@@ -419,7 +420,7 @@ const characters = {
 	2307: {
 		hyyz_xt_luocha: ['罗刹', ["male", "hyyz_xt", 3, ["hyyzzanghua", "hyyzxuanxin"], ['zhu',]], '紫灵谷的骊歌', '金发俊雅的年轻人，背着巨大的棺棹。身为天外行商的他，不幸被卷入仙舟「罗浮」的星核危机，一身精湛医术莫名有了用武之地。'],
 		hyyzzanghua: {
-			audio: 4,
+			audio: 5,
 			logAudio(event, player) {
 				return player.storage.hyyzzanghua ? [
 					'ext:忽悠宇宙/asset/character/audio/hyyzzanghua3.mp3',
@@ -532,11 +533,13 @@ const characters = {
 							.set('ai', () => get.attitude2(target) > 0 ? 1 : 0)
 							.forResult();
 						if (index == 0) {
+							game.hyyzSkillAudio('hyyzzanghua', 3, 4, 5)
 							await target.hyyzQvsan();
 							while (target.hp >= target.getDamagedHp()) {
 								await target.loseHp();
 							}
 						} else if (index == 1) {
+							game.hyyzSkillAudio('hyyzzanghua', 1, 2)
 							await target.hyyzJinghua();
 							while (target.hp <= target.getDamagedHp()) {
 								await target.recover();
@@ -1580,7 +1583,7 @@ const characters = {
 					})
 					.set('list', list)
 					.forResult();
-				event.result = {
+				if (targets) event.result = {
 					bool: true,
 					cost_data: list.length,
 					targets: targets
@@ -1607,10 +1610,19 @@ const characters = {
 					charlotte: true,
 					async content(event, trigger, player) {
 						player.storage.hyyzceli.add(trigger.name);
+						let map = {
+							judge: '判',
+							draw: '摸',
+							useCard: '用',
+							discard: '弃'
+						}
+
+						player.addTip('hyyzceli', player.storage.hyyzceli.map(i => map[i]).join())
 						player.when({
 							global: 'phaseAfter'
 						}).then(() => {
 							player.storage.hyyzceli = [];
+							player.removeTip('hyyzceli')
 						})
 					},
 				},
@@ -1774,19 +1786,20 @@ const characters = {
 					return distance - from.getStorage('menghengyue', 0)
 				},
 			},
-			intro: {
-				name: "横跃",
-				content: "已记录花色：$",
-				onunmark: true,
-			},
 			locked: true,
 			trigger: {
 				player: "useCardAfter",
 			},
 			filter(event, player) {
-				return player.isPhaseUsing() && !player.hasHistory('useCard', (evt) => {
+				if (!player.isPhaseUsing()) return false;
+				if (!game.hasPlayer((current) => get.distance(player, current) == 1 && current.countGainableCards(player, 'he') > 0)) return false
+				let suits = []
+				const history = player.getHistory('useCard', (evt) => {
+					suits.add(get.hyyzSuit(evt.card))
 					return evt.card != event.card && get.suit(evt.card) == get.suit(event.card)
-				}) && game.hasPlayer((current) => get.distance(player, current) == 1 && current.countGainableCards(player, 'he') > 0);
+				})
+				player.addTip('menghengyue', '横跃' + suits.unique().join(''))
+				return !history.length
 			},
 			async cost(event, trigger, player) {
 				if (game.countPlayer(current => {
@@ -2360,7 +2373,6 @@ const characters = {
 				player: ['recoverEnd', 'drawAfter', 'gainAfter'],
 				global: ['loseAfter', 'loseAsyncAfter'],
 			},
-			direct: true,
 			filter(event, player) {
 				if (player.storage.mengyuehua.length == 0) return false;
 				var list = player.storage.mengyuehua;
@@ -2393,8 +2405,7 @@ const characters = {
 					}
 				}
 			},
-			content() {
-				'step 0'
+			async cost(event, trigger, player) {
 				switch (trigger.name) {
 					case 'damage': {
 						if (trigger.nature == 'fire') {
@@ -2432,8 +2443,8 @@ const characters = {
 						break;
 					}
 				}
-				player.syncStorage('mengyuehua');
-				'step 1'
+				player.markSkill('mengyuehua');
+				//
 				var list = [
 					'对一名角色造成1点火焰伤害',
 					'回复1点体力',
@@ -2518,92 +2529,95 @@ const characters = {
 						}
 					}
 				});
-				'step 2'
-				if (result.bool) {
-					player.logSkill('mengyuehua');
-					var map = [
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(1);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('月华，对一名角色造成1点火焰伤害', true)
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'fire');
-								});
-							event.nature = 'fire';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(2);
-							player.syncStorage('mengyuehua');
-							player.recover();
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(3);
-							player.syncStorage('mengyuehua');
-							player.draw();
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(4);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('月华，对一名角色造成1点冰冻伤害', true)
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'ice');
-								});
-							event.nature = 'ice';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(5);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('月华：弃置一名角色区域内的一张牌', function (card, player, target) {
-								return target.countDiscardableCards(player, 'hej');
-							}, true);
-							event.do = 'discardPlayerCard';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(6);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('月华：获得一名角色区域内的一张牌', function (card, player, target) {
-								return target.countGainableCards(player, 'hej') && target != player;
-							}, true);
-							event.do = 'gainPlayerCard';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(7);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('月华，对一名角色造成1点雷电伤害')
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'thunder');
-								}, true);
-							event.nature = 'thunder';
-						},
-					];
-					for (var i = 0; i < result.links.length; i++) {
-						game.log('#g【月华】', player, '执行并禁用了', '#y选项' + get.cnNumber(result.links[i] + 1, true));
-						map[result.links[i]](trigger, player);
+				const { links } = await next.forResult()
+				if (links) {
+					event.result = {
+						bool: true,
+						cost_data: links
 					}
-					if (result.links.includes(1) || result.links.includes(2)) event.finish();
-				} else event.finish();
-				'step 3'
-				var target = result.targets[0];
-				if (event.nature) {
-					target.damage(event.nature);
-				} else if (event.do) {
-					player[event.do](target, true);
 				}
 			},
-			group: 'mengyuehua_clear',
-			subSkill: {
-				clear: {
-					trigger: {
-						global: 'phaseEnd'
-					},
-					direct: true,
-					content() {
-						player.storage.mengyuehua = [];
-						for (var i of player.storage.mengyuehua2) player.storage.mengyuehua.push(i);
+			async content(event, trigger, player) {
+				const links = event.cost_data;
+				var map = [
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(1);
 						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('月华，对一名角色造成1点火焰伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'fire');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('fire')
+						}
 					},
-					sub: true,
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(2);
+						player.syncStorage('mengyuehua');
+						await player.recover();
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(3);
+						player.syncStorage('mengyuehua');
+						await player.draw();
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(4);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('月华，对一名角色造成1点冰冻伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'ice');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('ice')
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(5);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player
+							.chooseTarget('月华：弃置一名角色区域内的一张牌', function (card, player, target) {
+								return target.countDiscardableCards(player, 'hej');
+							}, true)
+							.forResult()
+						if (targets) {
+							await player.discardPlayerCard(targets[0], 'he', true)
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(6);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('月华：获得一名角色区域内的一张牌', function (card, player, target) {
+							return target.countGainableCards(player, 'hej') && target != player;
+						}, true)
+							.forResult()
+						if (targets) {
+							await player.gainPlayerCard(targets[0], 'he', true)
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(7);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('月华，对一名角色造成1点雷电伤害')
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'thunder');
+							}, true)
+							.forResult()
+						if (targets) {
+							await targets[0].damage('thuner')
+						}
+					},
+				];
+				for (var i = 0; i < result.links.length; i++) {
+					game.log('#g【月华】', player, '执行并禁用了', '#y选项' + get.cnNumber(result.links[i] + 1, true));
+					await map[links[i]](trigger, player);
 				}
+				player.when({ global: 'phaseAfter' }).then(() => {
+					player.storage.mengyuehua = player.storage.mengyuehua2.slice()
+					player.markSkill('mengyuehua')
+				})
 			}
 		},
 		mengliushang: {
@@ -2611,13 +2625,11 @@ const characters = {
 			trigger: {
 				player: ["useCard", "respond"],
 			},
-			preHidden: true,
 			filter(event, player) {
 				return event.respondTo && event.respondTo[0] != player;
 			},
-			content() {
-				'step 0'
-				var list = [
+			async cost(event, trigger, player) {
+				let list = [
 					'对一名角色造成1点火焰伤害',
 					'回复1点体力',
 					'摸一张牌',
@@ -2700,84 +2712,98 @@ const characters = {
 							})) return num - 1;
 						}
 					}
-				});
-				'step 1'
-				if (result.bool) {
-					player.logSkill('mengliushang');
-					var map = [
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(1);
-							player.storage.mengyuehua2.remove(1);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('流裳，对一名角色造成1点火焰伤害', true)
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'fire');
-								});
-							event.nature = 'fire';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(2);
-							player.storage.mengyuehua2.remove(2);
-							player.syncStorage('mengyuehua');
-							player.recover();
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(3);
-							player.storage.mengyuehua2.remove(3);
-							player.syncStorage('mengyuehua');
-							player.draw();
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(4);
-							player.storage.mengyuehua2.remove(4);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('流裳，对一名角色造成1点冰冻伤害', true)
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'ice');
-								});
-							event.nature = 'ice';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(5);
-							player.storage.mengyuehua2.remove(5);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('流裳：弃置一名角色区域内的一张牌', function (card, player, target) {
-								return target.countDiscardableCards(player, 'hej');
-							}, true);
-							event.do = 'discardPlayerCard';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(6);
-							player.storage.mengyuehua2.remove(6);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('流裳：获得一名角色区域内的一张牌', function (card, player, target) {
-								return target.countGainableCards(player, 'hej') && target != player;
-							}, true);
-							event.do = 'gainPlayerCard';
-						},
-						function (trigger, player) {
-							player.storage.mengyuehua.remove(7);
-							player.storage.mengyuehua2.remove(7);
-							player.syncStorage('mengyuehua');
-							player.chooseTarget('流裳，对一名角色造成1点雷电伤害')
-								.set('ai', function (target) {
-									return get.damageEffect(target, player, player, 'thunder');
-								}, true);
-							event.nature = 'thunder';
-						},
-					];
-					for (var i = 0; i < result.links.length; i++) {
-						game.log(player, '选择了', '#g【月华】', '的', '#y选项' + get.cnNumber(result.links[i] + 1, true));
-						map[result.links[i]](trigger, player);
+				})
+				const { links } = await next.forResult()
+				if (links) {
+					event.result = {
+						bool: true,
+						cost_data: links
 					}
-					if (result.links.includes(1) || result.links.includes(2)) event.finish();
-				} else event.finish();
-				'step 2'
-				var target = result.targets[0];
-				if (event.nature) {
-					target.damage(event.nature);
-				} else if (event.do) {
-					player[event.do](target, true);
+				}
+			},
+			async content(event, trigger, player) {
+				const links = event.cost_data;
+				const map = [
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(1);
+						player.storage.mengyuehua2.remove(1);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点火焰伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'fire');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('fire')
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(2);
+						player.storage.mengyuehua2.remove(2);
+						player.syncStorage('mengyuehua');
+						await player.recover();
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(3);
+						player.storage.mengyuehua2.remove(3);
+						player.syncStorage('mengyuehua');
+						await player.draw();
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(4);
+						player.storage.mengyuehua2.remove(4);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点冰冻伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'ice');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('ice')
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(5);
+						player.storage.mengyuehua2.remove(5);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player
+							.chooseTarget('流裳：弃置一名角色区域内的一张牌', function (card, player, target) {
+								return target.countDiscardableCards(player, 'hej');
+							}, true)
+							.forResult()
+						if (targets) {
+							await player.discardPlayerCard(targets[0], 'he', true)
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(6);
+						player.storage.mengyuehua2.remove(6);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('流裳：获得一名角色区域内的一张牌', function (card, player, target) {
+							return target.countGainableCards(player, 'hej') && target != player;
+						}, true)
+							.forResult()
+						if (targets) {
+							await player.gainPlayerCard(targets[0], 'he', true)
+						}
+					},
+					async function (trigger, player) {
+						player.storage.mengyuehua.remove(7);
+						player.storage.mengyuehua2.remove(7);
+						player.syncStorage('mengyuehua');
+						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点雷电伤害')
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'thunder');
+							}, true)
+							.forResult()
+						if (targets) {
+							await targets[0].damage('thuner')
+						}
+					},
+				];
+				for (var i = 0; i < links.length; i++) {
+					game.log('#g【流裳】', player, '执行并移除了', '#g【月华】', '的', '#y选项' + get.cnNumber(links[i] + 1, true));
+					await map[links[i]](trigger, player);
 				}
 			}
 		},
@@ -3416,23 +3442,18 @@ const characters = {
 			init(player) {
 				player.storage.mengmushou = 0;
 			},
-			mark: true,
-			intro: {
-				content: '你已帮助别人筹集的善款：#'
-			},
 			trigger: {
 				global: 'gainAfter',
 			},
 			filter(event, player) {
 				return event.player.hasSkill('mengshuguang');
 			},
-			charlotte: true,
 			forced: true,
 			dutySkill: true,
 			async content(event, trigger, player) {
 				player.storage.mengmushou += trigger.cards.length;
-				game.log('#y捐款+' + trigger.cards.length)
-				player.markSkill('mengmushou')
+				game.log('#g【幕手】', '捐款+' + trigger.cards.length)
+				player.addTip('mengmushou', '幕手' + player.storage.mengmushou)
 			},
 			group: ['mengmushou_achieve', 'mengmushou_fail'],
 			subSkill: {
@@ -3449,6 +3470,7 @@ const characters = {
 					async content(event, trigger, player) {
 						game.log(player, '成功完成使命');
 						player.awakenSkill('mengmushou');
+						player.removeTip('mengmushou')
 						await player.gainMaxHp(2);
 						await player.recover(2);
 						await player.addSkills('mengshentui');
@@ -3465,6 +3487,7 @@ const characters = {
 					async content(event, trigger, player) {
 						game.log(player, '使命失败');
 						player.awakenSkill('mengmushou');
+						player.removeTip('mengmushou')
 						await player.loseMaxHp(2);
 						await trigger.player.recover(2);
 						player.addSkills('mengshentui');
@@ -3741,7 +3764,7 @@ const characters = {
 		"mengwenmou_info": "稳谋|当你使用或打出牌时，若你手牌中有此牌的花色，此牌不计入使用次数；否则，摸一张牌。",
 		"menggutu_info": "固图|锁定技，你响应其他角色的牌时对自己发动一次〖恢拓〗。",
 
-		//hyyz_b3_lizhilvzhe: ['理之律者', ["female", "shen", 3, ["mengsheyuan", "mengkanming"], []], '绯色愫', ''],
+		hyyz_b3_lizhilvzhe: ['理之律者', ["female", "shen", 3, ["mengsheyuan", "mengkanming"], []], '绯色愫', '尾巴已对技能〖涉渊〗〖堪名〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengsheyuan: {
 			audio: 3,
 			onremove: true,
@@ -3750,156 +3773,106 @@ const characters = {
 				mark(dialog, content, player) {
 					if (player == game.me || player.isUnderControl()) {
 						dialog.add([player.getStorage('mengsheyuan'), 'vcard']);
-						var card = player.getStorage('mengsheyuan')[player.getStorage('mengsheyuan').length - 1];
-						var type = get.type(card, 'trick');
-						dialog.addText('最后一张记录牌：');
-						dialog.addSmall([[card], 'vcard']);
-						dialog.addText('类型：' + get.translation(type));
-						var str = '失去的牌数：<br>';
-						str += '<li>相同类型：' + player.storage.mengsheyuan_lose[0] + '/1';
-						str += '<li>不同类型：' + player.storage.mengsheyuan_lose[1] + '/2';
-						dialog.addText(str);
+						dialog.addText('包含的类型')
+						dialog.addText(player.getStorage('mengsheyuan').map(name => get.translation(get.type2(name))).unique().join('、'))
 					} else {
 						dialog.addText('偷看女孩子的记录可是不礼貌的哦！');
 					}
 				},
 			},
 			trigger: {
-				global: 'phaseEnd',
+				global: 'phaseAfter',
 			},
 			filter(event, player) {
 				if (event.player == player) return false;
-				return game.getGlobalHistory('cardMove', evt => {
-					if (evt.name == 'lose' && evt.position == ui.discardPile || evt.name == 'cardsDiscard') {
-						for (var i of evt.cards.filterInD('d')) {
-							if (get.type(i) != 'equip') return true;
-						}
-					}
-				});
+				return get.centralCards().some(card => get.type2(card) != 'equip') ||
+					player.getStorage('mengsheyuan')?.some(name => !['trick', 'equip', 'basic'].includes(get.type2(name))) && !game.getGlobalHistory('everything', (evt) => evt.player == player && evt.name == "disableEquip").length
 			},
 			frequent: true,
 			async content(event, trigger, player) {
-				var cards = [];
-				game.getGlobalHistory('cardMove', evt => {
-					if (evt.name == 'lose' && evt.position == ui.discardPile || evt.name == 'cardsDiscard') {
-						for (var i of evt.cards.filterInD('d')) {
-							if (get.type(i) != 'equip') {
-								cards.push(i);
-							}
-						}
-					}
-				});
-				if (cards.length) {
-					var card = cards.randomGet();
-					await player.showCards(card);
-					if (player.storage.mengsheyuan && player.storage.mengsheyuan.length > 0 && player.storage.mengsheyuan.includes(card.name)) player.unmarkAuto('mengsheyuan', [card.name]);
-					player.markAuto('mengsheyuan', [card.name]);
-					game.log('【涉渊】记录了', '#g【' + get.translation(card.name) + '】');
-					player.addSkill('mengsheyuan_lose');
-					player.storage.mengsheyuan_lose = [0, 0];
-					player.syncStorage('mengsheyuan_lose');
+				const names = get.centralCards()
+					.filter(i => get.type(i) != 'equip')
+					.map(i => get.name(i))
+					.unique(),
+					name = names.randomGet();
+				player.storage.mengsheyuan ??= [];
+				player.storage.mengsheyuan.add(name);
+				game.log('【涉渊】记录了', '#g【' + get.translation(name) + '】');
+				player.markSkill(event.name)
+
+				if (!game.getGlobalHistory('everything', (evt) => evt.player == player && evt.name == "disableEquip").length) {
+					const types = player.getStorage('mengsheyuan').map(i => get.type(i))
+					let card1 = get.cardPile((card) => !types.includes(get.type2(card)));
+					if (card1) await player.gain(card1, 'gain2');
+					let card2 = get.cardPile((card) => !types.includes(get.type2(card)));
+					if (card2) await player.gain(card2, 'gain2');
 				}
 			},
+			subfrequent: ['lose'],
+			group: 'mengsheyuan_lose',
 			subSkill: {
 				lose: {
-					init(player) {
-						player.storage.mengsheyuan_lose = [0, 0];
-					},
 					trigger: {
 						player: "loseAfter",
 						global: ["equipAfter", "addJudgeAfter", "gainAfter", "loseAsyncAfter", "addToExpansionAfter"],
 					},
-					silent: true,
+					frequent: true,
 					filter(event, player) {
-						if (player.countDisabled() >= 5) return false;
+						if (!player.hasEnabledSlot()) return false;
+						if (!player.getStorage('mengsheyuan')?.length) return false
 						if (event.name == 'gain' && event.player == player) return false;
 						var evt = event.getl(player);
-						return evt && evt.cards2 && evt.cards2.length > 0;
+						const lose = evt.cards2;
+						if (!evt || !lose) return false
+						const storage = player.getStorage('mengsheyuan'), types = storage.map(name => get.type2(name));
+						return lose.some(card => storage.includes(get.name(card)) || types.includes(get.type2(card)))
 					},
-					content() {
-						'step 0'
-						event.type = get.type(player.getStorage('mengsheyuan')[player.getStorage('mengsheyuan').length - 1], 'trick');//记录类型
-						var evt = trigger.getl(player);
-						for (var i of evt.cards2) {
-							if (get.type(i, 'trick') == event.type) {
-								player.storage.mengsheyuan_lose[0]++;
-							}
-							else {
-								player.storage.mengsheyuan_lose[1]++;
-							};
+					async cost(event, trigger, player) {
+						const lose = trigger.getl(player).cards2;
+						const storage = player.getStorage('mengsheyuan'), types = storage.map(name => get.type2(name));
+						let includesType = 0, includesName = 0;
+						for (let card of lose) {
+							if (types.includes(get.type2(card))) includesType = 1;
+							if (storage.includes(get.name(card))) includesName = 2;
 						}
-						player.syncStorage('mengsheyuan_lose');
-						'step 1'
-						if (player.storage.mengsheyuan_lose[0] > 0 && player.countDisabled() < 5) {
-							event.num = 1;
-						} else if (player.storage.mengsheyuan_lose[1] > 1 && player.countDisabled() < 5) {
-							event.num = 2;
-						} else event.finish();
-						'step 2'
-						var list = [];
-						for (var i = 1; i <= 5; i++) {
-							if (player.hasEnabledSlot(i)) list.push('equip' + i);
-						}
-						list.sort();
-						player.chooseControl(list, 'cancel2')
-							.set('prompt', '请选择废除一个装备栏')
-							.set('ai', function (evevt, player, list) {
-								for (var i = 1; i <= 5; i++) {
-									if (_status.event.list.includes('equip' + i) && !player.getEquip(i)) return 'equip' + i;
-								}
-								return _status.event.list.randomGet();
-							})
-							.set('list', list);
-						'step 3'
-						if (result.control && result.control != 'cancel2') {
-							game.hyyzSkillAudio('mengsheyuan', 3)
-							player.storage.mengsheyuan_lose[event.num - 1] -= event.num;
-							delete event.num;
-							player.disableEquip(result.control);
-							if (!player.hasSkill('mengsheyuan_usable')) {
-								event.notype = event.type == 'basic' ? 'trick' : 'basic';
-								var gains = [];
-								while (gains.length < 2) {
-									var card = get.cardPile(function (card) {
-										return get.type(card, 'trick') == event.notype && !gains.includes(card);
-									});
-									if (card) gains.push(card);
-								}
-								if (gains.length == 2) player.gain(gains, 'gain2', 'log');
+						let num = Math.min(player.countEnabledSlot(), (includesName + includesType))
+						if (num > 0) {
+							event.result = {
+								bool: true,
+								cost_data: num
 							}
-							player.addTempSkill('mengsheyuan_usable');
-							event.goto(1);
-						} else event.finish();
+						}
+					},
+					async content(event, trigger, player) {
+						let num = event.cost_data;
+						while (num > 0 && player.countEnabledSlot() > 0) {
+							num--;
+							await player.chooseToDisable()
+						}
 					}
 				},
-				usable: {
-					charlotte: true,
-					sub: true,
-				}
 			}
 		},
 		mengkanming: {
 			audio: 2,
 			enable: ["chooseToUse",],
 			filter(event, player) {
-				if (!player.getStorage('mengsheyuan').length || player.hasSkill('mengkanming_used')) return false;
-				if (player.countDisabled() < 5 || !player.countCards('hse')) return false;
+				if (!player.getStorage('mengsheyuan')?.length) return false;
+				if (player.hasEnabledSlot() || !player.countCards('hse')) return false;
 				if (event.name == 'chooseToRespond' && event.responded) return false;
-				for (var i of player.getStorage('mengsheyuan')) {
-					if (get.type(i) != 'equip' && event.filterCard({ name: i, isCard: true }, player, event)) return true;
-				}
-				return false;
+				return player.getStorage('mengsheyuan').some(name => event.filterCard({ name: name, isCard: true }, player, event))
 			},
+			usable: 1,
 			chooseButton: {
 				dialog(event, player) {
 					var list = [];
 					var names = player.getStorage('mengsheyuan');
 					for (var i of names) {
 						if (i == 'sha') {
+							if (!event.filterCard({ name: i }, player, event)) continue;
 							list.push(['基本', '', 'sha']);
 							for (var j of lib.inpile_nature) {
-								//if (event.filterCard({ name: i, nature: j }, player, event))
-								list.push(['基本', '', 'sha', j]);
+								if (event.filterCard({ name: i, nature: j }, player, event)) list.push(['基本', '', 'sha', j]);
 							}
 						}
 						else if (get.type2(i) == 'trick') list.push(['锦囊', '', i]);
@@ -3922,7 +3895,7 @@ const characters = {
 				backup(links, player) {
 					return {
 						audio: 'mengkanming',
-						filterCard() { return true },
+						filterCard: true,
 						check(card) {
 							return 10 - get.value(card);
 						},
@@ -3932,9 +3905,7 @@ const characters = {
 							nature: links[0][3],
 							isCard: false,
 						},
-						precontent() {
-							player.addTempSkill('mengkanming_used');
-						},
+						async precontent(event, trigger, player) { },
 					}
 				},
 				prompt(links, player) {
@@ -3942,71 +3913,45 @@ const characters = {
 				},
 			},
 			hiddenCard(player, name) {
-				if (player.countCards('hes') && player.getStorage('mengsheyuan').includes(name)) return true;
-				return false;
+				return player.countCards('hes') && player.getStorage('mengsheyuan', []).includes(name)
 			},
-			group: ['mengkanming_log', 'mengkanming_after'],
+			group: ['mengkanming_after'],
 			subSkill: {
-				used: {
-					charlotte: true,
-				},
-				log: {
-					trigger: {
-						global: "changeHp",
-					},
-					charlotte: true,
-					silent: true,
-					filter(event, player) {
-						return event.getParent(2).skill == 'mengkanming_backup' && !player.hasSkill('mengkanming_log2');
-					},
-					content() {
-						game.log(trigger.player, '改变了体力值', '#g【堪名】②', '失效')
-						player.addTempSkill('mengkanming_log2');
-					},
-				},
-				log2: {
-					charlotte: true,
-				},
 				after: {
+					audio: 'mengkanming',
 					trigger: {
 						player: 'useCardAfter'
 					},
+					forced: true,
 					filter(event, player) {
-						return event.skill == 'mengkanming_backup' && !player.hasSkill('mengkanming_log2');
+						if (event.skill != "mengkanming_backup") return false;
+						return !game.getGlobalHistory('changeHp', (evt) => {
+							return evt.num != 0 && evt.getParent().card == event.card
+						}).length
 					},
-					direct: true,
-					content() {
-						'step 0'
-						if (player.hasSkill('mengkanming_log2')) {
-							player.removeSkill('mengkanming_log2');
-						}
-						'step 1'
-						event.count = 0;
-						'step 2'
-						if (player.countDisabledSlot() > 0) {
+					async content(event, trigger, player) {
+						let num = 0, bool = true;
+						while (player.hasDisabledSlot() && bool) {
 							var list = [];
 							for (var i = 1; i <= 5; i++) {
-								if (player.hasDisabledSlot(i)) list.push('equip' + i);
+								if (player.hasDisabledSlot(i)) {
+									list.push("equip" + i);
+								}
 							}
-							player.chooseControl(list, 'cancel2')
-								.set('prompt', '堪名：是否恢复一个装备栏？')
-								.set('ai', function (evevt, player, list) {
-									return _status.event.list.randomGet();
-								})
-								.set('list', list);
-						} else event.finish()
-						'step 3'
-						if (result.control && result.control != 'cancel2') {
-							game.hyyzSkillAudio('mengkanming', 1, 2)
-							player.enableEquip(result.control);
-							event.count++;
-							if (event.count >= 2) {
-								event.count -= 2;
-								player.chooseDrawRecover(true);
+							list.add('cancel2')
+							const next = player.chooseControl(list);
+							next.set("prompt", "是否恢复一个装备栏？");
+							next.set('ai', (event, player) => list[0])
+							const result = await next.forResult();
+							if (result.control != 'cancel2') {
+								num++;
+								await player.enableEquip(result.control);
+							} else {
+								bool = false
 							}
-							event.goto(2)
-						};
-
+						}
+						await player.draw(num)
+						await player.recover(Math.floor(num / 2))
 					}
 				}
 			},
@@ -4026,8 +3971,8 @@ const characters = {
 				},
 			},
 		},
-		"mengsheyuan_info": "涉渊|其他角色的回合结束后，你随机展示一张本回合进入弃牌堆的非装备牌，然后重新记录此牌。若如此做，此后你每失去1/2张与〖涉渊〗最后一张记录的牌类型相同/不同的牌后，可以废除一个装备栏（若装备栏均被废除，则不进行失去牌的记录）。若本回合未以此法废除过装备栏，你获得牌堆中两张与〖涉渊〗最后一张记录的牌类型不同的非装备牌。",
-		"mengkanming_info": "堪名|每回合限一次，若你的装备栏均已被废除，你可以将一张牌当〖涉渊〗记录的牌使用。此牌结算结束后，若没有角色因此牌改变体力值，你复原至少一个装备栏。每以此法复原两个装备栏，你回复1点体力或摸一张牌。",
+		"mengsheyuan_info": "涉渊|其他角色的回合结束后，你记录" + get.hyyzIntroduce('中央区') + "的一张随机非装备牌名；若本回合未废除过装备栏，你获得两张〖涉渊〗记录牌中缺失类型的牌。你失去牌后，若〖涉渊〗记录牌中包含此牌的类型/牌名，你废除1/2个装备栏。",
+		"mengkanming_info": "堪名|每回合限一次，若你的装备栏均已废除，你可以将一张牌当〖涉渊〗记录牌使用。结算结束后，若没有角色因此牌改变体力值，你复原任意装备栏；每复原1/2个，你摸一张牌/回复1点体力。",
 
 		hyyz_b3_sushang: ['李素裳', ["female", "hyyz_b3", 3, ["mengzhejian", "mengtaixu", "mengjianxin"], []], '微雨', '尾巴已对技能〖太虚〗进行修改，若有其他方案可私信尾巴修改。'],//
 		mengzhejian: {
@@ -4181,6 +4126,7 @@ const characters = {
 				global: 'damageEnd'
 			},
 			filter(event, player) {
+				player.removeTip('mengpingji_old')
 				if (!event.source) return false;
 				return player.storage.mengpingji_old || player.countCards('he');
 			},
@@ -4857,7 +4803,12 @@ const characters = {
 				await player.addhyyzBuff('hyyzBuff_zhongshang');
 				await target.damage();
 
-				player.addTempSkill('mengquansheng', { player: 'phaseBegin' })
+				player.addSkill('mengquansheng')
+				player.addTip('mengquansheng', '全盛姿态')
+				player.when({ player: "phaseBegin" }).then(() => {
+					player.removeSkill('mengquansheng')
+					player.removeTip('mengquansheng')
+				})
 			},
 			ai: {
 				order: 10,
@@ -4878,6 +4829,7 @@ const characters = {
 			trigger: {
 				source: 'damageSource'
 			},
+			charlotte: true,
 			forced: true,
 			async content(event, trigger, player) {
 				game.log('#g全盛姿态，' + get.translation(player) + '恢复1点体力');
@@ -4888,46 +4840,14 @@ const characters = {
 		"mengpijing_info": "辟径|出牌阶段限一次，若你没有护甲，你失去1点体力并获得2点护甲；否则，失去所有护甲并摸等量的牌。<br><span class=firetext>全盛姿态：此技改为出牌阶段限两次，且收益的数值+1。</span>",
 		"mengaoan_info": "傲岸|出牌阶段限一次，你可以失去一半体力（向上取整），直到你的下回合开始进入全盛姿态。若如此做，你" + get.hyyzIntroduce('重伤') + "并对其他角色造成一点伤害。<br><span class=firetext>全盛姿态：你造成伤害后回复一点体力。</span>",
 	},
-	2310: {//开拓者
-		//hyyz_xt_kaituozhe: ['开拓者', ["female", "hyyz_xt", 4, ["hyyzchuxing"], []], '紫灵谷的骊歌', '你记得不多。<br>你并非来自此地，也并非来自彼方，你本不去往任意一处——<br>直到模糊的声在你耳边吹拂，那悲伤爱怜的劝导，似是而非的催促……<br>种子扎根。你睁开双眼，那说话的人已不在。<br>只是声音愈来愈多愈清晰。<br>有无虑的关照，有镇静的劝告，有毅然的坚持，有温柔的点拨……<br>你看到锦线正织成明日。<br>巨大的兽自无垠降下，<br>金色的瞳从黑夜俯视，<br>你也不再被过去抛弃。<br>你还将开拓漫长旅途，<br>踏过的荆棘都成了路。<br>列车鸣笛，愿你抵达将至的未来<br>——以你自己的意志。'],
-		hyyzchuxing: {
-			trigger: {
-				global: ["phaseBefore", "gainPathBegin"],
-				player: ["enterGame"],
-			},
-			forced: true,
-			filter(event, player) {
-				if (event.name == 'gainPath') {
-					return event.paths.length > 0;
-				}
-				return (event.name != 'phase' || game.phaseNumber == 0);
-			},
-			async content(event, trigger, player) {
-				if (trigger.name == 'gainPath') {
-					let skills = [];
-					for (let path of trigger.paths) {
-						if (path in lib.skill.hyyzchuxing.map) await player.addSkills(lib.skill.hyyzchuxing.map[path])
-					}
-				}
-				else player.chooseUseTarget({ name: 'zhulu_card', isCard: true }, true)
-			},
-			map: {
-				hyyz_kaituo: [''],
-				hyyz_huimie: ['hyyzsheming'],
-				hyyz_xunlie: [''],
-				hyyz_zhishi: [''],
-				hyyz_tongxie: ['hyyzzhulian'],
-				hyyz_cunhu: ['hyyzzhongwang'],
-				hyyz_xvwu: [''],
-				hyyz_fengrao: [''],
-				hyyz_jiyi: [''],
-			},
-			derivation: ['', 'hyyzsheming', '', '', 'hyyzzhulian', 'hyyzzhongwang', '', ''],
-		},
-		hyyzchuxing_info: `初行|锁定技，游戏开始时，你视为使用【逐鹿天下】。一名角色激活命途后，你获得对应技能。<span class=\"text\" style=\"font-family: yuanli\"><br>毁灭：舍命<br>存护：众望<br>同谐：翥跹</span>`,
+	2310: {
+		hyyz_xt_huimie_kaituozhe: ['开拓者',
+			["female", "hyyz_xt", 4, ["hyyzsheming", "hyyzhuimie"], []],
+			'紫灵谷的骊歌',
+			'尾巴已对技能〖翥跹〗〖毁灭〗进行修改，若有其他方案可私信尾巴修改。<br>你记得不多。<br>你并非来自此地，也并非来自彼方，你本不去往任意一处——<br>直到模糊的声在你耳边吹拂，那悲伤爱怜的劝导，似是而非的催促……<br>种子扎根。你睁开双眼，那说话的人已不在。<br>只是声音愈来愈多愈清晰。<br>有无虑的关照，有镇静的劝告，有毅然的坚持，有温柔的点拨……<br>你看到锦线正织成明日。<br>巨大的兽自无垠降下，<br>金色的瞳从黑夜俯视，<br>你也不再被过去抛弃。<br>你还将开拓漫长旅途，<br>踏过的荆棘都成了路。<br>列车鸣笛，愿你抵达将至的未来<br>——以你自己的意志。'
+		],
 		hyyzsheming: {
-			pathSkill: true,
-			audio: 4,
+			audio: 5,
 			cardSuit(list) {
 				if (!list) return [];
 				var suits = [];
@@ -4944,11 +4864,12 @@ const characters = {
 			usable: 1,
 			filterTarget: lib.filter.notMe,
 			async content(event, trigger, player) {
+				const targetx = event.targets[0];
 				let cardx = [];
-				const { cards: cards1 } = await event.target
+				const { cards: cards1 } = await targetx
 					.chooseToDiscard(2, 'he', '弃置两张牌，否则受到' + get.translation(player) + '造成的1点伤害', '提示：尽可能选择花色相同的两张牌')
 					.set('ai', function (card) {
-						var target = _status.event.player;
+						let target = _status.event.player;
 						if (target.hp > 3 || ['jiu', 'tao'].includes(card.name)) return -1;
 						if (target.hp < 2 && target.countCards('he') >= 2) return 100;
 						var value = get.value(card);
@@ -4959,50 +4880,47 @@ const characters = {
 					})
 					.forResult();
 				if (cards1) cardx.addArray(cards1)
-				else if (event.target.isIn()) {
-					player.line(event.target);
-					event.target.damage(player);
-				}
-				else return;
-				if (!player.isIn()) return;
-				const { cards: cards2 } = await player
-					.chooseToDiscard(2, 'he', '弃置两张牌，否则受到' + get.translation(event.target) + '造成的1点伤害', '你们弃置的牌花色不同，可以摸两张牌')
-					.set('cardsx', cardx)
-					.set('ai', function (card) {
-						var player = _status.event.player;
-						if (player.hp > 2 || ['jiu', 'tao'].includes(card.name)) return -1;
-						var cardsx = _status.event.cardsx.slice();
-						var suits = lib.skill.hyyzsheming.cardSuit(cardsx), suits_no = lib.suit.slice();
-						suits_no.removeArray(suits);
+				else if (targetx.isIn()) await targetx.damage(player);
+				if (player.isIn()) {
+					const { cards: cards2 } = await player
+						.chooseToDiscard(2, 'he', '弃置两张牌，否则受到' + get.translation(targetx) + '造成的1点伤害', '你们弃置的牌花色不同，可以摸两张牌')
+						.set('cardsx', cardx)
+						.set('ai', function (card) {
+							var player = _status.event.player;
+							if (player.hp > 2 || ['jiu', 'tao'].includes(card.name)) return -1;
+							var cardsx = _status.event.cardsx.slice();
+							var suits = lib.skill.hyyzsheming.cardSuit(cardsx), suits_no = lib.suit.slice();
+							suits_no.removeArray(suits);
 
-						if (cardsx.length) {
-							if (suits.length < 2) return 10 - get.value(card);
-							if (!player.countCards('he', { suit: suits_no[0] }) || !player.countCards('he', { suit: suits_no[1] })) return 10 - get.value(card);//你没合适的牌
-							if (ui.selected.cards.length) {
-								if (!cardsx.includes(ui.selected.cards[0])) cardsx.push(ui.selected.cards[0]);
-								suits = lib.skill.hyyzsheming.cardSuit(cardsx);
+							if (cardsx.length) {
+								if (suits.length < 2) return 10 - get.value(card);
+								if (!player.countCards('he', { suit: suits_no[0] }) || !player.countCards('he', { suit: suits_no[1] })) return 10 - get.value(card);//你没合适的牌
+								if (ui.selected.cards.length) {
+									if (!cardsx.includes(ui.selected.cards[0])) cardsx.push(ui.selected.cards[0]);
+									suits = lib.skill.hyyzsheming.cardSuit(cardsx);
+								}
+								return !suits.includes(get.suit(card));
+							} else {
+								if (ui.selected.cards.length) return get.suit(ui.selected.cards[0]) != get.suit(card);
+								return true;
 							}
-							return !suits.includes(get.suit(card));
-						} else {
-							if (ui.selected.cards.length) return get.suit(ui.selected.cards[0]) != get.suit(card);
-							return true;
+						})
+						.forResult()
+					if (cards2) cardx.addArray(cards2);
+					else if (targetx.isAlive()) {
+						await player.damage(targetx);
+					};
+					let suits = lib.skill.hyyzsheming.cardSuit(cardx);
+					if (suits.length == 0) {
+						game.log(player, '和', targetx, '均未弃置牌');
+					} else {
+						if (suits.length == cardx.length) await player.draw(2);
+						if (cardx.length == 4 && player.getStat().skill.hyyzsheming) {
+							delete player.getStat().skill.hyyzsheming;
 						}
-					})
-					.forResult()
-				if (cards2) cardx.addArray(cards2);
-				else if (event.target.isAlive()) {
-					player.damage(event.target);
-					event.target.line(player);
-				};
-				let suits = lib.skill.hyyzsheming.cardSuit(cardx);
-				if (suits.length == 0) {
-					game.log(player, '和', event.target, '均未弃置牌');
-				} else {
-					if (suits.length == cardx.length) player.draw(2);
-					if (cardx.length == 4) {
-						delete player.getStat().skill.hyyzsheming;
 					}
 				}
+
 			},
 			ai: {
 				order: 8,
@@ -5020,10 +4938,67 @@ const characters = {
 				threaten: 1.1,
 			},
 		},
-		hyyzsheming_info: "舍命|出牌阶段限一次，你可以令一名其他角色与你分别抉择：①弃置两张牌②受到对方造成的1点伤害。若弃置的牌花色各不相同，你摸两张牌；若弃置了四张牌，重置此技。",
+		hyyzhuimie: {
+			audio: 3,
+			trigger: {
+				source: 'damageBegin2',
+				player: 'damageBegin4',
+			},
+			usable: 1,
+			filter(event, player) {
+				return event.num % player.hp == 0
+			},
+			async content(event, trigger, player) {
+				if (trigger.source == player) trigger.num++
+				else if (trigger.player == player) trigger.num--
+			},
+		},
+		hyyzsheming_info: "舍命|出牌阶段限一次，你可以令一名其他角色与你依次选择一项：①弃置两张牌；②受到对方造成的1点伤害。若弃置的牌花色各不相同，你摸两张牌；若弃置了四张牌，重置此技。",
+		hyyzhuimie_info: '毁灭|每回合限一次，当你造成/受到伤害时，若伤害值为你体力值的倍数，此伤害+1/-1。',
+
+		hyyz_xt_cunhu_kaituozhe: ['开拓者',
+			["female", "hyyz_xt", 4, ["hyyzcunhu", "hyyzzhongwang"], []],
+			'紫灵谷的骊歌',
+			'尾巴已对技能〖存护〗〖众望〗进行修改，若有其他方案可私信尾巴修改。<br>你记得不多。<br>你并非来自此地，也并非来自彼方，你本不去往任意一处——<br>直到模糊的声在你耳边吹拂，那悲伤爱怜的劝导，似是而非的催促……<br>种子扎根。你睁开双眼，那说话的人已不在。<br>只是声音愈来愈多愈清晰。<br>有无虑的关照，有镇静的劝告，有毅然的坚持，有温柔的点拨……<br>你看到锦线正织成明日。<br>巨大的兽自无垠降下，<br>金色的瞳从黑夜俯视，<br>你也不再被过去抛弃。<br>你还将开拓漫长旅途，<br>踏过的荆棘都成了路。<br>列车鸣笛，愿你抵达将至的未来<br>——以你自己的意志。'
+		],
+		hyyzcunhu: {
+			audio: 4,
+			trigger: {
+				player: ["phaseJieshuBegin"],
+			},
+			async cost(event, trigger, player) {
+				event.result = await player
+					.chooseTarget(get.prompt('hyyzcunhu'), '将装备区内的所有牌移动给一名其他角色', lib.filter.notMe)
+					.set('ai', function (target) {
+						var player = _status.event.player;
+						if (get.attitude(player, target) > 0) {
+							return 10 + target.countCards('e') + player.countCards('e') - target.hp - target.hujia;
+						} else return -1;
+					})
+					.forResult();
+			},
+			async content(event, trigger, player) {
+				const target = event.targets[0];
+				if (player.getCards('e').length > 0) {
+					let cards = player.getCards('e');
+					for (let card of cards) {
+						if (target.canEquip(card, false)) {
+							await target.equip(card);
+							await game.delay()
+						}
+					}
+				};
+				player.draw(target.countCards('e'));
+				target.draw(player.countCards('e'));
+			},
+		},
 		hyyzzhongwang: {
-			pathSkill: true,
-			audio: 1,
+			audio: 2,
+			logAudio(event, player, triggername, indexedData, costResult) {
+				return [
+					'ext:忽悠宇宙/asset/character/audio/hyyzzhongwang1.mp3',
+				]
+			},
 			mark: true,
 			intro: {
 				content: "limited",
@@ -5031,52 +5006,79 @@ const characters = {
 			limited: true,
 			skillAnimation: true,
 			animationColor: 'fire',
+
 			enable: 'phaseUse',
 			filter(event, player) {
-				return game.hasPlayer(current => current.countCards('e', function (card) {
-					return player.hasEmptySlot(get.subtype(card));
-				}));
+				const targets = player.getAllHistory('useSkill', evt => evt.skill == 'hyyzcunhu').map(i => i.targets[0]).unique();
+				return targets.length > 0 && targets.some(i => i.countCards('eh', (card) => get.type(card) == 'equip' && player.canEquip(card, false)) > 0)
+			},
+			selectTarget: -1,
+			filterTarget(card, player, target) {
+				return player.getAllHistory('useSkill', evt => evt.skill == 'hyyzcunhu').map(i => i.targets[0]).unique().includes(target)
 			},
 			async content(event, trigger, player) {
 				player.awakenSkill('hyyzzhongwang');
 				player.storage.hyyzzhongwang = true;
-
-				let count = 0;
-				while (count < 5) {
-					count++;
-					if (player.hasEmptySlot(count)) {
-						let targets = game.filterPlayer(current => current.getEquip(count));
-						let target = targets.randomGet();
-						if (target) {
-							let card = target.getEquip(count);
-							target.line(player, 'green');
-							target.$give(card, player, 'giveAuto');
-							await player.equip(card);
+				let count = 0
+				const cunhu_targets = player.getAllHistory('useSkill', evt => evt.skill == 'hyyzcunhu').map(i => i.targets[0]).unique();
+				for (let target of cunhu_targets) {
+					let num = target.countCards('he', (card) => get.type(card) == 'equip' && player.canEquip(card, false))
+					if (!num) continue;
+					const { cards } = await target
+						.chooseCard('众望：是否将任意装备牌置入' + get.translation(player) + '的装备区？', 'eh', [1, num])
+						.set('filterCard', (card) => {
+							if (!player.canEquip(card, false) || get.type(card) != 'equip') return false;
+							if (ui.selected.cards.length) {
+								return ui.selected.cards.every(i => get.subtype(card) != get.subtype(i));
+							} else {
+								return true
+							}
+						})
+						.set('complexCard', true)
+						.set('ai', (card) => true)
+						.forResult()
+					if (cards) {
+						count++;
+						for (let card of cards) {
+							if (player.canEquip(card)) {
+								target.line(player, 'green')
+								await player.equip(card);
+							}
 						}
-					};
+					}
 				}
-
-				const { targets } = await player.chooseTarget('对一名其他角色造成1点火焰伤害', lib.filter.notMe)
-					.set('ai', function (target) {
-						let player = _status.event.player;
-						return get.damageEffect(target, player, player, 'fire');
-					})
-					.forResult();
-				if (targets) {
-					player.line(targets, 'fire');
-					targets[0].damage('fire');
+				if (count > 0) {
+					const { targets } = await player.chooseTarget('对一名其他角色造成' + count + '点火焰伤害', lib.filter.notMe)
+						.set('ai', function (target) {
+							let player = _status.event.player;
+							return get.damageEffect(target, player, player, 'fire') * count;
+						})
+						.forResult();
+					if (targets) {
+						game.hyyzSkillAudio('hyyzzhongwang', 2)
+						player.line(targets, 'fire');
+						await targets[0].damage('fire');
+					}
 				}
 			},
 			ai: {
 				order: 10,
 				result: {
 					player(card, player, target) {
-						if (game.roundNumber > 1) return 2;
+						const targets = player.getAllHistory('useSkill', evt => evt.skill == 'hyyzcunhu').map(i => i.targets[0]).unique();
+						return targets.length;
 					}
 				}
 			},
 		},
-		hyyzzhongwang_info: "众望|限定技，出牌阶段，令此后有牌被移动时你摸一张牌，然后你随机移动场上的装备牌至你的空装备栏，并对一名其他角色造成1点火焰伤害。",
+		hyyzcunhu_info: '存护|结束阶段，你可以选择一名其他角色并将装备区内的牌移给该角色的空装备栏，然后摸对方装备区内牌数张牌。',
+		hyyzzhongwang_info: "众望|限定技，出牌阶段，你可依次令成为过〖存护〗目标的角色选择将任意装备牌置入你的空装备栏，然后造成X点火焰伤害（X为响应的角色数）。",
+
+		hyyz_xt_tongxie_kaituozhe: ['开拓者',
+			["female", "hyyz_xt", 4, ["hyyzzhulian", "hyyztongxie"], []],
+			'紫灵谷的骊歌',
+			'尾巴已对技能〖翥跹〗进行修改，并新增技能〖同谐〗，若有其他方案可私信尾巴修改。<br>你记得不多。<br>你并非来自此地，也并非来自彼方，你本不去往任意一处——<br>直到模糊的声在你耳边吹拂，那悲伤爱怜的劝导，似是而非的催促……<br>种子扎根。你睁开双眼，那说话的人已不在。<br>只是声音愈来愈多愈清晰。<br>有无虑的关照，有镇静的劝告，有毅然的坚持，有温柔的点拨……<br>你看到锦线正织成明日。<br>巨大的兽自无垠降下，<br>金色的瞳从黑夜俯视，<br>你也不再被过去抛弃。<br>你还将开拓漫长旅途，<br>踏过的荆棘都成了路。<br>列车鸣笛，愿你抵达将至的未来<br>——以你自己的意志。'
+		],
 		hyyzzhulian: {
 			audio: 5,
 			pathSkill: true,
@@ -5090,169 +5092,105 @@ const characters = {
 			position: 'he',
 			discard: false,
 			lose: false,
-			delay: false,
 			filterTarget: lib.filter.notMe,
+			selectTarget: [0, 1],
+			prompt(event, player) {
+				return '选择一张牌，默认置于牌堆顶，或选择并置于其他角色区域内';
+			},
 			async content(event, trigger, player) {
-				const target = event.targets[0], cards = event.cards;
-				const contentx = async function (player, target, cards) {
-					let tos = ['手牌区'];
-					if (cards.every(card => lib.card[card.name].type == 'equip' && target.canEquip(card, true))) tos.push('装备区');
-					if (!target.storage._disableJudge) tos.push('判定区');
-					let to;
-					if (tos.length == 1) to = tos[0];
-					else {
-						let { control } = await player.chooseControl(tos)
-							.set('prompt', `把${get.translation(cards)}移动到${get.translation(target)}的...`)
-							.forResult();
-						to = control
+				const card = event.cards[0];
+				if (event.targets?.length > 0) {
+					const target = event.targets[0];
+					let pisotions = ['手牌区'];
+					if (get.type(card) == 'equip' && target.canEquip(card, true)) pisotions.push('装备区');
+					if (get.type(card) == 'delay' && target.canAddJudge(get.name(card))) pisotions.push('判定区');
+					const { control } = pisotions.length > 1 ? await player
+						.chooseControl(pisotions)
+						.set('prompt', '将' + get.translation(card) + '置于' + get.translation(target) + '的哪个区域？')
+						.set('ai', () => '手牌区')
+						.forResult() : { control: pisotions[0] }
+					if (control) {
+						switch (control) {
+							case '手牌区': await player.give(card, target); break;
+							case '装备区': await target.equip(card); break;
+							case '判定区': await target.addJudge(lib.card[card.name].type == 'delay' ? card : get.autoViewAs({ name: get.name(card) }, [card]), [card]); break;
+						}
+						await player.gain(get.cards(), 'draw')
 					}
-					if (to == '手牌区') {
-						var next = target.gain(cards);
-						next.source = player;
-						next.animate = 'giveAuto';
-					} else if (to == '装备区') {
-						while (cards.length && cards.some(card => target.canEquip(card, true))) {
-							let card = cards.find(card => target.canEquip(card, true));
-							cards.remove(card);
-							player.$give(card, target);
-							target.equip(card);
-						}
-					} else if (to == '判定区') {
-						let next = player.chooseToMove(prompt, true);
-						if (cards.some(card => lib.card[card.name].type == 'delay' && !target.hasJudge(card.name))) {
-							next.set('list', [
-								['蓄谋', cards],
-								['判定']
-							]);
-							next.set('targetx', target);
-							next.set('filterMove', function (from, to, moved) {
-								const card = from.link, targetx = _status.event.targetx;
-								if (to == 1) {
-									if (lib.card[card.name].type != 'delay') return false;
-									if (targetx.hasJudge(card.name)) return false;
-									if (moved[1].some(card => targetx.hasJudge(card.name))) return false;
-								}
-								return true;
-							});
-							next.set('filterOk', function (moved) {
-								return true;
-							});
-						} else {
-							next.set('list', [
-								['蓄谋', cards]
-							]);
-						}
-						const { moved } = await next.forResult();
-						if (moved) {
-							let jsrg = moved[0], judge = moved[1];
-							if (jsrg.length) {
-								player.$give(jsrg, target);
-								jsrg.forEach(card => target.addJudge({ name: 'xumou_jsrg' }, card));
-							}
-							if (judge && judge.length) {
-								player.$give(judge, target);
-								judge.map(card => target.addJudge(card));
-							}
-						}
-					}
-					game.updateRoundNumber();
-					await game.delay();
-					await player.draw();
-				};
-				const { control } = await player
-					.chooseControl('控顶', '置入' + get.translation(target) + '的区域')
-					.set('prompt', `控顶并获得对方牌
-					给对方牌并摸牌`)
-					.forResult();
-				if (control == '控顶') {
-					player.lose(cards, ui.cardPile, 'insert');
-					player.$throw(cards, 1000);
-					game.log(player, '将一张牌置于牌堆顶');
-					await player.gainPlayerCard(target, 'hej', true);
 				} else {
-					await contentx(player, target, cards);
+					await player.lose(card, ui.cardPile, 'insert');
+					player.$throw(card, 1000);
+					game.log(player, '将一张牌置于牌堆顶');
+					const players = game.filterPlayer(i => i != player && i.countGainableCards(player, 'hej') > 0)
+					if (players.length) {
+						const { targets } = players.length > 1 ? await player
+							.chooseTarget('获得一名角色区域内的一张牌', true, (card, player, target) => target != player && target.countGainableCards(player, 'hej') > 0)
+							.forResult() : { targets: players }
+						if (targets) {
+							await player.gainPlayerCard(targets[0], 'hej', true);
+						}
+					}
+				}
+			},
+			ai: {
+				order: 10,
+				result: {
+					target: 2,
+					player: 1
+				}
+			}
+		},
+		hyyztongxie: {
+			trigger: {
+				global: 'gainAfter'
+			},
+			filter(event, player) {
+				if (event.player == player) {//你获得
+					return game.hasPlayer(c => c != player && event.getl(c)?.cards2.some(j => event.getg(player).includes(j)));
+				} else {
+					return event.getl(player)?.cards2.some(j => event.getg(event.player).includes(j))
+				}
+			},
+			async cost(event, trigger, player) {
+				const targets = [trigger.player];
+				const cards = trigger.getg(trigger.player)
+				game.filterPlayer(c => {
+					if (trigger.getl(c)?.cards2.some(j => cards.includes(j))) {
+						targets.add(c)
+					}
+				})
+				event.result = await player
+					.chooseTarget(get.prompt2('hyyztongxie'), (card, player, target) => {
+						return targets.includes(target)
+					})
+					.set('ai', (target) => get.attitude2(target))
+					.forResult()
+			},
+			async content(event, trigger, player) {
+				const target = event.targets[0];
+				const { color } = await target
+					.judge(function (card) {
+						if (target.hp == target.maxHp) {
+							if (get.color(card) == "red") return -1;
+						}
+						if (get.color(card) == "red") return 1;
+						return 0;
+					})
+					.forResult();
+				switch (color) {
+					case "red": if (target.hp < target.maxHp) await target.recover(); break;
+					case "black": target.draw(); break;
+					default: break;
+				}
+			},
+			mod: {
+				playerEnabled(card, player, target) {
+					if (_status.event.getParent().name == 'hyyztongxie' && target.hasHistory('gain')) return false
 				}
 			},
 		},
 		hyyzzhulian_info: "翥跹|出牌阶段限两次，你可以选择一张牌和一名其他角色，你将此牌置于其中一项并获得另一项一张牌：①牌堆顶②该角色的区域内。",
-		//hyyz_tongxie: {
-		//	audio:  1,
-		//	pathSkill: true,
-		//	trigger: {
-		//		player: ['useSkillAfter', 'logSkill'],
-		//	},
-		//	filter(event, player) {
-		//		return event.skill && lib.skill[event.skill].pathSkill && event.skill != 'hyyz_tongxie';
-		//		if (["global", "equip"].includes(event.type)) return false;
-		//		if (!event.skill) return false;
-		//		let skills = game.expandSkills(event.player.getSkills('aaa', false, false));
-		//		skills = skills.filter((skill) => {
-		//			let info = get.info(skill);
-		//			if (!info || info.juexingji || info.hiddenSkill || info.zhuSkill || info.dutySkill || info.chargeSkill || lib.skill.hyyz_tongxie.banned.includes(j)) return //false;
-		//			if (skill.init || (skill.ai && (skill.ai.combo || skill.ai.notemp || skill.ai.neg))) return false;
-		//			return true;
-		//		});
-		//		//if (lib.filter.skillDisabled(event.skill)) return false;
-		//		if (!skills.includes(event.skill)) return false;
-		//		return true;
-		//	},
-		//	async cost(event, trigger, player) {
-		//		event.result = await player
-		//			.chooseTarget(`令一名角色发动${get.translation(trigger.skill)}`, `其可以改为觉醒命途`, lib.filter.notMe)
-		//			.set('ai', (target) => get.attitude2(target) > 0)
-		//			.forResult();
-		//	},
-		//	logTarget: 'targets',
-		//	async content(event, trigger, player) {
-		//		const target = event.targets[0];
-		//		if (!target.hasPath()) {
-		//			const {bool} = await target.chooseBool('你没有命途，是否改为觉醒命途？')
-		//			.forResult();
-		//			if (bool) {
-		//				target.choosePaths(true)
-		//				.set('ai', () => ['hyyz_huimie', 'hyyz_cunhu'].randomGet());
-		//				return;
-		//			}
-		//		}
-		//		const info = lib.skill[trigger.skill];
-		//		let result = { bool: false };
-		//		if (event.name == 'logSkill') {
-		//			'什么也没有，只是过滤一下'
-		//		} else if (info.filterTarget == undefined && info.filterCard == undefined) {//没有选择任何目标和牌
-		//			result = await target.chooseBool()
-		//				.set('prompt', info.prompt || get.prompt(trigger.skill) || '是否发动【同谐】')
-		//				.forResult();
-		//		} else {
-		//			let object = {
-		//				prompt: info.prompt || get.prompt(trigger.skill) || get.prompt(trigger.sourceSkill) || '是否发动【同谐】',
-		//				filterCard: info.filterCard || false,
-		//				filterTarget: info.filterTarget || false,
-		//			};
-		//			if (info.filterCard != undefined) {
-		//				object.selectCard = info.selectCard || 1;
-		//				object.position = info.position || 'h';
-		//				object.multitarget = info.multitarget || undefined;
-		//				object.discard = info.discard || undefined;
-		//				object.lose = info.lose || undefined;
-		//				object.delay = info.delay || undefined;
-		//				object.complexCard = info.complexCard || undefined;
-		//			};
-		//			if (info.filterTarget != undefined) {
-		//				object.selectTarget = info.selectTarget || 1;
-		//				object.complexTarget = info.complexTarget || undefined;
-		//				object.multitarget = info.multitarget || undefined;
-		//			}
-		//			object.complexSelect = info.complexSelect || undefined;
-		//			object.multiline = info.multiline || undefined;
-		//			result = await target.chooseCardTarget(object)
-		//				.forResult();
-		//		}
-		//		if (result.bool) {
-		//			target.useSkill(result.cards, result.targets, trigger.skill);
-		//		};
-		//	},
-		//},
-		hyyz_tongxie_info: get.hyyzIntroduce('命途') + "技，你发动其他命途技后，可令一名其他角色选择是否发动此技。若其没有命途，其可以改为选择命途。",
+		hyyztongxie_info: '同谐|你获得其他角色的牌后，或其他角色获得你的牌后，你可令一方进行〖恢拓〗判定。',
 
 		hyyz_xt_sp_kafuka: ['卡芙卡', ["female", "hyyz_xt", 3, ["mengyuemian", "mengyexuan"], []], '柚衣'],
 		mengyuemian: {
@@ -5517,8 +5455,6 @@ const characters = {
 											await current.draw();
 										}
 										break;
-									} else {
-										current.say('对不起，这次没办法帮助你了……');
 									}
 								}
 							}
@@ -5617,23 +5553,20 @@ const characters = {
 			marktext: "叛",
 			intro: {
 				content(storage, player, skill) {
-					var str = '<li>上一轮于回合外';
-					if (player.storage.mengsanpan_log[1][0]) {
-						str += '<p style=\"color:rgb(124,252,0)\">体力值减少过</p>';
-					} else str += '<p style="color:rgb(255,102,102)">体力值未减少</p>';
-					if (player.storage.mengsanpan_log[1][1]) {
-						str += '<p style=\"color:rgb(124,252,0)\">失去过牌</p>';
-					} else str += '<p style=\"color:rgb(255,102,102)\">未失去过牌</p>';
-					str += '<li>当前';
+					let str = '<li>上一轮于回合外';
+					if (player.storage.mengsanpan_log[1][0]) str += '<p style=\"color:rgb(124,252,0)\">体力值减少过</p>';
+					else str += '<p style="color:rgb(255,102,102)">体力值未减少</p>';
+					if (player.storage.mengsanpan_log[1][1]) str += '<p style=\"color:rgb(124,252,0)\">失去过牌</p>';
+					else str += '<p style=\"color:rgb(255,102,102)\">未失去过牌</p>';
+					str += '<li>当前'
 					if (player.countCards('j') > 0) str += '<p style=\"color:rgb(124,252,0)\">判定区有牌</p>';
 					else str += '<p style=\"color:rgb(255,102,102)\">判定区没有牌</p>';
+
 					str += '<li>本轮于回合外';
-					if (player.storage.mengsanpan_log[0][0]) {
-						str += '<p style=\"color:rgb(124,252,0)\">体力值减少过</p>';
-					} else str += '<p style=\"color:rgb(255,102,102)\">体力值未减少</p>';
-					if (player.storage.mengsanpan_log[0][1]) {
-						str += '<p style=\"color:rgb(124,252,0)\">失去过牌</p>';
-					} else str += '<p style=\"color:rgb(255,102,102)\">未失去过牌</p>';
+					if (player.storage.mengsanpan_log[0][0]) str += '<p style=\"color:rgb(124,252,0)\">体力值减少过</p>';
+					else str += '<p style=\"color:rgb(255,102,102)\">体力值未减少</p>';
+					if (player.storage.mengsanpan_log[0][1]) str += '<p style=\"color:rgb(124,252,0)\">失去过牌</p>';
+					else str += '<p style=\"color:rgb(255,102,102)\">未失去过牌</p>';
 					return str;
 				},
 			},
@@ -5894,6 +5827,7 @@ const characters = {
 					filter(event, player) {
 						return event.card && event.card.storage && event.card.storage.mengjiaoqi && !player.isMaxHandcard(true)
 					},
+					forced: true,
 					async content(event, trigger, player) {
 						var num = player.countCards('h');
 						game.filterPlayer((current) => {
@@ -5902,7 +5836,10 @@ const characters = {
 						});
 						num++;
 						await player[player.storage.mengduanao ? 'recover' : 'loseHp']()
-						player.storage.mengduanao = false
+						if (player.storage.mengduanao) {
+							player.storage.mengduanao = false
+							player.removeTip('mengduanao')
+						}
 						await player.drawTo(num)
 					}
 				},
@@ -5963,6 +5900,7 @@ const characters = {
 						if (control != 'cancel2') {
 							await player.discard(player.getCards('h', { suit: control }));
 							player.storage.mengduanao = true;
+							player.addTip('mengduanao', '<span class="greentext">改为回复</span>')
 						}
 					}
 				}
@@ -6349,7 +6287,7 @@ const characters = {
 		"mengdizai_info": "地载|出牌阶段限一次，你可以弃置一张牌，令选择两名其他角色从牌堆底各摸一张牌，并进行拼点。赢的角色弃置两张牌并对没赢的角色造成一点伤害；若均没赢，则你获得两张拼点牌（不计入手牌上限）。",
 		"mengfengyang_info": "风扬|你不能成为其他角色拼点的目标。一名角色发动拼点后，你可以依次观看并用任意张手牌交换此次拼点中没赢的角色的手牌。",
 
-		hyyz_ys_kalilu: ['卡莉露', ["female", "hyyz_ys", 3, ["menglinting", "mengquanxin"], []], '沧海依酥'],//
+		hyyz_ys_kalilu: ['卡莉露', ["female", "hyyz_ys", 3, ["menglinting", "mengquanxin"], []], '沧海依酥'],
 		menglinting: {
 			trigger: {
 				global: 'useCardToPlayer'
@@ -6454,12 +6392,37 @@ const characters = {
 		hyyz_xt_jingliu: ['镜流', ["female", "hyyz_xt", 4, ["hyyzfeiguang", "hyyzzhuanpo"], []], '紫灵谷的骊歌', '镜流，曾经的罗浮剑首，云骑军不败盛名的缔造者。而今其名字已被抹去，成为行走于魔阴身边缘的仙舟叛徒，汲汲追寻旧日的夙愿。倒在她剑下的丰饶之民数不胜数，造翼者的羽卫，步离人的父狼，连高如山岳的器兽也当不住她的一击，可最终因魔阴神智狂乱、大开杀戒，成了逃亡域外的重犯。'],
 		hyyzfeiguang: {
 			audio: 8,
+			$tip(player) {
+				const storage1 = player.storage.hyyzfeiguang, storage2 = player.storage.hyyzzhuanpo;
+				if (!storage1) {
+					if (!storage2) {//双阳
+						player.addTip('hyyzfeiguang', '飞光 转化')
+						player.addTip('hyyzzhuanpo', '转魄 直伤')
+					} else {
+						player.addTip('hyyzfeiguang', '飞光 视为')
+						player.addTip('hyyzzhuanpo', '转魄 免费')
+					}
+				} else {
+					if (!storage2) {
+						player.addTip('hyyzfeiguang', '飞光 弃牌')
+						player.addTip('hyyzzhuanpo', '转魄 直伤')
+					} else {//双阴
+						player.addTip('hyyzfeiguang', '飞光 获得')
+						player.addTip('hyyzzhuanpo', '转魄 免费')
+					}
+				}
+				player.addTip('hyyzzhuanpo', '转魄 直伤')
+			},
 			init(player) {
 				player.storage.hyyzfeiguang = false;
+				lib.skill.hyyzfeiguang.$tip(player)
 			},
 			mark: true,
 			marktext: "☯",
-			zhuanhuanji: true,
+			zhuanhuanji(player, skill) {
+				player.storage[skill] = !player.storage[skill]
+				lib.skill.hyyzfeiguang.$tip(player)
+			},
 			intro: {
 				content(storage, player, skill) {
 					var str = '';
@@ -6616,10 +6579,14 @@ const characters = {
 			audio: 2,
 			init(player) {
 				player.storage.hyyzzhuanpo = false;
+				lib.skill.hyyzfeiguang.$tip(player)
 			},
 			mark: true,
 			marktext: "☯",
-			zhuanhuanji: true,
+			zhuanhuanji(player, skill) {
+				player.storage[skill] = !player.storage[skill]
+				lib.skill.hyyzfeiguang.$tip(player)
+			},
 			intro: {
 				content(storage, player, skill) {
 					var str = '';
@@ -6931,10 +6898,9 @@ const characters = {
 			filter(event, player) {
 				return player.countCards('h') > 0;
 			},
-			content() {
-				'step 0'
+			async content(event, trigger, player) {
 				var prompt = '###' + get.prompt('mengjiannu') + '###重铸一种花色的所有牌';
-				var next = player.chooseButton(true, [prompt, [lib.suit.map(i => ['', '', 'lukai_' + i]), 'vcard']], 1);
+				const next = player.chooseButton(true, [prompt, [lib.suit.map(i => ['', '', 'lukai_' + i]), 'vcard']], 1);
 				next.set('filterButton', button => {
 					var player = _status.event.player;
 					var cards = player.getCards('h', { suit: button.link[2].slice(6) });
@@ -6988,89 +6954,48 @@ const characters = {
 					},
 					add: next.custom.add
 				});
-				'step 1'
-				if (result.bool) {
-					var cards = result.cards;
-					if (!cards.length) {
-						var suits = result.links.map(i => i[2].slice(6));
-						cards = player.getCards('h', card => suits.includes(get.suit(card, player)));
-					}
-					event.cards = cards;
-					if (!cards.length) event.finish();
-					else {
-						player.recast(cards);
-						if (game.hasPlayer(function (current) {
-							var card = { name: 'sha', nature: 'ice' };
-							return lib.filter.targetEnabled2(card, player, current) && lib.filter.targetInRange(card, player, current);
-						})) {
-							player.chooseTarget('视为使用一张冰【杀】，或点取消摸一张牌', function (card, player, target) {
-								var card = { name: 'sha', nature: 'ice' };
-								return lib.filter.targetEnabled2(card, player, target) && lib.filter.targetInRange(card, player, target);
-							})
-								.set('ai', function (target) {
-									var card = { name: 'sha', nature: 'ice' };
-									return get.effect(target, card, player, player);
-								})
-						} else {
-							event._result = { bool: false, targets: [] };
-						}
-					}
-				}
-				'step 2'
-				if (result.bool && result.targets.length > 0) {
-					player.useCard({ name: 'sha', nature: 'ice' }, result.targets[0], false)
-						.set('addCount', false);
-				} else {
-					player.draw();
+				const { cards } = await next.forResult()
+				if (cards) {
+					await player.recast(cards);
+					const card = get.autoViewAs({ name: 'sha', nature: 'ice' })
+					const { bool } = await player.chooseUseTarget('视为使用一张冰【杀】，或点取消摸一张牌', card, false).forResult()
+					if (!bool) await player.draw()
 				}
 			},
 			onremove: true,
-			marktext: "缄怒",
-			intro: {
-				content: "失去最后一种花色：$",
-				onunmark: true,
-			},
 			group: 'mengjiannu_lose',
 			subSkill: {
 				lose: {
 					trigger: {
-						player: "loseEnd",
+						player: 'loseAfter',
 					},
-					direct: true,
 					filter(event, player) {
-						for (var i = 0; i < event.cards.length; i++) {
-							if (event.cards[i].original == 'h') {
-								var suit = get.suit(event.cards[i]);
-								if (!player.countCards('h', { suit: suit }) && !player.getStorage('mengjiannu').includes(suit)) return true;
-							}
-						}
-						return false;
+						return event.hs.some(card => !player.countCards('h', { suit: get.suit(card) }) && !player.getStorage('mengjiannu').includes(get.suit(card)))
 					},
-					content() {
-						'step 0'
-						for (var i = 0; i < trigger.cards.length; i++) {
-							if (trigger.cards[i].original == 'h') {
-								var suit = get.suit(trigger.cards[i]);
-								if (!player.countCards('h', { suit: suit }) && !player.getStorage('mengjiannu').includes(suit)) {
-									player.markAuto('mengjiannu', [suit]);
-								}
+					async cost(event, trigger, player) {
+						player.storage.mengjiannu ??= []
+						for (let card of trigger.hs) {
+							const suit = get.suit(card);
+							if (!player.countCards('h', { suit: suit }) && !player.getStorage('mengjiannu').includes(suit)) {
+								player.storage.mengjiannu.add(suit)
 							}
 						}
-						'step 1'
+						player.addTip('mengjiannu', '缄怒 ' + player.storage.mengjiannu.map(suit => get.hyyzSuit(suit)).join(''))
+
 						if (player.getStorage('mengjiannu').length >= 4) {
-							player.chooseTarget(get.prompt('mengjiannu'), '造成1点冰冻伤害')
+							event.result = await player
+								.chooseTarget(get.prompt('mengjiannu'), true, '造成1点冰冻伤害')
 								.set('ai', function (target) {
 									var player = _status.event.player;
 									return get.damageEffect(target, player, player, 'ice');
-								});
+								})
+								.forResult()
 						}
-						'step 2'
-						if (result.bool && result.targets && result.targets.length) {
-							player.logSkill('mengjiannu', result.targets);
-							player.unmarkSkill('mengjiannu');
-							player.line(result.targets[0], 'ice');
-							result.targets[0].damage('ice');
-						}
+					},
+					async content(event, trigger, player) {
+						event.targets[0].damage('ice');
+						delete player.storage.mengjiannu
+						player.removeTip('mengjiannu')
 					}
 				}
 			}
@@ -7116,7 +7041,7 @@ const characters = {
 			"_priority": 0,
 		},
 		"mengdonghen_info": "冬痕|转换技，当你成为其他角色使用牌的目标后，阳：令此牌对你无效。阴：你失去1点体力并获得此牌。",
-		"mengjiannu_info": "缄怒|①出牌阶段限一次，你可以重铸一种花色的所有手牌，然后摸一张牌或视为使用一张不计入使用次数的冰【杀】。②当你累计失去过每种花色的所有手牌后，重置此项并对一名角色造成1点冰属性伤害。",
+		"mengjiannu_info": "缄怒|①出牌阶段限一次，你可以重铸一种花色的所有手牌，然后摸一张牌或视为使用一张不计入使用次数的冰【杀】。②当你每累计失去每种花色的所有手牌后，对一名角色造成1点冰属性伤害。",
 		mengrongyu_info: "融语|你的手牌上限+1。当你死亡时，〖夷灭〗一名其他角色，然后其获得〖飞扬〗〖跋扈〗。",
 
 		hyyz_b3_saixiliya: ['塞西莉亚', ["female", "hyyz_b3", "3/5", ["mengxieheng"], []], '七夕月', ''],
@@ -8129,16 +8054,19 @@ const characters = {
 				var cards = get.cards();
 				var content = ['牌堆顶的牌', cards];
 				game.log(player, '观看了牌堆顶的牌');
-				await player.chooseControl('ok')
-					.set('dialog', content);
+				await player.chooseControl('ok').set('dialog', content);
 				ui.cardPile.insertBefore(cards[0], ui.cardPile.firstChild);
+
 				if (!player.getStorage('mengsucheng').includes(get.suit(cards[0]))) {
-					player.markAuto('mengsucheng', [get.suit(cards[0])]);
+					player.markAuto('mengsucheng', get.suit(cards[0]));
+					player.addTip('mengsucheng', '塑成 ' + player.storage.mengsucheng.map(suit => get.hyyzSuit(suit)).join(''))
 					player.when({ global: 'phaseAfter' }).then(() => {
+						player.removeTip('mengsucheng')
 						player.storage.mengsucheng = [];
 					})
 				} else {
 					player.tempBanSkill('mengsucheng')
+					player.removeTip('mengsucheng')
 					var list = [];
 					for (var i = 0; i < lib.inpile.length; i++) {
 						var name = lib.inpile[i];
@@ -8178,7 +8106,6 @@ const characters = {
 					player: 1,
 				},
 			},
-			"_priority": 0,
 		},
 		mengchuangsheng: {
 			audio: 3,
@@ -8259,7 +8186,7 @@ const characters = {
 				};
 			},
 		},
-		"mengsucheng_info": "塑成|出牌阶段，你可以观看牌堆顶的一张牌。若记录中没有此牌的花色，你记录之；否则，视为对至多X名角色使用一张普通锦囊牌且本回合不能再发动此技，X为本回合此技的发动次数。",
+		"mengsucheng_info": "塑成|出牌阶段，你可以观看牌堆顶的一张牌。若已观看过此花色，本回合不能再发动此技，然后视为对至多X名角色使用一张普通锦囊牌（X为本回合此技的发动次数）。",
 		"mengchuangsheng_info": "创生|当你使用或打出牌后，你可以声明一种花色并展示牌堆顶的牌。若牌堆顶的牌与你声明的花色相同，你获得之并令当前使用的牌不计入使用次数；否则，本回合不能再发动此技。",
 		"mengbaie_info": "白垩|你每回合首次获得一种花色的牌后，你重置〖塑成〗或〖创生〗并清除记录。",
 	},
@@ -8562,6 +8489,7 @@ const characters = {
 				if (player.storage.menggufeng) {//sha
 					game.hyyzSkillAudio('menggufeng', 2)
 					player.changeZhuanhuanji('menggufeng');
+					player.removeTip('menggufeng')
 					//await player.drawTo(10)
 					if (player.hasHistory('useCard', (evt) => evt.card.storage.menggufeng_jiu)) {//第三部分
 						player.addGaintag(player.getCards('h'), 'menggufeng')
@@ -8577,6 +8505,7 @@ const characters = {
 					player.changeZhuanhuanji('menggufeng');
 					var num = Math.floor(player.countCards('h') / 2);
 					player.storage.menggufeng_num = num;
+					player.addTip('menggufeng', '古枫 ' + num)
 					//await player.drawTo(10)
 					if (player.hasHistory('useCard', (evt) => evt.card.storage.menggufeng_sha)) {//第三部分
 						player.addGaintag(player.getCards('h'), 'menggufeng')

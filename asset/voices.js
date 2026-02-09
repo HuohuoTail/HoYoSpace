@@ -30,21 +30,19 @@ const hyyzvoices = {
 		'hyyz_xt_bailu': '医不自医……',
 		'hyyzleiyin1': '乖乖张嘴。',
 		'hyyzleiyin2': '补补身子！',
-		'xtshengxi1': '我也不能放弃治疗！',
-		'xtshengxi2': '疗效好！',
+		'hyyzshengxi1': '我也不能放弃治疗！',
+		'hyyzshengxi2': '疗效好！',
 		'hyyzxuanhu1': '我看还能抢救一下！',
 	},
 	...{//2307
 		'hyyz_xt_luocha': '没能……实现啊……',
-		'hyyzzanghua1': '百花盛放。',
+		'hyyzzanghua1': '白花盛放。',
 		'hyyzzanghua2': '领受天赐。',
-		'hyyzzanghua3': '永眠非终焉。',
-		'hyyzzanghua4': '逝者将再临。',
-		'hyyzxuanxin1': '凡夺取的，必将偿还。',
-		'xtheiyuan1': '清算的时刻到了。',
-		'xtheiyuan2': '我来为你送行。',
-		'xtbaihua1': '不能松懈。',
-		'xtbaihua2': '可惜，你们选错了对手。',
+		'hyyzzanghua3': '我来为你送行。',
+		'hyyzzanghua4': '清算的时刻到了。',
+		'hyyzzanghua5': '可惜，你们选错了对手。',
+		'hyyzxuanxin1': '永眠非终焉。',
+		'hyyzxuanxin2': '逝者将再临。',
 
 		'hyyz_xt_welt': '交给……你们了……',
 		'hyyzduanjie1': '退下吧。',
@@ -337,27 +335,37 @@ const hyyzvoices = {
 		mengaoan5: '要结束了！',
 	},
 	...{//2310
-		'hyyz_xt_kaituozhe': '我……必须坚持……',
-		'hyyz_kaituo1': '当有机会做出选择的时候，不要让自己后悔。',
-		'hyyz_kaituo2': '以自己的意志，抵达结局吧。',
+		'hyyz_xt_huimie_kaituozhe': '是我……输了……',
 		'hyyzsheming1': '规则，就是用来打破的！',
 		'hyyzsheming2': '我来送你上路！',
 		'hyyzsheming3': '制胜一击！',
 		'hyyzsheming4': '你出局了！',
-		'hyyz_huimie1': '不痛不痒。',
-		'hyyz_huimie2': '还差得远！',
-		'hyyz_huimie3': '速战速决吧。',
-		'hyyz_cunhu1': '坚不可摧！',
-		'hyyz_cunhu2': '以强援弱！',
-		'hyyz_cunhu3': '骑枪，备战！',
-		'hyyz_cunhu4': '我来守护！',
-		'hyyzzhongwang1': '枪尖已经点燃，炎枪！冲锋！',
+		'hyyzsheming5': '速战速决吧。',
+		hyyzhuimie1: '规则，就是用来打破的。',
+		'hyyzhuimie2': '不痛不痒。',
+		'hyyzhuimie3': '还差得远！',
+
+		'hyyz_xt_cunhu_kaituozhe': '我……必须坚持……',
+		'hyyzcunhu1': '坚不可摧！',
+		'hyyzcunhu2': '以强援弱！',
+		'hyyzcunhu3': '骑枪，备战！',
+		'hyyzcunhu4': '我来守护！',
+		'hyyzzhongwang1': '枪尖已经点燃。',
+		'hyyzzhongwang2': '炎枪！冲锋！',
+
+		hyyz_xt_tongxie_kaituozhe: '还没……结束……',
 		'hyyzzhulian1': '考验默契的时候。',
 		'hyyzzhulian2': '各就各位。',
 		'hyyzzhulian3': '保持步调一致。',
 		'hyyzzhulian4': '即兴表演！',
 		'hyyzzhulian5': '好梦成真！',
 		'hyyz_tongxie1': '气氛已经烘托到位，合演，开场！',
+
+
+
+		'hyyz_kaituo1': '当有机会做出选择的时候，不要让自己后悔。',
+		'hyyz_kaituo2': '以自己的意志，抵达结局吧。',
+
 
 		//meng_sp_ren: '这次能成功吗……',
 		//mengenciJLP1: '还不够！',
@@ -375,19 +383,6 @@ const hyyzvoices = {
 		mengyexuan2: '记住还能呼吸的感觉。',
 		mengyexuan3: '猎物落网咯。',
 		mengyexuan4: '美妙的时光总有尽头，该说再见了。',
-
-		//meng_re_shalangbaizi: '抱歉，是我判断失误了……',
-		//meng_shalangbaizi: '抱歉，是我判断失误了……',
-		//mengjipo1: '有备无患，简单道理',
-		//mengjipo2: '优秀的指挥，老师',
-		//mengjipo3: '状态良好，走吧',
-		//mengjipo4: 'clear',
-		//mengjiecai1: '上了哦',
-		//mengjiecai2: '掩护射击',
-		//mengyouji1: '目标，设立完毕',
-		//mengyouji2: '开始火力支援',
-		//mengyouji3: '无人机开始支援',
-		//mengyouji4: '设备启动',
 
 		hyyz_ys_nuoaier: '我还想……保护大家……',
 		mengchawei1: '应该赶得上。',
@@ -523,22 +518,6 @@ const hyyzvoices = {
 
 	},
 	...{//2312
-		//meng_zhipeizhilvzhe: '善，是一种需要相信的东西，而恶，不需要！',
-		//mengzongou1: '人性的卑劣，远比灾难更可怕！',
-		//mengzongou2: '既然未来比现在更黑暗，那你为什么要劝我看向光明？',
-		//mengzongou3: '欢迎来到，支配剧场',
-		//mengzongou4: '是你救了那些折磨我的混蛋！',
-		//mengzongou5: '灾害没有击垮我们，身为同胞的人类却做到了',
-		//mengzongou6: '这样的世界，从一开始，就不存在真正的救赎！',
-		//mengzongou7: '因为那个女人让你活下去，带着贯穿余生的自责与愧疚',
-		//mengzongou8: '她救了你，却在你心中留下了永远的诅咒！',
-		//mengzongou9: '也许我的人生，也要到此为止了……',
-		//mengzongou10: '这种声音，一点一点扩散，变成了丑恶',
-		//mengzongou11: '这个世界的所有人都是这样，盲目、冲动、自私、悲哀！',
-		//mengzongou12: '无论付出什么样的代价，都要把你，拉进我们的剧场！',
-		//mengzongou13: '是时候，给剧目一个收尾了！',
-		//mengzongou14: '哈哈哈哈！啊哈哈哈哈哈！',
-
 		hyyz_ɸ_zhaoxing: '勇士之魂，从未破灭！',
 		mengdianci1: '即使敌众我寡，末将亦能万军从中取敌将首级。',
 		mengdianci2: '一点寒芒先到，随后枪出如龙！',
@@ -592,7 +571,7 @@ const hyyzvoices = {
 		'hyyzpeiyu1': '以往的生命片段，还能复原如初吗？',
 		'hyyzpeiyu2': '生命，不仅存在于呼吸之间。',
 		'hyyzzaowu1': '和之前一样，表现得好，就要奖励。',
-		'hyyznicha1': '你仍有值得研究的价值。',
+		'hyyznicha1': '你们仍有值得研究的价值。',
 		'hyyznicha2': '很好，优美的姿势。',
 
 		'hyyz_xt_yinzhi': '没找到……「祂」……',
@@ -847,17 +826,6 @@ const hyyzvoices = {
 		hyyz_xt_wangxiayitong: '',
 
 		hyyz_xt_sp_heitiane: '流年…不利……',
-		mengzhenzhao1: '无理的客人',
-		mengzhenzhao2: '必将承受代价！',
-		mengshuijing1: '不祥之征，重现。',
-		mengshuijing2: '厄运之誓，降临。',
-		mengshuijing3: '命运，并非一种选择。',
-		mengshuijing4: '这次想同我了解什么？',
-		mengshuijing5: '记忆是常变的泡沫。静默的水面下…便是无尽深渊。',
-		mengliuguang1: '不祥之征，重现。',
-		mengliuguang2: '厄运之誓，降临。',
-		mengliuguang3: '命运，并非一种选择。',
-		mengliuguang4: '这次想同我了解什么？',
 
 		hyyz_xt_sb_jingliu: '终于……解脱了……',
 		mengzuanyue1: '就让这一轮月华……照彻万川！',
@@ -890,6 +858,8 @@ const hyyzvoices = {
 		mengganzhao3: '这又何苦呢？',
 
 		hyyz_b3_ailixiya: '嗨，想我了吗？无论何时何地，爱莉希雅都会回应你的期待！',
+		mengailian1: '来点浪漫的气氛，如何？',
+		mengailian2: '我的心意，要好好收下哦！',
 		mengzhenwo1: '万千的轨迹交织、萦绕，由此诞下百花齐放的奇迹，这就是美丽的永恒，我所相信的——真我！',
 
 		hyyz_b3_geleixiu: '颜色，看不见了……',
@@ -938,7 +908,7 @@ const hyyzvoices = {
 		mengyizhe1: '愿往日的枯壤，化作幼芽新生的温床。',
 		mengyizhe2: '落叶归根，我们不过是找到了自己的归处。',
 
-		hyyz_b3_sp_weierwei: '不，我必须，亲手弥补！',
+		hyyz_b3_weierwei: '不，我必须，亲手弥补！',
 		mengluoxuan1: '谢幕之时，尽请欢呼吧！',
 		mengluoxuan2: '我会让你的毁灭，美妙绝伦！',
 		mengwuzhuang1: '特型武装型号九，入场吧！',
@@ -985,8 +955,6 @@ const hyyzvoices = {
 		mengxueyuan2: '补充点盐分。',
 		mengqiusheng1: '啊，被叮了个包…',
 		mengqiusheng2: '得快点止血。',
-
-		hyyz_ɸ_luotianyi: '',
 
 		hyyz_xt_sp_shajin: '满盘皆输啊……',
 		mengyanglu1: '呵，全押了，我买单。',
@@ -1070,6 +1038,8 @@ const hyyzvoices = {
 		'hyyzminggan3': '命运，并非一种选择。',
 		'hyyzminggan4': '这次想同我了解什么？',
 		'hyyzyibu1': '记忆是常变的泡沫。静默的水面下…便是无尽深渊。',
+		hyyzyibu2: '无理的客人',
+		hyyzyibu3: '你将承受代价！',
 
 		'hyyz_xt_xier': '我……还能……',
 		'hyyzfuguang1': '早点给你个痛快！',
@@ -1094,14 +1064,14 @@ const hyyzvoices = {
 		hyyzliaoyuan1: '燎原之火！',
 		hyyzliaoyuan2: '火，还不够旺！',
 	},
-	...{//202407
+	...{//2407
 		hyyz_xt_wu_liuying: '任务……终止……',
 
 		hyyz_xt_re_liuying: '任务……终止……',
 
 		hyyz_xt_sp_liuying: '任务……终止……',
 	},
-	...{//2408hyyz_b3_leidianyayi
+	...{//2408
 		hyyz_ys_sp_furina: '别看我……丢人的样子……',
 		hyyzshenyi1: '没什么，我没什么想倾诉的，我可是神明芙宁娜，一切都会好起来的！',
 		hyyzshenyi2: '唉，真是的，给我点面子啊！',
@@ -1154,8 +1124,6 @@ const hyyzvoices = {
 
 
 		hyyz_xt_sb_ruanmei: '还没有……答案……',
-		mengdanqinghuiqianqiu1: '你仍有值得研究的价值。',
-		mengdanqinghuiqianqiu2: '很好，优美的姿势。',
 
 		hyyz_ys_xiaogong: '祭典，结束了……',
 		mengyanshi1: '想看烟花吗？',
@@ -1165,7 +1133,7 @@ const hyyzvoices = {
 		mengqingcun2: '金鱼来啦！',
 		menghuahuoyouyi1: '烟花来咯！',
 
-		hyyz_xt_sp_botiou: '呵呵……好枪法……',
+		hyyz_xt_xunlie_botiou: '呵呵……好枪法……',
 
 		hyyz_b3_leidianyayi: '',
 		menglizui: '',
@@ -1174,17 +1142,10 @@ const hyyzvoices = {
 
 		hyyz_ys_sb_zhongli: '磐石……也会归于尘土……',
 
-		meng_feixiao: '各位…拜托了……',
-		mengyueguan1: '不避，不悔！',
-		mengyueguan2: '无惧，无畏！',
-		mengleishou1: '我将，巡征追猎。',
-		mengleishou2: '翾翔不坠，万载常胜！',
-		mengleishou3: '太慢！',
-		mengleishou4: '不行。',
-		mengleishou5: '大捷，已定！',
+		hyyz_xt_sp_feixiao: '各位…拜托了……',
 		mengtiantong1: '良机就在当下。',
 
-		hyyz_xt_sp_sanyueqi: '江湖…难啊……',
+		hyyz_xt_xunlie_sanyueqi: '江湖…难啊……',
 		mengxijian1: '师父请喝茶！',
 		mengxijian2: '劳您担待啦！',
 		menghuiwu1: '看我这招！',
@@ -1225,7 +1186,7 @@ const hyyzvoices = {
 		'hyyzlingzhong2': '愿歌声为我们带来胜利。',
 		'hyyzlingzhong3': '希望世间纷争不再。',
 
-		hyyz_b3_sp_hua: '轩辕……终于可以……',
+		hyyz_b3_wo_hua: '轩辕……终于可以……',
 	},
 	...{//2411
 		hyyz_xt_moze: '功亏…一篑……',
@@ -1237,7 +1198,7 @@ const hyyzvoices = {
 		mengjiandai2: '夜色，如影随形。',
 		mengjiandai3: '幽冥，奔袭！',
 
-		hyyz_xt_heita: '断开…连接……',
+		hyyz_xt_wo_heita: '断开…连接……',
 		mengaixing1: '有人问我灵感是什么，不就是脑中一分钟几千次的波动吗',
 		mengaixing2: '既不解题，又不写稿，那就别怪自己的人生无趣咯',
 		mengwoxiang1: '就这样吧，人偶而已，别要求太多。',
@@ -1251,7 +1212,7 @@ const hyyzvoices = {
 
 		hyyz_b3_sp_meibiwusi: '死亡……只是一个开始……',
 
-		hyyz_b3_weierwei: '',
+		hyyz_b3_wo_weierwei: '',
 	},
 	...{//2412
 		hyyz_ys_xigewen: '还有病人在等我…',
@@ -1321,6 +1282,8 @@ const hyyzvoices = {
 		'hyyz_xt_sp_zhigengniao': '演出……还没……',
 
 		hyyz_b3_sp_qingque: '不想……回去工作……',
+
+		hyyz_ys_zheping: '',
 	},
 	...{//2501
 		hyyz_xt_yvkong: '我无颜面对……',
@@ -1497,6 +1460,73 @@ const hyyzvoices = {
 		hyyz_xt_jingliu: '终于……解脱了……',
 
 		hyyz_b3_re_hua: '轩辕……终于可以……',
+
+		hyyz_ys_yanfei: '判断…失误了吗……',
+		hyyzwoxuan1: '嗯，这次就算你预约过了。',
+		hyyzwoxuan2: '权衡二者，真是种学问呢。',
+		hyyzhuanlv1: '不期修古，不法常可。',
+		hyyzhuanlv2: '天下之大无奇不有啊。',
+
+		hyyz_xt_huanyv_qingque: '不想……回去工作……',
+
+		hyyz_sp_qingque: '不想……回去工作……',
+
+		hyyz_ɸ_luotianyi: '',
+
+		hyyz_ɸ_shalangbaizi: '抱歉，是我判断失误了……',
+		mengxieyuan1: '有备无患，简单道理',
+		mengxieyuan2: '优秀的指挥，老师',
+		mengxieyuan3: '状态良好，走吧',
+		mengxieyuan4: 'clear',
+		mengxieyuan5: '上了哦',
+		mengxieyuan6: '掩护射击',
+		mengkongxi1: '目标，设立完毕',
+		mengkongxi2: '开始火力支援',
+		mengkongxi3: '无人机开始支援',
+		mengkongxi4: '设备启动',
+
+		hyyz_ɸ_zhipeizhilvzhe: '善，是一种需要相信的东西，而恶，不需要！',
+		mengsangchuan1: '人性的卑劣，远比灾难更可怕！',
+		mengsangchuan2: '既然未来比现在更黑暗，那你为什么要劝我看向光明？',
+		mengsangchuan3: '欢迎来到，支配剧场',
+		mengsangchuan4: '是你救了那些折磨我的混蛋！',
+		mengsangchuan5: '灾害没有击垮我们，身为同胞的人类却做到了',
+		mengsangchuan6: '这样的世界，从一开始，就不存在真正的救赎！',
+		mengsangchuan7: '因为那个女人让你活下去，带着贯穿余生的自责与愧疚',
+		mengsangchuan8: '她救了你，却在你心中留下了永远的诅咒！',
+		mengsangchuan9: '也许我的人生，也要到此为止了……',
+		mengsangchuan10: '这种声音，一点一点扩散，变成了丑恶',
+		mengsangchuan11: '这个世界的所有人都是这样，盲目、冲动、自私、悲哀！',
+		mengsangchuan12: '无论付出什么样的代价，都要把你，拉进我们的剧场！',
+		mengsangchuan13: '是时候，给剧目一个收尾了！',
+		mengsangchuan14: '哈哈哈哈！啊哈哈哈哈哈！',
+
+		hyyz_ys_die_naweilaite: '潮汐再起时，我必将归来…',
+		hyyzyuanping1: '潮水啊，我已归来。',
+		hyyzyuanping2: '化作，浮沫吧。',
+		hyyzyuanping3: '凡高大者，我无不蔑视。',
+		hyyzyvzhi1: '肃静！',
+		hyyzyvzhi2: '低头。',
+		hyyzyvzhi3: '不得喧哗。',
+
+		hyyz_zzz_die_banyue: '喝……',
+		hyyznuxiang1: "燎原，撼岳。",
+		hyyznuxiang2: "我身如岳。",
+		hyyznuxiang3: "五-岳-倾。",
+		hyyzjinchi1: "撼天动地，地崩山摧！",
+		hyyzjinchi2: "灭却——此恨！",
+
+		hyyz_xt_die_feixiao: '各位…拜托了……',
+		hyyzsanwu1: '不避，不悔！',
+		hyyzsanwu2: '无惧，无畏！',
+		hyyzsanwu3: '太慢！',
+		hyyzsanwu4: '不行。',
+		hyyzsanwu5: '大捷，已定！',
+		hyyzxinshou1: '我将，巡征追猎。',
+		hyyzxinshou2: '翾翔不坠，万载常胜！',
+
+		hyyz_ys_die_furina: '别看我……丢人的样子……',
+
 	},
 	...{//ym
 		ym_zilinggudelige: '白天爆肝，晚上圆梦，粉丝白嫖，万万不可呀',

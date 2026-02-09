@@ -5,6 +5,7 @@ import { characters as characters2023, dynamicTranslates as dynamicTranslates202
 import { characters as characters2024, dynamicTranslates as dynamicTranslates2024 } from './character2024.js'
 import { characters as characters2025, dynamicTranslates as dynamicTranslates2025 } from './character2025.js'
 import { characters as characters2026, dynamicTranslates as dynamicTranslates2026 } from './character2026.js'
+import { characters as charactersym, dynamicTranslates as dynamicTranslatesym } from './characterym.js'
 import { hyyzcards } from './card.js';
 import hyyzvoices from './voices.js';
 //——————————————链接台词对应的语音——————————————//
@@ -14,8 +15,8 @@ for (let characterName in hyyzvoices) {
 }
 
 //——————————————整合武将信息————————— —————//
-const allCharacter = { ...characters2023, ...characters2024, ...characters2025, ...characters2026 },//
-	dynamicTranslates = { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026 }
+const allCharacter = { ...characters2023, ...characters2024, ...characters2025, ...characters2026, ...charactersym },//
+	dynamicTranslates = { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026, ...dynamicTranslatesym }
 //初始化一些常用属性
 const characters = {}, characterTitles = {}, characterIntros = {}, skills = {}, translates = {}, characterSorts = {};
 //依次过滤、筛选、解码导入的信息
@@ -55,6 +56,44 @@ if (lib.config['extension_忽悠宇宙_type'] == '1') {//按角色来源分类
 		return 'hyyzSort_' + (['b3', 'ys', 'zzz', 'xt'].includes(name.split('_')[1]) ? name.split('_')[1] : 'other');
 	}
 } else if (lib.config['extension_忽悠宇宙_type'] == '2') {//按设计师分类
+	lib.hyyz.authors = {
+		hyyzSort_lige: '紫灵谷的骊歌',
+		hyyzSort_huohuoTail: '尾巴酱',
+		hyyzSort_canghaiyisu: '沧海依酥',
+		hyyzSort_menghai: '梦海离殇',
+		hyyzSort_miealiei: '咩阿栗诶',
+		hyyzSort_youyi: '柚衣',
+		hyyzSort_xiao: '魈',
+		hyyzSort_fushengyi: '浮生亦',
+		hyyzSort_lalalala: '啦啦啦啦',
+		hyyzSort_rijiu: '日玖阳气冲三关',
+		hyyzSort_xilin: '西琳',
+		hyyzSort_weiyu: '微雨',
+		hyyzSort_miao: '埋埋埋埋喵',
+		hyyzSort_lengruohan: '冷若寒',
+		hyyzSort_xinzhi: '心之所向_星之所向',
+		hyyzSort_mushancai: '木善才',
+		hyyzSort_zhouwang: '纣王',
+		hyyzSort_yuezhou: '樾舟',
+		//无自设
+		hyyzSort_feisesu: '绯色愫',
+		hyyzSort_shiyi: '拾壹',
+		hyyzSort_muci: '慕辞',
+		hyyzSort_liuying: '流萤一生推',
+		hyyzSort_qixiyue: '七夕月',
+		hyyzSort_sabalujiang: '萨巴鲁酱',
+		hyyzSort_zuoyeliuying: '昨夜流萤',
+		hyyzSort_qianqiuwanye: '千秋万叶',
+		hyyzSort_huangliangjiu: '黄粱酒温梦',
+		hyyzSort_yishuizhian: '奕水之安',
+		hyyzSort_zhushang: '一般路过の祝商',
+		hyyzSort_huidanglingjueding: '会当凌绝顶喵',
+		hyyzSort_yayiyuanfei: '鸦懿鸢霏',
+		hyyzSort_wuleizhengxin: '五雷正心',
+		hyyzSort_dengjie: '灯姐',
+		hyyzSort_sanqiu: '三秋',
+		hyyzSort_luoyeqiushuang: '落叶秋霜',
+	}
 	Object.assign(translates, lib.hyyz.authors)
 	sortName = function (author) {
 		for (let sort in lib.hyyz.authors) {
@@ -152,6 +191,7 @@ for (let data in allCharacter) {//键：日期
 	}
 }
 //——————————————存入库——————————————//
+lib.hyyz.characters = {}
 Object.assign(lib.hyyz.characters, characters)
 //——————————————导入武将——————————————//
 game.import("character", () => {

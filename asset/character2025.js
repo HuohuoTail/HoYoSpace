@@ -1081,7 +1081,6 @@ const characters = {
 		mengxunhuan_info: '巡寰|转换技，此技能上的技能失效。你使用非伤害牌时，阳：将手牌数调整至护甲值，阴：将护甲值调整至手牌数。',
 		mengchenyv_info: '沉谕|转换技，此技能下的技能失效。你发动其他技能时，阳：令之本轮与此技能交换位置。阴：令之本轮视为持恒技。',
 		mengfeixiang_info: '非相|转换技，此技能仅失效时生效。你造成或受到伤害时，阳：摸两张牌。阴：获得1点护甲。',
-
 	},
 	2502: {
 		hyyz_xt_sp_yinzhi: ['银枝', ['male', 'hyyz_xt', 4, ['mengketi', 'mengcimei', 'menggaojie'], []], '木善才'],
@@ -1363,7 +1362,6 @@ const characters = {
 					]
 				}
 			},
-			nobracket: true,
 			marktext: '🔥',
 			intro: {
 				markcount(storage, player, x) {
@@ -1386,6 +1384,7 @@ const characters = {
 					if (!player.storage.menghunqvmingzhichishenbumie) player.storage.menghunqvmingzhichishenbumie = 0;
 					player.storage.menghunqvmingzhichishenbumie += trigger.num;
 					player.markSkill(event.name)
+					player.addTip('menghunqvmingzhichishenbumie', '炽神 🔥' + player.storage.menghunqvmingzhichishenbumie)
 					event.trigger('yvran')
 				}
 			},
@@ -1399,7 +1398,6 @@ const characters = {
 		},
 		mengsimingzhangluyixiebozhi: {
 			audio: 2,
-			nobracket: true,
 			sunbenSkill: true,
 			trigger: {
 				player: 'useCard'
@@ -1509,7 +1507,6 @@ const characters = {
 		},
 		mengtianchiwuxingbingxianqianli: {
 			audio: 4,
-			nobracket: true,
 			unique: true,
 			derivation: [],
 			trigger: {
@@ -1525,7 +1522,9 @@ const characters = {
 			async content(event, trigger, player) {
 				player.awakenSkill("mengtianchiwuxingbingxianqianli");
 				lib.skill.menghunqvmingzhichishenbumie.intro.content = `已<span class="firetext">点燃</span>#点体力`;
-				player.when({ global: 'phaseAfter' }).then(() => { player.loseHp(player.hp) })
+				player.when({ global: 'phaseAfter' }).then(() => {
+					player.loseHp(player.hp)
+				})
 
 				const color = player.isUnseen() ? 'fire' : get.groupnature(player.group, "raw");
 				player.$fullscreenpop("鏖战模式", color);
@@ -1586,9 +1585,9 @@ const characters = {
 				}
 			},
 		},
-		menghunqvmingzhichishenbumie_info: '炽神|》曰：魂躯明志，炽神不灭<li>锁定技，你不能因受伤扣减体力，所有角色造成伤害时预燃你等量体力。',
-		mengsimingzhangluyixiebozhi_info: '掌戮|》曰：司民掌戮，以血搏之<li>昂扬技，你使用【杀】时可与目标拼点。你若令点数-N且伤害+N，则没赢者视之为【决斗】没赢。激昂：角色死亡。',
-		mengtianchiwuxingbingxianqianli_info: '兵燹|》曰：天敕五刑，兵燹千里<li>觉醒技，若你已预燃所有体力，点燃之并令游戏进入“鏖战”，然后对所有角色执行燃烧且销毁亮出牌的【兵临城下】。',
+		menghunqvmingzhichishenbumie_info: '炽神|<span class="text" style="font-family: yuanli">>曰:魂躯明志，<br>　　　炽神不灭</span><li>锁定技，你不能因受伤扣减体力，所有角色造成伤害时预燃你等量体力。',
+		mengsimingzhangluyixiebozhi_info: '掌戮|<span class="text" style="font-family: yuanli">>曰:司民掌戮，<br>　　　以血搏之</span><li>昂扬技，你使用【杀】时可与目标拼点。你若令点数-N且伤害+N，则没赢者视之为【决斗】没赢。激昂：角色死亡。',
+		mengtianchiwuxingbingxianqianli_info: '兵燹|<span class="text" style="font-family: yuanli">>曰:天敕五刑，<br>　　　兵燹千里</span><li>觉醒技，若你已预燃所有体力，点燃之并令游戏进入“鏖战”，然后对所有角色执行燃烧且销毁亮出牌的【兵临城下】。',
 	},
 	2503: {
 		hyyz_ɸ_shengongbao: ['申公豹', ['male', 'qun', 4, ['mengchongshi', 'mengkunmiu'], []], '彪心慕凤-尾巴酱', ''],
@@ -2165,6 +2164,7 @@ const characters = {
 				if (player == trigger.player && trigger.num1 <= trigger.num2 || player != trigger.player && trigger.num1 >= trigger.num2) {
 					player.addSkill('mengguina2');
 					player.storage.mengguina2++;
+					player.addTip('mengguina', '归纳 +' + player.storage.mengguina2)
 					player.markSkill('mengguina2')
 				} else {
 					player.removeSkill('mengguina2');
@@ -2177,6 +2177,7 @@ const characters = {
 			},
 			onremove(player) {
 				delete player.storage.mengguina2
+				player.removeTip('mengguina')
 				player.unmarkSkill('mengguina2')
 			},
 			trigger: {

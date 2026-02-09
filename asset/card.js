@@ -441,28 +441,39 @@ export const hyyzcards = {
 			type: "trick",
 			//recastable() { return true; },
 			global: "hyyz_qiongguan_skill",
-			async content(event, trigger, player) {
-				let evt_useCard = event.getParent(),//xtqiongguan=>useCard
-					evt_judge = evt_useCard.getParent(5);//judge
-				const chooseCardResultCards = evt_useCard.cards;
-
-				if (evt_judge.player.judging[0].clone) {
-					evt_judge.player.judging[0].clone.classList.remove('thrownhighlight');
-					game.broadcast(function (card) {
-						if (card.clone) card.clone.classList.remove('thrownhighlight');
-					}, evt_judge.player.judging[0]);
-					game.addVideo('deletenode', player, get.cardsInfo([evt_judge.player.judging[0].clone]));
+			async content(event, triggerXXX, player) {
+				/**判定发生的时机judge
+				 * - judge 6
+				 * - arrangeTrigger 5
+				 * - trigger 4
+				 * - hyyz_qiongguan_skill 3
+				 * - chooseToUse 2
+				 * - useCard 1
+				 * - hyyz_qiongguan == event
+				 */
+				let trigger = event.getParent(6);//judge
+				const { cards } = event;
+				if (cards?.length) {
+					if (trigger.player.judging[0].clone) {
+						trigger.player.judging[0].clone.classList.remove('thrownhighlight');
+						game.broadcast(function (card) {
+							if (card.clone) card.clone.classList.remove('thrownhighlight');
+						}, trigger.player.judging[0]);
+						game.addVideo('deletenode', player, get.cardsInfo([trigger.player.judging[0].clone]));
+					}
+					const old_card = trigger.player.judging[0]
+					if (get.suit(old_card) == get.suit(cards[0])) {//花色相同获得
+						player.$gain2(old_card);
+						await player.gain(old_card);
+					} else {//不同则弃置旧判定牌
+						await game.cardsDiscard(old_card);
+					}
+					trigger.player.judging[0] = cards[0];//改成此牌
+					trigger.orderingCards.addArray(cards);//加入
+					game.log(trigger.player, '将判定牌改为', cards);
+					await game.delay(2);
+					console.log(trigger);
 				}
-				if (get.suit(evt_judge.player.judging[0]) == get.suit(chooseCardResultCards[0])) {
-					player.$gain2(evt_judge.player.judging[0]);
-					await player.gain(evt_judge.player.judging[0]);
-				} else {
-					await game.cardsDiscard(evt_judge.player.judging[0]);
-				}
-				evt_judge.player.judging[0] = chooseCardResultCards[0];
-				evt_judge.orderingCards.addArray(evt_useCard.cards);
-				game.log(evt_judge.player, '将判定牌改为', chooseCardResultCards[0]);
-				await game.delay(2);
 			},
 			ai: {
 				basic: {
@@ -2253,6 +2264,7 @@ export const hyyzcards = {
 			prompt2(event, player) {
 				return '对' + get.translation(event.player) + '造成1点附魔任一出现过的属性的伤害'
 			},
+			usable: 1,
 			async cost(event, trigger, player) {
 				let naturesList = lib.skill.hyyz_xuanyuan_skill1.historyNature()
 				naturesList = naturesList.map(name => [name, get.translation(name)]);
@@ -2411,18 +2423,18 @@ export const hyyzcards = {
 				next.set('filterCard', (card, player) => get.position(card) == 'h' && get.name(card) == 'hyyz_qiongguan' && lib.filter.cardEnabled(card, player, 'forceEnable'));
 				next.set("respondTo", [trigger.player, trigger.player.judging[0]])
 				next.set('ai1', function (card) {
-					const player = _status.event.player;
-					const trigger = _status.event.getTrigger(), judging = trigger.player.judging[0]
+					const { player, judging } = get.event();
+					const trigger = _status.event.getTrigger()
+
 					const result = trigger.judge(card) - trigger.judge(judging);
 					const att = get.attitude(player, trigger.player);
 					if (att == 0 || result == 0) return 0;
 					if (att > 0) {
-						return result - get.value(card) / 2;
+						return result
 					}
-					else {
-						return -result - get.value(card) / 2;
-					}
+					return -result
 				});
+				const { cards } = await next.forResult()
 			},
 			mod: {
 				ignoredHandcard(card, player) {
