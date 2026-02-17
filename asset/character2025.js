@@ -176,7 +176,7 @@ const characters = {
 		},
 		mengxiaowang_info: '霄望|若你从未执行过完整回合，你可以翻至背面或受到一点伤害，视为使用一张本回合未使用过的即时牌。',
 		mengqingping_info: '清平|锁定技，你受到伤害后，翻面并于本回合结束后执行额外回合。',
-		mengyunjin_info: '云劲|你的【闪】/【无懈可击】可以对一张被抵消或无效的基本/锦囊牌使用，使用之。',
+		mengyunjin_info: '云劲|你的【闪】/【无懈可击】可以对一张被抵消或无效的基本/锦囊牌使用。',
 
 		hyyz_ɸ_miyali: ['米雅莉', ['female', 'hyyz_ɸ', 4, ['hyyz_dualside', 'mengsanyin', 'mengshuren'], []], '咩阿栗诶', ''],
 		hyyz_dualside: {//用了一小部分冰雪雨柔的代码。但是他写反面的方法有点怪
@@ -1936,7 +1936,7 @@ const characters = {
 		},
 		mengtianyan_info: '天眼|回合开始时，你卜算3。你卜算时，你可以改为将卜算的任意张牌置入你的判定区。',
 		mengdianxue_info: '点穴|锁定技，判定阶段，你改为获得所有判定区内的牌并进行等量次【闪电】判定，判定牌生效后，你将每张判定牌当做一张【出其不意】（助战）使用。',
-		mengzhaijie_info: '斋戒|锁定技，结束阶段，你卜算你手牌数张牌，且此次卜算须至少将X张牌弃置，否则你失去X点体力。（X为中央区内锦囊牌牌数）',
+		mengzhaijie_info: '斋戒|锁定技，结束阶段，你卜算你手牌数张牌，且此次卜算须至少将X张牌弃置，否则你失去X点体力。（X为' + get.hyyzIntroduce('中央区') + '内锦囊牌牌数）',
 
 		hyyz_ys_youla: ['优菈', ['female', 'hyyz_ys', 4, ['mengzuchou', 'menghailang'], []]],
 		mengzuchou: {

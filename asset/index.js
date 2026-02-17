@@ -16,7 +16,7 @@ for (let characterName in hyyzvoices) {
 
 //——————————————整合武将信息————————— —————//
 const allCharacter = { ...characters2023, ...characters2024, ...characters2025, ...characters2026, ...charactersym },//
-	dynamicTranslates = { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026, ...dynamicTranslatesym }
+	dynamicTranslates = { ...dynamicTranslates2023, ...dynamicTranslates2024, ...dynamicTranslates2025, ...dynamicTranslates2026, ...dynamicTranslatesym }// 
 //初始化一些常用属性
 const characters = {}, characterTitles = {}, characterIntros = {}, skills = {}, translates = {}, characterSorts = {};
 //依次过滤、筛选、解码导入的信息
@@ -56,44 +56,6 @@ if (lib.config['extension_忽悠宇宙_type'] == '1') {//按角色来源分类
 		return 'hyyzSort_' + (['b3', 'ys', 'zzz', 'xt'].includes(name.split('_')[1]) ? name.split('_')[1] : 'other');
 	}
 } else if (lib.config['extension_忽悠宇宙_type'] == '2') {//按设计师分类
-	lib.hyyz.authors = {
-		hyyzSort_lige: '紫灵谷的骊歌',
-		hyyzSort_huohuoTail: '尾巴酱',
-		hyyzSort_canghaiyisu: '沧海依酥',
-		hyyzSort_menghai: '梦海离殇',
-		hyyzSort_miealiei: '咩阿栗诶',
-		hyyzSort_youyi: '柚衣',
-		hyyzSort_xiao: '魈',
-		hyyzSort_fushengyi: '浮生亦',
-		hyyzSort_lalalala: '啦啦啦啦',
-		hyyzSort_rijiu: '日玖阳气冲三关',
-		hyyzSort_xilin: '西琳',
-		hyyzSort_weiyu: '微雨',
-		hyyzSort_miao: '埋埋埋埋喵',
-		hyyzSort_lengruohan: '冷若寒',
-		hyyzSort_xinzhi: '心之所向_星之所向',
-		hyyzSort_mushancai: '木善才',
-		hyyzSort_zhouwang: '纣王',
-		hyyzSort_yuezhou: '樾舟',
-		//无自设
-		hyyzSort_feisesu: '绯色愫',
-		hyyzSort_shiyi: '拾壹',
-		hyyzSort_muci: '慕辞',
-		hyyzSort_liuying: '流萤一生推',
-		hyyzSort_qixiyue: '七夕月',
-		hyyzSort_sabalujiang: '萨巴鲁酱',
-		hyyzSort_zuoyeliuying: '昨夜流萤',
-		hyyzSort_qianqiuwanye: '千秋万叶',
-		hyyzSort_huangliangjiu: '黄粱酒温梦',
-		hyyzSort_yishuizhian: '奕水之安',
-		hyyzSort_zhushang: '一般路过の祝商',
-		hyyzSort_huidanglingjueding: '会当凌绝顶喵',
-		hyyzSort_yayiyuanfei: '鸦懿鸢霏',
-		hyyzSort_wuleizhengxin: '五雷正心',
-		hyyzSort_dengjie: '灯姐',
-		hyyzSort_sanqiu: '三秋',
-		hyyzSort_luoyeqiushuang: '落叶秋霜',
-	}
 	Object.assign(translates, lib.hyyz.authors)
 	sortName = function (author) {
 		for (let sort in lib.hyyz.authors) {
@@ -108,7 +70,7 @@ if (lib.config['extension_忽悠宇宙_type'] == '1') {//按角色来源分类
 	}
 }
 for (let data in allCharacter) {//键：日期
-	if (lib.config['extension_忽悠宇宙_type'] == '0') {//按圆梦时间分类
+	if ('按圆梦时间分类' && lib.config['extension_忽悠宇宙_type'] == '0') {//
 		if (/^\d+$/.test(data)) {//日期 202408
 			sortName = 'hyyzSort_' + data
 			translates[sortName] = `20${data.slice(0, 2)}.${data.slice(2)}圆梦`;//hyyz_202408: 2024.08圆梦
@@ -122,10 +84,10 @@ for (let data in allCharacter) {//键：日期
 		characterSorts[sortName] ??= [];//生成一个空扩展包
 	}
 	for (let name in allCharacter[data]) {//键：角色 or 技能名 or 技能名_info
-		//if (sortName != 'hyyzSort_2401') continue;
-		/**值：角色前置数组['',[],'',''] or 技能内容{} or 技能翻译'xx|xxxx' 
-		 * @type { Character | Skill | String } values
-		*/
+		//if (sortName != 'hyyzSort_2401') continue;//测试
+		if (!lib.config['extension_忽悠宇宙_baoji'] && lib.hyyz.configbaoji.includes(name)) continue;
+		if (!lib.config['extension_忽悠宇宙_weakness'] && lib.hyyz.configweakness.includes(name)) continue;
+		/**值：角色前置数组['',[],'',''] or 技能内容{} or 技能翻译'xx|xxxx' */
 		let values = allCharacter[data][name];
 		if (typeof values == 'object' && Array.isArray(values)) {//角色前置数组
 			//武将标准数组
@@ -191,7 +153,6 @@ for (let data in allCharacter) {//键：日期
 	}
 }
 //——————————————存入库——————————————//
-lib.hyyz.characters = {}
 Object.assign(lib.hyyz.characters, characters)
 //——————————————导入武将——————————————//
 game.import("character", () => {

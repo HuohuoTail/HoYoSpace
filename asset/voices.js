@@ -1281,7 +1281,7 @@ const hyyzvoices = {
 
 		'hyyz_xt_sp_zhigengniao': '演出……还没……',
 
-		hyyz_b3_sp_qingque: '不想……回去工作……',
+		hyyz_xt_sp_qingque: '不想……回去工作……',
 
 		hyyz_ys_zheping: '',
 	},
@@ -1469,7 +1469,7 @@ const hyyzvoices = {
 
 		hyyz_xt_huanyv_qingque: '不想……回去工作……',
 
-		hyyz_sp_qingque: '不想……回去工作……',
+		hyyz_xt_zhishi_qingque: '不想……回去工作……',
 
 		hyyz_ɸ_luotianyi: '',
 

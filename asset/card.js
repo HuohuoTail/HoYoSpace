@@ -1092,7 +1092,7 @@ export const hyyzcards = {
 			},
 		},
 		hyyz_xuanyuan_info: ["轩辕剑",
-			"<li>轩辕：你使用的【杀】可以" + get.hyyzIntroduce('附魔') + "任意出现过的属性。<li>墨影：你可令你即将造成伤害的【杀】/【决斗】视为另一者。",
+			"<li>轩辕：你使用的【杀】可以附加任意出现过的属性。<li>墨影：你可令你即将造成伤害的【杀】/【决斗】视为另一者。",
 			`Ⅹ支配之键·支配`],
 		hyyz_xuanyuan: {//5/3
 			epic: true,

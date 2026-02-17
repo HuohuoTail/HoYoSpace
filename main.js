@@ -6,55 +6,183 @@ async function ARENAREADY() { }
 async function PREPARE() { }
 /** @type { importCharacterConfig['skill'] } */
 async function PRECONTENT() {
-	lib.hyyz ??= {}
 	//——————————————军八座位次上限——————————————//
 	_status.maximumNumberOfPlayers ??= 30
+	if ('扩展参数空间') {
+		lib.hyyz ??= {}
+		Object.assign(lib.hyyz, {
+			//本页 - 新增前缀
+			prefix: {
+				//hyyz_b3: '崩',
+				hyyz_b3_sp: 'SP',
+				hyyz_b3_re: '界',
+				hyyz_b3_sb: '谋',
+				hyyz_b3_wu: '武',
+				hyyz_b3_wo: '我',
+				//hyyz_ys: '原',
+				hyyz_ys_sp: 'SP',
+				hyyz_ys_re: '界',
+				hyyz_ys_sb: '谋',
+				hyyz_ys_wu: '武',
+				hyyz_ys_shen: '神',
+				//hyyz_xt: '铁',
+				hyyz_xt_re: '界',
+				hyyz_xt_wo: '我',
+				hyyz_xt_sp: 'SP',
+				hyyz_xt_sb: '谋',
+				hyyz_xt_wu: '武',
+				hyyz_xt_shen: '神',
+				hyyz_xt_huimie: '毁灭',
+				hyyz_xt_xunlie: '巡猎',
+				hyyz_xt_zhishi: '智识',
+				hyyz_xt_tongxie: '同谐',
+				hyyz_xt_xvwu: '虚无',
+				hyyz_xt_cunhu: '存护',
+				hyyz_xt_fengrao: '丰饶',
+				hyyz_xt_jiyi: '记忆',
+				hyyz_xt_huanyv: '欢愉',
+				hyyz_xt_fanyv: '繁育',
+				//hyyz_zzz: '绝',
+				hyyz_zzz_sb: '谋',
+				hyyz_ɸ: 'ɸ',
+				hyyz_ɸ_chunjin: 'ɸ纯烬',
+				ym: '梦',
+				ym_re: '梦界',
+				ym_sp: '梦SP',
 
+				hyyz_ys_die: '🦋',
+				hyyz_xt_die: '🦋',
+				hyyz_zzz_die: '🦋',
+				hyyz_ceshi: '测试·',
+			},
+			//本页 - 详情介绍
+			get introduce() {
+				const introduce = {
+					//属性
+					风蚀: `特有概念：一名角色受到风蚀伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。`,
+					量子: `特有概念：一名角色使用量子【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。`,
+					虚数: `特有概念：一名角色受到虚数伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。`,
+					//buff
+					效果: "特有概念：分为增益[效果]-buff和负面[效果]-debuff，其中debuff包含持续[效果]-dotdebuff。<li>净化：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。<li>驱散：移除所有buff。<li>引爆：立即结算dotdebuff中的高亮效果。",
+					净化: "特有概念：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。",
+					驱散: "特有概念：移除对象所有buff。",
+					引爆: "特有概念：立即结算对象拥有的dotdebuff中的高亮效果。",
+					//buff
+					加速: "特有概念：buff，下个弃牌阶段开始前，插入一个出牌阶段。",
+					//debuff
+					重伤: "特有概念：debuff，下次受到的伤害+1。",
+					虚弱: "特有概念：debuff，下次造成的伤害-1。",
+					减速: "特有概念：debuff，下个出牌阶段开始前，插入一个弃牌阶段。",
+					冻结: "特有概念：debuff，当前回合内不能使用、打出或弃置手牌。",
+					禁锢: "特有概念：debuff，使用的下一张牌无效。",
+					纠缠: "特有概念：debuff，下次成为即时牌的目标后，重铸一张相同类型的牌，否则此牌结算两次。",
+					//dotdebuff
+					裂伤: "特有概念：dotdebuff，每层令此角色使用牌指定其他角色后失去1点体力。",
+					灼烧: "特有概念：dotdebuff，每层令此角色[点燃]区域内随机两张牌（优先手牌）",
+					风化: "特有概念：dotdebuff，准备阶段，每层使此角色受到1点风蚀伤害。",
+					触电: "特有概念：dotdebuff，始终横置；每层使此角色使用或打出无目标的牌后受到1点雷电伤害",
+					//弱点
+					弱点: "特有概念：弱点击破后会触发对应的击破debuff，受到非dotdeubff伤害将被击破弱点。",
 
+					//宝集
+					中央区: "封装概念：本回合进入弃牌堆的牌。",
+					即时牌: "封装概念：基本牌和普通锦囊牌；装备牌和延时锦囊牌称为非即时牌。",
+					周始: "封装概念：转换技或多选项技能完成一轮循环后触发的效果。",
+					附魔: "封装概念：为一项事物增加额外效果。<li>属性：新增该附魔词条。<li>牌：牌生效后，执行该附魔词条中的效果。<li>技能或效果：令附魔对象的拥有者/使用者在结算中视为拥有附魔词条中包含的技能或效果。",
+					滞留牌: '封装概念：此刻没有合法目标的手牌（即不能点击的手牌）。',
+					点燃: "封装概念：被点燃的牌使用时无距离和次数限制且不计入次数上限；每回合结束后弃置之。",
+					断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
+					背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
+					单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
+					追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
+					法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
+					否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
+					异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
+					体力下限: '特有概念：指令一名角色保持存活的最小体力，默认为1。<li>低于体力下限会进入濒死，高于体力下限则存活。例如体力下限为3，2血就会濒死、体力下限为-2，则0血也能存活。',
+				}
+				for (let i in introduce) introduce[i] = '<li>' + introduce[i];
+				return introduce;
+			},
+			//index.js页 - 按设计师分类
+			authors: {
+				hyyzSort_lige: '紫灵谷的骊歌',
+				hyyzSort_huohuoTail: '尾巴酱',
+				hyyzSort_canghaiyisu: '沧海依酥',
+				hyyzSort_menghai: '梦海离殇',
+				hyyzSort_miealiei: '咩阿栗诶',
+				hyyzSort_youyi: '柚衣',
+				hyyzSort_xiao: '魈',
+				hyyzSort_fushengyi: '浮生亦',
+				hyyzSort_lalalala: '啦啦啦啦',
+				hyyzSort_rijiu: '日玖阳气冲三关',
+				hyyzSort_xilin: '西琳',
+				hyyzSort_weiyu: '微雨',
+				hyyzSort_miao: '埋埋埋埋喵',
+				hyyzSort_lengruohan: '冷若寒',
+				hyyzSort_xinzhi: '心之所向_星之所向',
+				hyyzSort_mushancai: '木善才',
+				hyyzSort_zhouwang: '纣王',
+				hyyzSort_yuezhou: '樾舟',
+				//无自设
+				hyyzSort_feisesu: '绯色愫',
+				hyyzSort_shiyi: '拾壹',
+				hyyzSort_muci: '慕辞',
+				hyyzSort_liuying: '流萤一生推',
+				hyyzSort_qixiyue: '七夕月',
+				hyyzSort_sabalujiang: '萨巴鲁酱',
+				hyyzSort_zuoyeliuying: '昨夜流萤',
+				hyyzSort_qianqiuwanye: '千秋万叶',
+				hyyzSort_huangliangjiu: '黄粱酒温梦',
+				hyyzSort_yishuizhian: '奕水之安',
+				hyyzSort_zhushang: '一般路过の祝商',
+				hyyzSort_huidanglingjueding: '会当凌绝顶喵',
+				hyyzSort_yayiyuanfei: '鸦懿鸢霏',
+				hyyzSort_wuleizhengxin: '五雷正心',
+				hyyzSort_dengjie: '灯姐',
+				hyyzSort_sanqiu: '三秋',
+				hyyzSort_luoyeqiushuang: '落叶秋霜',
+			},
+			//index.js页 - 存入所有本扩武将用
+			characters: {},
+			//hyyzBuff.js页 - buff专题
+			buff: new Map([
+				//['buff名',['汉语','类型']],
+				['hyyzBuff_zhongshang', ['重伤', 'debuff']],
+				['hyyzBuff_xuruo', ['虚弱', 'debuff']],
+				['hyyzBuff_jiansu', ['减速', 'debuff']],
+				['hyyzBuff_jingu', ['禁锢', 'debuff']],
+				['hyyzBuff_jiuchan', ['纠缠', 'debuff']],
+				['hyyzBuff_dongjie', ['冻结', 'debuff']],
+
+				['hyyzBuff_zhuoshao', ['灼烧', 'dotdebuff']],
+				['hyyzBuff_chudian', ['触电', 'dotdebuff']],
+				['hyyzBuff_lieshang', ['裂伤', 'dotdebuff']],
+				['hyyzBuff_fenghua', ['风化', 'dotdebuff']],
+
+				['hyyzBuff_jiasu', ['加速', 'buff']],
+			]),
+			//hyyzBuff.js页 - wakness专题
+			weakness: new Map([
+				//['弱点名', ['汉语', '击破debuff']],
+				['fire', ['火', 'hyyzBuff_zhuoshao']],
+				['thunder', ['雷', 'hyyzBuff_chudian']],
+				['hyyz_physical', ['物理', 'hyyzBuff_lieshang']],
+				['hyyz_wind', ['风', 'hyyzBuff_fenghua']],
+
+				['ice', ['冰', 'hyyzBuff_dongjie']],
+				['hyyz_quantum', ['量子', 'hyyzBuff_jiuchan']],
+				['hyyz_imaginary', ['虚数', 'hyyzBuff_jingu']],
+			]),
+			//characterym.js页 - hyyz_ɸ_huyouzongzu忽悠宗族init用
+			clanSkills: {},
+			//index.js页 - 选择特定选项后，这些武将和技能将不会加入扩展内
+			configbaoji:/**宝集+底层 */
+				['hyyz_xt_ren', 'hyyz_b3_kiana', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilinghua', 'hyyz_b3_saixiliya', 'hyyz_ys_wu_xiaogong', 'hyyz_ys_sp_wendy', 'hyyz_xt_wo_danheng', 'hyyz_b3_re_xinyanzhilvzhe', 'hyyz_xt_guinaifen', 'hyyz_ys_sb_nahida', 'hyyz_ys_nahida', 'hyyz_xt_zhenliyisheng', 'hyyz_xt_danhengbailu', 'hyyz_ɸ_pink', 'hyyz_ys_shanhugongxinhai', 'hyyz_b3_zhongyanzhilvzhe', 'hyyz_b3_xinyanzhilvzhe', 'hyyz_xt_lingke', 'hyyz_xt_liuying', 'hyyz_xt_botiou', 'hyyz_zzz_11', 'hyyz_ys_sp_nahida', 'hyyz_ɸ_liang', 'hyyz_xt_sb_ruanmei', 'hyyz_ys_xiaogong', 'hyyz_ɸ_mansui', 'hyyz_xt_zhigengniao', 'hyyz_b3_wo_weierwei', 'hyyz_ɸ_cuicui', 'hyyz_xt_tibao', 'hyyz_xt_shen_nikaduoli', 'hyyz_ɸ_shengongbao', 'hyyz_ɸ_guanzhe', 'hyyz_ys_yianshan', 'hyyz_ys_aikefei', 'hyyz_ys_sikeke', 'hyyz_xt_sp_liuying', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '',],
+			configweakness:/**弱点 */
+				['hyyz_xt_yinlang'],
+		})
+	}
 	if ('新增前缀') {
-		lib.hyyz.prefix = {
-			//hyyz_b3: '崩',
-			hyyz_b3_sp: 'SP',
-			hyyz_b3_re: '界',
-			hyyz_b3_sb: '谋',
-			hyyz_b3_wu: '武',
-			hyyz_b3_wo: '我',
-			//hyyz_ys: '原',
-			hyyz_ys_sp: 'SP',
-			hyyz_ys_re: '界',
-			hyyz_ys_sb: '谋',
-			hyyz_ys_wu: '武',
-			hyyz_ys_shen: '神',
-			//hyyz_xt: '铁',
-			hyyz_xt_re: '界',
-			hyyz_xt_wo: '我',
-			hyyz_xt_sp: 'SP',
-			hyyz_xt_sb: '谋',
-			hyyz_xt_wu: '武',
-			hyyz_xt_shen: '神',
-			hyyz_xt_huimie: '毁灭',
-			hyyz_xt_xunlie: '巡猎',
-			hyyz_xt_zhishi: '智识',
-			hyyz_xt_tongxie: '同谐',
-			hyyz_xt_xvwu: '虚无',
-			hyyz_xt_cunhu: '存护',
-			hyyz_xt_fengrao: '丰饶',
-			hyyz_xt_jiyi: '记忆',
-			hyyz_xt_huanyv: '欢愉',
-			hyyz_xt_fanyv: '繁育',
-			//hyyz_zzz: '绝',
-			hyyz_zzz_sb: '谋',
-			hyyz_ɸ: 'ɸ',
-			hyyz_ɸ_chunjin: 'ɸ纯烬',
-			ym: '梦',
-			ym_re: '梦界',
-			ym_sp: '梦SP',
-
-			hyyz_ys_die: '🦋',
-			hyyz_xt_die: '🦋',
-			hyyz_zzz_die: '🦋',
-			hyyz_ceshi: '测试·',
-		}
 		lib.namePrefix.set('ɸ', { color: '#fd8359', nature: 'soilmm', showName: "ɸ" });//武
 		lib.namePrefix.set('ɸ纯烬', { color: '#fd8359', nature: 'soilmm', showName: "ɸ纯烬" });//武
 		lib.namePrefix.set('我', { color: '#1bdeb4', nature: 'soilmm', showName: "我" });//自定义
@@ -363,106 +491,106 @@ async function PRECONTENT() {
 			},
 		}
 	}
-
-	//——————————————卡牌——————————————//
-	lib.skill._hyyz_heiyuanbaihua = {//黑渊白花合成机制
-		trigger: {
-			player: "equipAfter",
-		},
-		filter(event, player) {
-			if (lib.inpile.includes('hyyz_heiyuanbaihua')) return false;
-
-			let names = ['hyyz_baihua', 'hyyz_heiyuan'];
-			if (!event.cards.some(card => names.includes(card.name)) || !player.getCards('e', card => names.includes(card.name))) return false;
-			names.remove(event.cards.find(card => names.includes(card.name)).name);
-			return event.getl && event.getl(player).es?.some(card => card.name == names[0]);
-		},
-		priority: Infinity,
-		silent: true,
-		async content(event, trigger, player) {
-			let names = ['hyyz_baihua', 'hyyz_heiyuan'];
-			const before = trigger.getl(player).es.find(card => names.includes(card.name));
-			if (before.fix) before.fix();
-			if (before.remove) before.remove();
-			if (!before.destroyed) before.destroyed = true;
-			lib.inpile.remove(before.name);
-			names.remove(before.name);
-
-			const after = trigger.cards.find(card => names[0] == card.name);
-			await player.lose([after], ui.special);
-			if (after.fix) after.fix();
-			if (after.remove) after.remove();
-			if (!after.destroyed) after.destroyed = true;
-			lib.inpile.remove(after.name);
-
-			game.log(before, '和', after, '合为', '#y黑渊白花【♣12】');
-			const card = game.createCard2('hyyz_heiyuanbaihua', 'club', 12);
-			player.equip(card);
-			lib.inpile.add('hyyz_heiyuanbaihua');
-		}
-	}
-	/**玩家显示智库的x张牌 */
-	lib.element.player.zhiku_shown = function (count = 1) {
-		lib.translate.zhiku = '智库';
-		const player = this;
-		let cards = Array.from(ui.cardPile.childNodes).slice(0, count);
-		let gainCards = cards.map((card) => {
-			let cardx = ui.create.card()
-			cardx.init(get.cardInfo(card));
-			cardx._cardid = card.cardid;
-			return cardx;
-		});
-		player.directgains(gainCards, null, "zhiku");
-		const observer = new MutationObserver((mutLists, observer) => {
-			for (const mutList of mutLists) {
-				if (mutList.type === 'childList') {
-					let cards = Array.from(ui.cardPile.childNodes).slice(0, count);
-					let gainCards = cards.map((card) => {
-						let cardx = ui.create.card().init(get.cardInfo(card));
-						cardx._cardid = card.cardid;
-						return cardx;
-					});
-					let deleteCards = player.getCards('s', card => card.hasGaintag('zhiku'));
-					if (player.isOnline2()) {
-						player.send(function (cards, player) {
-							cards.forEach(i => i.delete());
-							if (player == game.me) ui.updatehl();
-						}, deleteCards, player);
-					}
-					deleteCards.forEach(card => card.delete());
-					player.directgains(gainCards, null, "zhiku");
-					if (player == game.me) ui.updatehl();
-				}
-			}
-		});
-		return observer;
-	}
-	/**失去虚空万藏 */
-	lib.skill._xukongwanzang = {
-		trigger: {
-			player: ["loseBegin"]
-		},
-		silent: true,
-		forced: true,
-		forceDie: true,
-		filter(event, player) {
-			return event.cards.some(card => card.name.includes("hyyz_xvkong"));
-		},
-		async content(event, trigger, player) {
-			if (player.storage.zhiku_shown) {
-				player.storage.zhiku_shown.disconnect(ui.cardPile, { childList: true, subtree: true });
-				delete player.storage.zhiku_shown;
-			}
-			player.getCards('s', card => card.hasGaintag('zhiku')).forEach(i => i.delete());
-		},
-		//不准使用！
-		mod: {
-			cardEnabled2(card, player, bool) {
-				if (get.itemtype(card) == 'card' && (card.gaintag?.includes('zhiku'))) return false;
+	if ('合成类卡牌机制') {
+		//黑渊白花合成
+		lib.skill._hyyz_heiyuanbaihua = {
+			trigger: {
+				player: "equipAfter",
 			},
-		},
-	};
+			filter(event, player) {
+				if (lib.inpile.includes('hyyz_heiyuanbaihua')) return false;
 
+				let names = ['hyyz_baihua', 'hyyz_heiyuan'];
+				if (!event.cards.some(card => names.includes(card.name)) || !player.getCards('e', card => names.includes(card.name))) return false;
+				names.remove(event.cards.find(card => names.includes(card.name)).name);
+				return event.getl && event.getl(player).es?.some(card => card.name == names[0]);
+			},
+			priority: Infinity,
+			silent: true,
+			async content(event, trigger, player) {
+				let names = ['hyyz_baihua', 'hyyz_heiyuan'];
+				const before = trigger.getl(player).es.find(card => names.includes(card.name));
+				if (before.fix) before.fix();
+				if (before.remove) before.remove();
+				if (!before.destroyed) before.destroyed = true;
+				lib.inpile.remove(before.name);
+				names.remove(before.name);
+
+				const after = trigger.cards.find(card => names[0] == card.name);
+				await player.lose([after], ui.special);
+				if (after.fix) after.fix();
+				if (after.remove) after.remove();
+				if (!after.destroyed) after.destroyed = true;
+				lib.inpile.remove(after.name);
+
+				game.log(before, '和', after, '合为', '#y黑渊白花【♣12】');
+				const card = game.createCard2('hyyz_heiyuanbaihua', 'club', 12);
+				player.equip(card);
+				lib.inpile.add('hyyz_heiyuanbaihua');
+			}
+		}
+		/**玩家显示智库的x张牌 */
+		lib.element.player.zhiku_shown = function (count = 1) {
+			lib.translate.zhiku = '智库';
+			const player = this;
+			let cards = Array.from(ui.cardPile.childNodes).slice(0, count);
+			let gainCards = cards.map((card) => {
+				let cardx = ui.create.card()
+				cardx.init(get.cardInfo(card));
+				cardx._cardid = card.cardid;
+				return cardx;
+			});
+			player.directgains(gainCards, null, "zhiku");
+			const observer = new MutationObserver((mutLists, observer) => {
+				for (const mutList of mutLists) {
+					if (mutList.type === 'childList') {
+						let cards = Array.from(ui.cardPile.childNodes).slice(0, count);
+						let gainCards = cards.map((card) => {
+							let cardx = ui.create.card().init(get.cardInfo(card));
+							cardx._cardid = card.cardid;
+							return cardx;
+						});
+						let deleteCards = player.getCards('s', card => card.hasGaintag('zhiku'));
+						if (player.isOnline2()) {
+							player.send(function (cards, player) {
+								cards.forEach(i => i.delete());
+								if (player == game.me) ui.updatehl();
+							}, deleteCards, player);
+						}
+						deleteCards.forEach(card => card.delete());
+						player.directgains(gainCards, null, "zhiku");
+						if (player == game.me) ui.updatehl();
+					}
+				}
+			});
+			return observer;
+		}
+		/**失去虚空万藏 */
+		lib.skill._xukongwanzang = {
+			trigger: {
+				player: ["loseBegin"]
+			},
+			silent: true,
+			forced: true,
+			forceDie: true,
+			filter(event, player) {
+				return event.cards.some(card => card.name.includes("hyyz_xvkong"));
+			},
+			async content(event, trigger, player) {
+				if (player.storage.zhiku_shown) {
+					player.storage.zhiku_shown.disconnect(ui.cardPile, { childList: true, subtree: true });
+					delete player.storage.zhiku_shown;
+				}
+				player.getCards('s', card => card.hasGaintag('zhiku')).forEach(i => i.delete());
+			},
+			//不准使用！
+			mod: {
+				cardEnabled2(card, player, bool) {
+					if (get.itemtype(card) == 'card' && (card.gaintag?.includes('zhiku'))) return false;
+				},
+			},
+		};
+	}
 	//——————————————十周年卡牌美化——————————————//
 	if (lib.config.extensions?.includes('十周年UI') && lib.config['extension_十周年UI_enable'] == true) {
 		game.getFileList('extension/十周年UI/image/card-skins/caise', (folders, files) => {
@@ -493,98 +621,52 @@ async function PRECONTENT() {
 			})
 		})
 	}
+	if ('详情介绍') {
+		/**感谢钫酸酱、沐如风晨-创造一个窗口用于显示
+		 * - 只是{@link hyyzIntroduce}的狗而已
+		 * @param {string} str 被显示的字符串
+		 * @param {number}id 被显示窗口的标号
+		 */
+		get.hyyztips = function (str, id) {
+			const hyyztip = ui.create.div('.hyyz-tip', document.body);
+			let isPhone = /mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|OperaMini/i.test(navigator.userAgent);
+			hyyztip.style.zIndex = 998;
+			const hyyztip2 = ui.create.div('.hyyz-tip2', hyyztip);
+			hyyztip2.innerHTML = str;
+			let element = document.getElementById(id);
+			if (element) {
+				let left = element.getBoundingClientRect().left;
+				if (isPhone) left += element.offsetParent.offsetLeft;
+				left += document.body.offsetWidth * 0.14;
+				hyyztip2.style.left = left + 'px';
 
-	//——————————————详情介绍——————————————//
-	let introduce = {
-		生息: "特有概念：buff，加2点体力上限，下次受到伤害后，回复1点体力。失去此效果的回合结束后，减2点体力上限。",
-		//属性
-		风蚀: `特有概念：一名角色受到风蚀伤害时，弃置至少一张牌；每额外弃置两张牌，此伤害减少1点。`,
-		量子: `特有概念：一名角色使用量子【杀】指定目标后，可以重铸一张牌，然后目标角色随机重铸一张同类型的牌。`,
-		虚数: `特有概念：一名角色受到虚数伤害时/使用虚数【杀】指定目标后，受伤角色/目标角色本回合护甲和防具失效。`,
-		//buff
-		效果: "特有概念：分为增益[效果]-buff和负面[效果]-debuff，其中debuff包含持续[效果]-dotdebuff。<li>净化：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。<li>驱散：移除所有buff。<li>引爆：立即结算dotdebuff中的高亮效果。",
-		净化: "特有概念：移除对象判定区的牌、复原武将牌、移除所有debuff、熄灭[点燃]的牌。",
-		驱散: "特有概念：移除对象所有buff。",
-		引爆: "特有概念：立即结算对象拥有的dotdebuff中的高亮效果。",
-		//buff
-		加速: "特有概念：buff，下个弃牌阶段开始前，插入一个出牌阶段。",
-		//debuff
-		重伤: "特有概念：debuff，下次受到的伤害+1。",
-		虚弱: "特有概念：debuff，下次造成的伤害-1。",
-		减速: "特有概念：debuff，下个出牌阶段开始前，插入一个弃牌阶段。",
-		冻结: "特有概念：debuff，当前回合内不能使用、打出或弃置手牌。",
-		禁锢: "特有概念：debuff，使用的下一张牌无效。",
-		纠缠: "特有概念：debuff，下次成为即时牌的目标后，重铸一张相同类型的牌，否则此牌结算两次。",
-		//dotdebuff
-		裂伤: "特有概念：dotdebuff，每层令此角色使用牌指定其他角色后失去1点体力。",
-		灼烧: "特有概念：dotdebuff，每层令此角色[点燃]区域内随机两张牌（优先手牌）",
-		风化: "特有概念：dotdebuff，准备阶段，每层使此角色受到1点风蚀伤害。",
-		触电: "特有概念：dotdebuff，始终横置；每层使此角色使用或打出无目标的牌后受到1点雷电伤害",
-		//弱点
-		弱点: "特有概念：弱点击破后会触发对应的击破debuff，受到非dotdeubff伤害将被击破弱点。",
-
-		//宝集
-		中央区: "封装概念：本回合进入弃牌堆的牌。",
-		即时牌: "封装概念：基本牌和普通锦囊牌；装备牌和延时锦囊牌称为非即时牌。",
-		周始: "封装概念：转换技或多选项技能完成一轮循环后触发的效果。",
-		附魔: "封装概念：为一项事物增加额外效果。<li>属性：新增该附魔词条。<li>牌：牌生效后，执行该附魔词条中的效果。<li>技能或效果：令附魔对象的拥有者/使用者在结算中视为拥有附魔词条中包含的技能或效果。",
-		滞留牌: '封装概念：此刻没有合法目标的手牌（即不能点击的手牌）。',
-		点燃: "封装概念：被点燃的牌使用时无距离和次数限制且不计入次数上限；每回合结束后弃置之。",
-		断拒: "特有概念：背水的反面，不执行任何选项，直接执行后面的效果。<li>可视为一个空白无效果的按钮。",
-		背水: "官方概念：断拒的反面，依次执行前面所有选项！<li>技能中存在多个选项或分支时，执行背水的效果后，再依次执行所有选项的内容。若不能支付代价，无法选择背水选项。",
-		单挑: '特有概念：与一名角色进入其他存活角色离场的单挑模式，默认持续至当前回合结束。',
-		追加攻击: '特有概念：一名角色于回合外，或非牌造成的伤害。',
-		法则技: '封装概念：本局游戏，所有角色均视为拥有的技能。<li>你死亡后此技能依然存在。',
-		否极技: '封装概念：转换技与选项的变种。拥有多个选项，但每个选项只能选择一次。所有选项均选择过后，触发“泰来”：重置所有选项并执行后面的效果。<li>选项形式很多样，如：装备区之于各个装备栏、所有角色之于各个角色，也存在角色与选项绑定的情况：薪炎之律者。',
-		异常: '特有概念：指有扩展的装备栏或废除的装备栏。通常伴有“初始化装备栏”，指恢复成通常情况的五个标准装备栏。',
-	}
-	for (let i in introduce) introduce[i] = '<li>' + introduce[i];
-	lib.hyyz.introduce = introduce;
-	/**感谢钫酸酱、沐如风晨-创造一个窗口用于显示
-	 * - 只是{@link hyyzIntroduce}的狗而已
-	 * @param {string} str 被显示的字符串
-	 * @param {number}id 被显示窗口的标号
-	 */
-	get.hyyztips = function (str, id) {
-		const hyyztip = ui.create.div('.hyyz-tip', document.body);
-		let isPhone = /mobile|Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|OperaMini/i.test(navigator.userAgent);
-		hyyztip.style.zIndex = 998;
-		const hyyztip2 = ui.create.div('.hyyz-tip2', hyyztip);
-		hyyztip2.innerHTML = str;
-		let element = document.getElementById(id);
-		if (element) {
-			let left = element.getBoundingClientRect().left;
-			if (isPhone) left += element.offsetParent.offsetLeft;
-			left += document.body.offsetWidth * 0.14;
-			hyyztip2.style.left = left + 'px';
-
-			let top = element.getBoundingClientRect().top;
-			top += document.body.offsetHeight * 0.08;
-			hyyztip2.style.top = top + 'px';
+				let top = element.getBoundingClientRect().top;
+				top += document.body.offsetHeight * 0.08;
+				hyyztip2.style.top = top + 'px';
+			}
+			hyyztip.listen(function (e) {
+				e.stopPropagation();
+				this.remove();
+			})
 		}
-		hyyztip.listen(function (e) {
-			e.stopPropagation();
-			this.remove();
-		})
+		/**弹窗显示注释
+		 * 返回的字符串有超链接效果
+		 * @param {string} key 被解释的关键词
+		 * @param {string} str 解释的内容
+		 * @returns {string}
+		 */
+		get.hyyzIntroduce = function (key, str) {
+			let link = `<u><b>[`
+			const id = (Math.random() * 9 + 1) * 100000;//随机id，并不稳定，但是基本没有bug//建议改为固定规则的编码
+			if (str && str != '') {
+				link += `<a id='${id}' style = 'color: unset' href = "javascript: get.hyyztips('${str}', '${id}'); ">${key}</a>`;
+			} else if (lib.hyyz.introduce[key]) {
+				link += `<a id='${id}' style = 'color: unset' href = "javascript: get.hyyztips('${lib.hyyz.introduce[key]}', '${id}'); ">${key}</a>`;
+			} else link += '锟斤拷';
+			link += `]</b></u>`;
+			return link;
+		}
 	}
-	/**弹窗显示注释
-	 * 返回的字符串有超链接效果
-	 * @param {string} key 被解释的关键词
-	 * @param {string} str 解释的内容
-	 * @returns {string}
-	 */
-	get.hyyzIntroduce = function (key, str) {
-		let link = `<u><b>[`
-		const id = (Math.random() * 9 + 1) * 100000;//随机id，并不稳定，但是基本没有bug//建议改为固定规则的编码
-		if (str && str != '') {
-			link += `<a id='${id}' style = 'color: unset' href = "javascript: get.hyyztips('${str}', '${id}'); ">${key}</a>`;
-		} else if (lib.hyyz.introduce[key]) {
-			link += `<a id='${id}' style = 'color: unset' href = "javascript: get.hyyztips('${lib.hyyz.introduce[key]}', '${id}'); ">${key}</a>`;
-		} else link += '锟斤拷';
-		link += `]</b></u>`;
-		return link;
-	}
-
 	//——————————————导入特殊机制——————————————//
 	hyyzBuffx();
 	import('./asset/index.js')
@@ -597,7 +679,7 @@ async function CONTENT(config, pack) {
 		])
 		//ss史诗，均衡强，或偶尔极致
 		lib.rank.rarity['epic'].addArray([
-			'hyyz_xt_jingyuan', 'hyyz_xt_welt', 'hyyz_xt_yinlang', 'hyyz_xt_jizi', 'hyyz_xt_sp_sushang', 'hyyz_xt_bronya', 'hyyz_xt_sushang', 'hyyz_b3_sp_xier', 'hyyz_b3_sb_jiziwuliangta', 'hyyz_xt_danhengyinyue', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilingren', 'hyyz_b3_sushang', 'hyyz_ys_shenlilinghua', 'hyyz_ys_nuoaier', 'hyyz_xt_huohuo', 'hyyz_ys_sp_wendy', 'hyyz_ys_abeiduo', 'hyyz_ɸ_zhaoxing', 'hyyz_xt_aisida', 'hyyz_xt_ruanmei', 'hyyz_xt_yinzhi', 'hyyz_b3_aiyi', 'hyyz_xt_sp_jingyuan', 'hyyz_xt_guinaifen', 'hyyz_ys_zhongli', 'hyyz_xt_zhenliyisheng', 'hyyz_b3_jiziwuliangta', 'hyyz_xt_sp_huohuo', 'hyyz_ɸ_pink', 'hyyz_xt_wangxiayitong', 'hyyz_xt_sb_jingliu', 'hyyz_b3_ailixiya', 'hyyz_b3_geleixiu', 'hyyz_b3_wu_hua', 'hyyz_b3_sp_kaiwen', 'hyyz_b3_su', 'hyyz_b3_shiyuanzhilvzhe', 'hyyz_b3_yidian', 'hyyz_ɸ_luotianyi', 'hyyz_xt_huangquan', 'hyyz_xt_botiou', 'hyyz_xt_fuxuan', 'hyyz_b3_leidianyayi', 'hyyz_ys_sb_zhongli', 'hyyz_ɸ_quancong', 'hyyz_ys_fukaluosi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_luanpo', 'hyyz_b3_wo_hua', 'hyyz_b3_wo_weierwei', 'hyyz_ɸ_dinyi', 'hyyz_b3_sp_qingque', 'hyyz_ɸ_king', 'hyyz_ɸ_peiyuanshao', 'hyyz_xt_tibao', 'hyyz_ɸ_caiwenji', 'hyyz_xt_shen_nikaduoli', 'hyyz_ys_sikeke', 'hyyz_b3_re_hua', 'ym_zilinggudelige', 'ym_weibajiang', 'ym_canghaiyisu', 'ym_miealiei', 'ym_fushengyi', 'ym_lalalala', 'ym_rijiu', 'ym_zhongshiweiyu', 'ym_daowuji', 'ym_sp_daowuji', 'ym_mushancai', 'ym_xiaohuanxiong', 'hyyz_xt_sb_daheita', 'hyyz_b3_lizhilvzhe', 'hyyz_xt_huimie_kaituozhe', 'hyyz_xt_cunhu_kaituozhe', 'hyyz_xt_tongxie_kaituozhe', 'hyyz_sp_qingque', 'hyyz_ɸ_zhipeizhilvzhe', 'hyyz_ɸ_shalangbaizi', 'hyyz_ɸ_xierde', 'hyyz_ɸ_yelianna', 'hyyz_xt_sp_daheita', '', '', '', '', '', '', '', '', '', '', '', '', '',
+			'hyyz_xt_jingyuan', 'hyyz_xt_welt', 'hyyz_xt_yinlang', 'hyyz_xt_jizi', 'hyyz_xt_sp_sushang', 'hyyz_xt_bronya', 'hyyz_xt_sushang', 'hyyz_b3_sp_xier', 'hyyz_b3_sb_jiziwuliangta', 'hyyz_xt_danhengyinyue', 'hyyz_b3_sp_jiziwuliangta', 'hyyz_ys_shenlilingren', 'hyyz_b3_sushang', 'hyyz_ys_shenlilinghua', 'hyyz_ys_nuoaier', 'hyyz_xt_huohuo', 'hyyz_ys_sp_wendy', 'hyyz_ys_abeiduo', 'hyyz_ɸ_zhaoxing', 'hyyz_xt_aisida', 'hyyz_xt_ruanmei', 'hyyz_xt_yinzhi', 'hyyz_b3_aiyi', 'hyyz_xt_sp_jingyuan', 'hyyz_xt_guinaifen', 'hyyz_ys_zhongli', 'hyyz_xt_zhenliyisheng', 'hyyz_b3_jiziwuliangta', 'hyyz_xt_sp_huohuo', 'hyyz_ɸ_pink', 'hyyz_xt_wangxiayitong', 'hyyz_xt_sb_jingliu', 'hyyz_b3_ailixiya', 'hyyz_b3_geleixiu', 'hyyz_b3_wu_hua', 'hyyz_b3_sp_kaiwen', 'hyyz_b3_su', 'hyyz_b3_shiyuanzhilvzhe', 'hyyz_b3_yidian', 'hyyz_ɸ_luotianyi', 'hyyz_xt_huangquan', 'hyyz_xt_botiou', 'hyyz_xt_fuxuan', 'hyyz_b3_leidianyayi', 'hyyz_ys_sb_zhongli', 'hyyz_ɸ_quancong', 'hyyz_ys_fukaluosi', 'hyyz_xt_sb_fuxuan', 'hyyz_xt_luanpo', 'hyyz_b3_wo_hua', 'hyyz_b3_wo_weierwei', 'hyyz_ɸ_dinyi', 'hyyz_xt_sp_qingque', 'hyyz_ɸ_king', 'hyyz_ɸ_peiyuanshao', 'hyyz_xt_tibao', 'hyyz_ɸ_caiwenji', 'hyyz_xt_shen_nikaduoli', 'hyyz_ys_sikeke', 'hyyz_b3_re_hua', 'ym_zilinggudelige', 'ym_weibajiang', 'ym_canghaiyisu', 'ym_miealiei', 'ym_fushengyi', 'ym_lalalala', 'ym_rijiu', 'ym_zhongshiweiyu', 'ym_daowuji', 'ym_sp_daowuji', 'ym_mushancai', 'ym_xiaohuanxiong', 'hyyz_xt_sb_daheita', 'hyyz_b3_lizhilvzhe', 'hyyz_xt_huimie_kaituozhe', 'hyyz_xt_cunhu_kaituozhe', 'hyyz_xt_tongxie_kaituozhe', 'hyyz_xt_zhishi_qingque', 'hyyz_ɸ_zhipeizhilvzhe', 'hyyz_ɸ_shalangbaizi', 'hyyz_ɸ_xierde', 'hyyz_ɸ_yelianna', 'hyyz_xt_sp_daheita', '', '', '', '', '', '', '', '', '', '', '', '', '',
 		])
 		//a+s精品，普通武将
 		lib.rank.rarity['rare'].addArray([
@@ -611,9 +693,9 @@ async function CONTENT(config, pack) {
 	if ('武将包') {
 		//——————————————自动开启武将包——————————————//
 		if (!lib.config['extension_忽悠宇宙_init']) {
-			//game.saveConfig('extension_忽悠宇宙_init', true);
-			//game.saveConfig('characters', lib.config.characters.concat(['hyyzCharacter', 'hyyzmysCharacter', 'hyyzmengCharacter', 'hyyzymCharacter', 'hyyzysltCharacter']))
-			//game.saveConfig('cards', lib.config.cards.concat(['hyyzCard', 'hyyzmengCard']));
+			game.saveConfig('extension_忽悠宇宙_init', true);
+			game.saveConfig('characters', lib.config.characters.concat(['hyyzCharacter']))
+			game.saveConfig('cards', lib.config.cards.concat(['hyyzCard']));
 		};
 		//——————————————清理重复包——————————————//
 		lib.config.characters = [...new Set(lib.config.characters)];
@@ -651,16 +733,17 @@ const CONFIG = {
 			'2': '按设计师分类',
 		}
 	},
-	buff: {//忽悠模式
-		name: 'buff系统(建议打开)',
-		intro: "若关闭，新buff不能再被赋予，部分武将技能效果无法执行",
-		init: true,
+	line1: { name: '<hr>' },
+	baoji: {
+		name: '复杂机制',
+		intro: '<li>开启时，包含大宝规则集、涉及结算底层、阅读理解困难的特殊机制，刚需玩家对新潮设计有较高的了解和较深的理解。<li>关闭后，相关机制的武将不会加入游戏。',
+		init: false,
 		clear: false,
 	},
 	weakness: {
-		name: '弱点系统(即时)',
-		intro: "若开启，角色开局获得两个弱点；若关闭，立即清除场上所有的弱点",
-		init: true,
+		name: '弱点系统',
+		intro: "<li>开启时：游戏开始时每个角色获得两个弱点。<li>关闭时：重启游戏后，相关机制的武将不会加入游戏。",
+		init: false,
 		clear: false,
 		update() {
 			if (lib.config["extension_忽悠宇宙_weakness"] != true && game.filterPlayer2 && lib.element.player.$syncWeakness) game.filterPlayer2((current => {
@@ -680,7 +763,7 @@ const CONFIG = {
 		},
 		onclick(item) {
 			game.saveConfig('extension_忽悠宇宙_weaknessPosition', item);
-			if (game.countPlayer2() > 0) game.filterPlayer2(i => i.$syncWeakness())
+			if (lib.config["extension_忽悠宇宙_weakness"] != true && game.countPlayer2() > 0 && lib.element.player.$syncWeakness) game.filterPlayer2(i => i.$syncWeakness())
 		}
 	},
 	weaknessPosition2: {//弱点内外侧显示位置
@@ -694,9 +777,10 @@ const CONFIG = {
 		},
 		onclick(item) {
 			game.saveConfig('extension_忽悠宇宙_weaknessPosition2', item);
-			if (game.countPlayer2() > 0) game.filterPlayer2(i => i.$syncWeakness())
+			if (lib.config["extension_忽悠宇宙_weakness"] != true && game.countPlayer2() > 0 && lib.element.player.$syncWeakness) game.filterPlayer2(i => i.$syncWeakness())
 		}
 	},
+	line2: { name: '<hr>' },
 	loadUpdateContent: {//历史记录
 		name: '<span style="color: #ea059e">历史更新记录(点击查看)▶</span>',
 		intro: '查看历史更新',
@@ -742,12 +826,12 @@ const CONFIG = {
 					'修复了冰冻被调离后无法脱离效果的bug',
 					'为火漆类奇物添加不能打出、弃置、响应的机制',
 					'<b style="color: #008cff">2025-7-17 『v3.7b』</b>',
-					'修复了奇物会进入弃牌堆的bug',
-					'增加了忽悠模式的开关。',
+					'修复了奇物会进入弃牌堆的bug（后续已删除该系统）',
+					'增加了弱点系统的开关。',
 					'未来100-200天内无限期延期更新',
-					'<b style="color: #008cff">2026-?-? 『v4.1』</b>',
-					'',
-					'',
+					'<b style="color: #008cff">2026-2-17 『v4.2』</b>',
+					'更新了忽悠宇宙扩展的公测版',
+					'重构了绝大多数武将的代码为异步，修复了海量bug，现已兼容无名杀1.11.1版本',
 				]
 				var more = ui.create.div('.loadUpdateContent', `　<div style="border: 1px solid blue"><font size=2px>` + strs.join('<br>') + `</font></div>`);
 				this.parentNode.insertBefore(more, this.nextSibling);

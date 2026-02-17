@@ -69,12 +69,11 @@ const characters = {
 		hyyz_ɸ_huyouzongzu_prefix: 'ɸ',
 		hyyzhyyz2: {
 			init(player) {
-				lib.hyyz.clanSkills = {};
 				for (let skillName in lib.skill) if (lib.skill[skillName].clanSkill) lib.hyyz.clanSkills[skillName] = [];
 				const clanSkills = Object.keys(lib.hyyz.clanSkills)
 				if (!_status.hyyzhyyz2) {
 					_status.hyyzhyyz2 = [];
-					if (!_status.characterlist) game.initCharactertList();
+					if (!_status.characterlist) game.initCharacterList();
 
 					for (const name of _status.characterlist) {
 						if (!lib.character[name][3]) continue;
@@ -271,8 +270,8 @@ const characters = {
 			},
 			async content(event, trigger, player) {
 				var cards = event.cards;
-				player.addToExpansion(cards, player, 'give').gaintag.add('ymshiping');
-				player.draw(cards.length);
+				await player.addToExpansion(cards, player, 'give').gaintag.add('ymshiping');
+				await player.draw(cards.length);
 			},
 			group: ['ymgengxin_sub', 'ymshiping'],
 			subSkill: {
@@ -303,8 +302,8 @@ const characters = {
 			},
 		},
 		ymshiping: {
-			init(player) {
-				player.markSkill('ymshiping');
+			init(player, skill) {
+				player.markSkill(skill);
 			},
 			charlotte: true,
 			locked: true,
@@ -597,7 +596,7 @@ const characters = {
 			},
 			async cost(event, trigger, player) {
 				const { links } = await player
-					.chooseCardButton(get.prompt('ymduangeng'), '弃置一张“视频”牌，然后回复1点体力并摸两张牌', player.getExpansions('ymshiping'))
+					.chooseButton(get.prompt('ymduangeng'), ['弃置一张“视频”牌，然后回复1点体力并摸两张牌', player.getExpansions('ymshiping')])
 					.set('ai', function () {
 						return _status.event.player.isDamaged();
 					})
@@ -605,14 +604,12 @@ const characters = {
 				if (links) {
 					event.result = {
 						bool: true,
-						cost_data: {
-							links: links
-						}
+						cost_data: links
 					}
 				}
 			},
 			async content(event, trigger, player) {
-				await player.loseToDiscardpile(event.cost_data.links);
+				await player.loseToDiscardpile(event.cost_data);
 				await player.recover();
 				await player.draw(2);
 				if (player.getExpansions('ymshiping').length <= 0) {
@@ -621,7 +618,7 @@ const characters = {
 			},
 		},
 		ymgengxin_info: "更新|出牌阶段，你可以将不同花色的牌置于武将牌上，称为“视频”，然后摸等量的牌。",
-		ymshiping: "视频",
+		ymshiping_info: "视频|",
 		ymsanlian_info: "三连|其他角色的出牌阶段限一次，其可以获得一张“视频”并交给你至多三张牌。",
 		ymzhenggao_info: "征稿|使命技，你获得其他角色的牌后恢复1点体力。<br><span class=greentext>成功</span>：当你累计获得其他角色五张牌后，你减1点体力上限并获得〖圆梦〗。<br><span class=firetext>失败</span>：第四轮开始时，你失去所有技能并获得〖断更〗。",
 		ymyuanmeng_info: "圆梦|锁定技，你使用因“三连”获得的牌无距离限制且不能被响应，然后令交出此牌的角色摸一张牌。",

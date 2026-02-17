@@ -1410,7 +1410,7 @@ const characters = {
 				trigger.num++;
 			},
 		},
-		"mengzhenjun_info": "整军|出牌阶段结束时，你可以令一名其他角色[净化]并执行一个出牌阶段。若其未[净化]，其摸两张牌。",
+		"mengzhenjun_info": "整军|出牌阶段结束时，你可以令一名其他角色" + get.hyyzIntroduce('净化') + "并执行一个出牌阶段。若其未" + get.hyyzIntroduce('净化') + "，其摸两张牌。",
 		"mengzhenqu_info": "阵曲|每轮限一次，其他角色的出牌阶段开始时，你可以交给其任意张牌并将手牌摸至体力上限，该角色使用这些牌不能被响应。",
 		"mengjunzhen_info": "军阵|主公技，其他星铁势力的角色使用当前回合获得的牌造成伤害时，你可以重铸超出体力值的手牌并令此牌伤害+1。",
 	},
@@ -2333,119 +2333,93 @@ const characters = {
 		hyyz_b3_kiana: ['琪亚娜', ["female", "hyyz_b3", 4, ['mengyuehua', 'mengliushang'], ['zhu',]], '拾壹'],
 		mengyuehua: {
 			audio: 3,
-			init(player) {
-				player.storage.mengyuehua = [1, 2, 3, 4, 5, 6, 7];
-				player.storage.mengyuehua2 = [1, 2, 3, 4, 5, 6, 7];
-				player.syncStorage('mengyuehua');
-			},
-			mark: true,
-			intro: {
-				content(storage, player) {
-					var list = [
-						'1.造成1点火焰伤害<br>',
-						'2.回复1点体力<br>',
-						'3.摸一张牌<br>',
-						'4.造成1点冰冻伤害<br>',
-						'5.你弃置一名角色的一张牌<br>',
-						'6.获得其他角色的一张牌<br>',
-						'7.造成1点雷电伤害<br>',
-					];
-					var str = '';
-					for (var i = 0; i < 7; i++) {
-						if (player.storage.mengyuehua2.includes(i + 1)) {
-							if (player.storage.mengyuehua.includes(i + 1)) {
-								str += '<p style=\"color:rgb(124,252,0)\">';
-								str += list[i];
-								str += '</p>';
-							}
-							else {
-								str += '<p style=\"color:rgb(255,102,102)\">';
-								str += list[i];
-								str += '</p>';
-							}
+			init(player, skill) {
+				player.storage[skill] = {
+					0: [true, async function (trigger, player) {
+						const { targets } = await player.chooseTarget('对一名角色造成1点火焰伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'fire');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('fire')
 						}
-					}
-					return str;
+					}],
+					1: [true, async function (trigger, player) {
+						await player.recover();
+					}],
+					2: [true, async function (trigger, player) {
+						await player.draw();
+					}],
+					3: [true, async function (trigger, player) {
+						const { targets } = await player.chooseTarget('对一名角色造成1点冰冻伤害', true)
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'ice');
+							})
+							.forResult()
+						if (targets) {
+							await targets[0].damage('ice')
+						}
+					}],
+					4: [true, async function (trigger, player) {
+						const { targets } = await player
+							.chooseTarget('弃置一名角色区域内的一张牌', function (card, player, target) {
+								return target.countDiscardableCards(player, 'hej');
+							}, true)
+							.forResult()
+						if (targets) {
+							await player.discardPlayerCard(targets[0], 'he', true)
+						}
+					}],
+					5: [true, async function (trigger, player) {
+						const { targets } = await player.chooseTarget('获得一名角色区域内的一张牌', function (card, player, target) {
+							return target.countGainableCards(player, 'hej') && target != player;
+						}, true)
+							.forResult()
+						if (targets) {
+							await player.gainPlayerCard(targets[0], 'he', true)
+						}
+					}],
+					6: [true, async function (trigger, player) {
+						const { targets } = await player.chooseTarget('对一名角色造成1点雷电伤害')
+							.set('ai', function (target) {
+								return get.damageEffect(target, player, player, 'thunder');
+							}, true)
+							.forResult()
+						if (targets) {
+							await targets[0].damage('thunder')
+						}
+					}],
 				}
+				lib.skill.mengyuehua.$syncTip(player);
+			},
+			$syncTip(player) {
+				let list = [];
+				for (let i in player.storage.mengyuehua) {
+					if (player.storage.mengyuehua[i][0]) list.add(`<span class="greentext">${Number(i) + 1}</span>`)
+					else list.add(`<span class="firetext">${Number(i) + 1}</span>`)
+				}
+				if (list.length) player.addTip('mengyuehua', '月华 ' + list.join(''))
+				else player.removeTip('mengyuehua')
 			},
 			trigger: {
-				source: 'damageSource',
-				player: ['recoverEnd', 'drawAfter', 'gainAfter'],
-				global: ['loseAfter', 'loseAsyncAfter'],
-			},
-			filter(event, player) {
-				if (player.storage.mengyuehua.length == 0) return false;
-				var list = player.storage.mengyuehua;
-				switch (event.name) {
-					case 'damage': {
-						if (event.num != 1) return false;
-						if (event.nature != undefined) {
-							if (event.nature == 'fire' || event.hasNature("fire")) return list.includes(1);
-							if (event.nature == 'ice' || event.hasNature("ice")) return list.includes(4);
-							if (event.nature == 'thunder' || event.hasNature("thunder")) return list.includes(7);
-						}
-						else return false;
-					}
-					case 'lose': {
-						if (event.type != 'discard' || !list.includes(5)) return false;
-						if (event.player == player && event.cards.length == 1) return true;
-						if (event.getParent().notBySelf != true) return false;
-						if ((event.discarder || event.getParent(2).player) != player) return false;
-						var evtx = event.getl(event.player);
-						return evtx && evtx.cards2 && evtx.cards2.length == 1;
-					}
-					case 'recover': return event.num == 1 && list.includes(2);
-					case 'draw': return event.num == 1 && list.includes(3);
-					default: {
-						var cards = event.getg(player);
-						if (!cards.length) return false;
-						return game.hasPlayer(current => {
-							return current != player && event.getl(current).cards2.length;
-						}) && list.includes(6);
-					}
-				}
+				player: 'mengyuehuaContent'
 			},
 			async cost(event, trigger, player) {
-				switch (trigger.name) {
-					case 'damage': {
-						if (trigger.nature == 'fire') {
-							player.storage.mengyuehua.remove(1);
-							game.log('#g【月华】', player, '触发并禁用', '#y选项一');
-						}
-						else if (trigger.nature == 'ice') {
-							player.storage.mengyuehua.remove(4);
-							game.log('#g【月华】', player, '触发并禁用', '#y选项四');
-						}
-						else if (trigger.nature == 'thunder') {
-							player.storage.mengyuehua.remove(7);
-							game.log('#g【月华】', player, '触发并禁用', '#y选项七');
-						}
-						break;
+				const index = trigger.getParent().skill[11];
+				player.storage.mengyuehua[index][0] = false;//限一次
+				lib.skill.mengyuehua.$syncTip(player);
+
+				player.when({
+					global: 'phaseAfter'
+				}).then(() => {
+					for (let i in player.storage.mengyuehua) {
+						player.storage.mengyuehua[i][0] = true
 					}
-					case 'lose': {
-						player.storage.mengyuehua.remove(5);
-						game.log('#g【月华】', player, '触发并禁用', '#y选项五');
-						break;
-					}
-					case 'recover': {
-						player.storage.mengyuehua.remove(2);
-						game.log('#g【月华】', player, '触发并禁用', '#y选项二');
-						break;
-					}
-					case 'draw': {
-						player.storage.mengyuehua.remove(3);
-						game.log('#g【月华】', player, '触发并禁用', '#y选项三');
-						break;
-					}
-					default: {
-						player.storage.mengyuehua.remove(6);
-						game.log('#g【月华】', player, '触发并禁用', '#y选项六');
-						break;
-					}
-				}
-				player.markSkill('mengyuehua');
-				//
-				var list = [
+					lib.skill.mengyuehua.$syncTip(player);
+				})
+
+				let list = [
 					'对一名角色造成1点火焰伤害',
 					'回复1点体力',
 					'摸一张牌',
@@ -2454,10 +2428,13 @@ const characters = {
 					'获得一名其他角色的一张牌',
 					'对一名角色造成1点雷电伤害',
 				];
-				for (var i = 0; i < list.length; i++) {
-					list[i] = [i, list[i]];
+				for (let i = 0; i < list.length; i++) {
+					if (player.storage.mengyuehua[i] == undefined) {
+						list[i] = [i, '<s>' + list[i] + '</s>'];
+					}
+					else list[i] = [i, list[i]];
 				}
-				var next = player.chooseButton([
+				const next = player.chooseButton([
 					'月华：执行一项',
 					[list.slice(0, 1), 'tdnodes'],
 					[list.slice(1, 3), 'tdnodes'],
@@ -2469,19 +2446,18 @@ const characters = {
 				next.set('forced', false);
 				next.set('selectButton', [1, 1]);
 				next.set('filterButton', function (button) {
-					var player = _status.event.player;
-					var list = player.storage.mengyuehua;
-					if (button.link == 0) return list.includes(1);
-					if (button.link == 1) return list.includes(2) && player.isDamaged();
-					if (button.link == 2) return list.includes(3);
-					if (button.link == 3) return list.includes(4);
-					if (button.link == 4) return list.includes(5) && game.hasPlayer((current) => current != player && current.countDiscardableCards(player, 'hej') > 0);
-					if (button.link == 5) return list.includes(6) && game.hasPlayer((current) => current != player && current.countGainableCards(player, 'hej') > 0);
-					if (button.link == 6) return list.includes(7);
+					let player = get.player()
+					let storage = player.getStorage('mengyuehua')
+					if (button.link == 0) return storage[0]?.[0];
+					if (button.link == 1) return storage[1]?.[0] && player.isDamaged();
+					if (button.link == 2) return storage[2]?.[0];
+					if (button.link == 3) return storage[3]?.[0];
+					if (button.link == 4) return storage[4]?.[0] && game.hasPlayer((current) => current != player && current.countDiscardableCards(player, 'hej') > 0);
+					if (button.link == 5) return storage[5]?.[0] && game.hasPlayer((current) => current != player && current.countGainableCards(player, 'hej') > 0);
+					if (button.link == 6) return storage[6]?.[0];
 				});
 				next.set('ai', function (button) {
-					var player = _status.event.player;
-					var event = _status.event.getTrigger();
+					let player = get.player()
 					switch (button.link) {
 						case 0: {
 							var num = 0;
@@ -2538,86 +2514,105 @@ const characters = {
 				}
 			},
 			async content(event, trigger, player) {
-				const links = event.cost_data;
-				var map = [
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(1);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('月华，对一名角色造成1点火焰伤害', true)
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'fire');
-							})
-							.forResult()
-						if (targets) {
-							await targets[0].damage('fire')
-						}
+				const index = event.cost_data[0];
+				game.log('#g【月华】', player, '执行了', '#y选项' + get.cnNumber(index + 1, true));
+				player.storage.mengyuehua[index][0] = false;//限一次
+				lib.skill.mengyuehua.$syncTip(player);
+				await player.getStorage('mengyuehua')[index][1](trigger, player);
+			},
+			group: ['mengyuehua_0', 'mengyuehua_1', 'mengyuehua_2', 'mengyuehua_3', 'mengyuehua_4', 'mengyuehua_5', 'mengyuehua_6'],
+			subSkill: {
+				0: {
+					trigger: {
+						source: 'damageSource',
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(2);
-						player.syncStorage('mengyuehua');
-						await player.recover();
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[0]?.[0]) return false
+						return event.hasNature("fire") && event.num == 1
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(3);
-						player.syncStorage('mengyuehua');
-						await player.draw();
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(4);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('月华，对一名角色造成1点冰冻伤害', true)
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'ice');
-							})
-							.forResult()
-						if (targets) {
-							await targets[0].damage('ice')
-						}
+				},
+				1: {
+					trigger: {
+						player: 'recoverAfter'
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(5);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player
-							.chooseTarget('月华：弃置一名角色区域内的一张牌', function (card, player, target) {
-								return target.countDiscardableCards(player, 'hej');
-							}, true)
-							.forResult()
-						if (targets) {
-							await player.discardPlayerCard(targets[0], 'he', true)
-						}
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[1]?.[0]) return false
+						return event.num == 1
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(6);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('月华：获得一名角色区域内的一张牌', function (card, player, target) {
-							return target.countGainableCards(player, 'hej') && target != player;
-						}, true)
-							.forResult()
-						if (targets) {
-							await player.gainPlayerCard(targets[0], 'he', true)
-						}
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
 					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(7);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('月华，对一名角色造成1点雷电伤害')
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'thunder');
-							}, true)
-							.forResult()
-						if (targets) {
-							await targets[0].damage('thuner')
-						}
+				},
+				2: {
+					trigger: {
+						player: 'drawAfter'
 					},
-				];
-				for (var i = 0; i < result.links.length; i++) {
-					game.log('#g【月华】', player, '执行并禁用了', '#y选项' + get.cnNumber(result.links[i] + 1, true));
-					await map[links[i]](trigger, player);
-				}
-				player.when({ global: 'phaseAfter' }).then(() => {
-					player.storage.mengyuehua = player.storage.mengyuehua2.slice()
-					player.markSkill('mengyuehua')
-				})
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[2]?.[0]) return false
+						return event.num == 1
+					},
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
+					},
+				},
+				3: {
+					trigger: {
+						source: 'damageSource',
+					},
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[3]?.[0]) return false
+						return event.hasNature("ice") && event.num == 1
+					},
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
+					},
+				},
+				4: {
+					trigger: {
+						global: 'discardAfter'
+					},
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[4]?.[0]) return false
+						return event.cards.length == 1 && (event.discarder || event.getParent().player) == player
+					},
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
+					},
+				},
+				5: {
+					trigger: {
+						player: 'gainAfter'
+					},
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[5]?.[0]) return false
+						return event.cards.length == 1 && game.hasPlayer2(current => current != player && event.getl(current)?.cards2?.length > 0)
+					},
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
+					},
+				},
+				6: {
+					trigger: {
+						source: 'damageSource',
+					},
+					filter(event, player) {
+						if (!player.getStorage('mengyuehua')[6]?.[0]) return false
+						return event.hasNature("thunder") && event.num == 1
+					},
+					silent: true,
+					async content(event, trigger, player) {
+						event.trigger('mengyuehuaContent')
+					},
+				},
 			}
 		},
 		mengliushang: {
@@ -2638,10 +2633,13 @@ const characters = {
 					'获得一名其他角色的一张牌',
 					'对一名角色造成1点雷电伤害',
 				];
-				for (var i = 0; i < list.length; i++) {
-					list[i] = [i, list[i]];
+				for (let i = 0; i < list.length; i++) {
+					if (player.storage.mengyuehua[i] == undefined) {
+						list[i] = [i, '<s>' + list[i] + '</s>'];
+					}
+					else list[i] = [i, list[i]];
 				}
-				var next = player.chooseButton([
+				const next = player.chooseButton([
 					'流裳：执行一项并永久移除',
 					[list.slice(0, 1), 'tdnodes'],
 					[list.slice(1, 3), 'tdnodes'],
@@ -2653,39 +2651,38 @@ const characters = {
 				next.set('forced', false);
 				next.set('selectButton', [1, 1]);
 				next.set('filterButton', function (button) {
-					var player = _status.event.player;
-					var list = player.storage.mengyuehua;
-					if (button.link == 0) return list.includes(1);
-					if (button.link == 1) return list.includes(2) && player.isDamaged();
-					if (button.link == 2) return list.includes(3);
-					if (button.link == 3) return list.includes(4);
-					if (button.link == 4) return list.includes(5) && game.hasPlayer((current) => current.countDiscardableCards(player, 'hej') > 0);
-					if (button.link == 5) return list.includes(6) && game.hasPlayer((current) => current.countGainableCards(player, 'hej') > 0);
-					if (button.link == 6) return list.includes(7);
+					let player = get.player()
+					let storage = player.getStorage('mengyuehua')
+					if (button.link == 0) return storage[0]?.[0];
+					if (button.link == 1) return storage[1]?.[0] && player.isDamaged();
+					if (button.link == 2) return storage[2]?.[0];
+					if (button.link == 3) return storage[3]?.[0];
+					if (button.link == 4) return storage[4]?.[0] && game.hasPlayer((current) => current != player && current.countDiscardableCards(player, 'hej') > 0);
+					if (button.link == 5) return storage[5]?.[0] && game.hasPlayer((current) => current != player && current.countGainableCards(player, 'hej') > 0);
+					if (button.link == 6) return storage[6]?.[0];
 				});
 				next.set('ai', function (button) {
-					var player = _status.event.player;
-					var event = _status.event.getTrigger();
+					let player = get.player()
 					switch (button.link) {
 						case 0: {
 							var num = 0;
 							if (game.hasPlayer(function (current) {
 								if (get.damageEffect(current, player, player, 'fire') > num) num = get.damageEffect(current, player, player);
-							})) return num - 1;
+							})) return num;
 						}
 						case 1: {
 							if (player.isDamaged()) {
-								if (player.hp == 1) return 1;
-								if (player.hp == 2) return 0.5;
-								return 0.2
+								if (player.hp == 1) return 2;
+								if (player.hp == 2) return 1.5;
+								return 1.2
 							};
 						}
-						case 2: return 0.1;
+						case 2: return 0.8;
 						case 3: {
 							var num = 0;
 							if (game.hasPlayer(function (current) {
 								if (get.damageEffect(current, player, player, 'ice') > num) num = get.damageEffect(current, player, player);
-							})) return num - 1;
+							})) return num;
 						}
 						case 4: {
 							var num = 0;
@@ -2694,7 +2691,7 @@ const characters = {
 								if (att < 0) att = -Math.sqrt(-att);
 								else att = Math.sqrt(att);
 								if (att * lib.card.guohe.ai.result.target(player, current) > num) num = att * lib.card.guohe.ai.result.target(player, current);
-							})) return num - 1;
+							})) return num;
 						}
 						case 5: {
 							var num = 0;
@@ -2703,16 +2700,16 @@ const characters = {
 								if (att < 0) att = -Math.sqrt(-att);
 								else att = Math.sqrt(att);
 								if (att * lib.card.shunshou.ai.result.target(player, current) > num) num = att * lib.card.shunshou.ai.result.target(player, current);
-							})) return num - 1;
+							})) return num;
 						}
 						case 6: {
 							var num = 0;
 							if (game.hasPlayer(function (current) {
 								if (get.damageEffect(current, player, player, 'thunder') > num) num = get.damageEffect(current, player, player) > num;
-							})) return num - 1;
+							})) return num;
 						}
 					}
-				})
+				});
 				const { links } = await next.forResult()
 				if (links) {
 					event.result = {
@@ -2722,90 +2719,13 @@ const characters = {
 				}
 			},
 			async content(event, trigger, player) {
-				const links = event.cost_data;
-				const map = [
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(1);
-						player.storage.mengyuehua2.remove(1);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点火焰伤害', true)
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'fire');
-							})
-							.forResult()
-						if (targets) {
-							await targets[0].damage('fire')
-						}
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(2);
-						player.storage.mengyuehua2.remove(2);
-						player.syncStorage('mengyuehua');
-						await player.recover();
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(3);
-						player.storage.mengyuehua2.remove(3);
-						player.syncStorage('mengyuehua');
-						await player.draw();
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(4);
-						player.storage.mengyuehua2.remove(4);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点冰冻伤害', true)
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'ice');
-							})
-							.forResult()
-						if (targets) {
-							await targets[0].damage('ice')
-						}
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(5);
-						player.storage.mengyuehua2.remove(5);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player
-							.chooseTarget('流裳：弃置一名角色区域内的一张牌', function (card, player, target) {
-								return target.countDiscardableCards(player, 'hej');
-							}, true)
-							.forResult()
-						if (targets) {
-							await player.discardPlayerCard(targets[0], 'he', true)
-						}
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(6);
-						player.storage.mengyuehua2.remove(6);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('流裳：获得一名角色区域内的一张牌', function (card, player, target) {
-							return target.countGainableCards(player, 'hej') && target != player;
-						}, true)
-							.forResult()
-						if (targets) {
-							await player.gainPlayerCard(targets[0], 'he', true)
-						}
-					},
-					async function (trigger, player) {
-						player.storage.mengyuehua.remove(7);
-						player.storage.mengyuehua2.remove(7);
-						player.syncStorage('mengyuehua');
-						const { targets } = await player.chooseTarget('流裳，对一名角色造成1点雷电伤害')
-							.set('ai', function (target) {
-								return get.damageEffect(target, player, player, 'thunder');
-							}, true)
-							.forResult()
-						if (targets) {
-							await targets[0].damage('thuner')
-						}
-					},
-				];
-				for (var i = 0; i < links.length; i++) {
-					game.log('#g【流裳】', player, '执行并移除了', '#g【月华】', '的', '#y选项' + get.cnNumber(links[i] + 1, true));
-					await map[links[i]](trigger, player);
-				}
-			}
+				const index = event.cost_data[0];
+				game.log('#g【月华】', player, '执行并移除了', '#g【月华】', '的', '#y选项' + get.cnNumber(index + 1, true));
+				const func = player.getStorage('mengyuehua')[index][1]
+				delete player.storage.mengyuehua[index]
+				lib.skill.mengyuehua.$syncTip(player);
+				await func(trigger, player);
+			},
 		},
 		"mengyuehua_info": "月华|当你执行以下一项后，你可以选择一项执行（每回合每项只能触发和执行一次）：<br>1.对一名角色造成1点火焰伤害；<br>2.回复1点体力；<br>3.摸一张牌；<br>4.对一名角色造成1点冰冻伤害；<br>5.弃置一名角色区域内的一张牌；<br>6.获得一名其他角色的一张牌；<br>7.对一名角色造成1点雷电伤害。",
 		"mengliushang_info": "流裳|当你响应其他角色的牌后，你可以执行并移除〖月华〗中的一项。",
@@ -3971,7 +3891,7 @@ const characters = {
 				},
 			},
 		},
-		"mengsheyuan_info": "涉渊|其他角色的回合结束后，你记录" + get.hyyzIntroduce('中央区') + "的一张随机非装备牌名；若本回合未废除过装备栏，你获得两张〖涉渊〗记录牌中缺失类型的牌。你失去牌后，若〖涉渊〗记录牌中包含此牌的类型/牌名，你废除1/2个装备栏。",
+		"mengsheyuan_info": "涉渊|其他角色的回合结束后，你记录本回合弃牌堆的一张随机非装备牌名；若本回合未废除过装备栏，你获得两张〖涉渊〗记录牌中缺失类型的牌。你失去牌后，若〖涉渊〗记录牌中包含此牌的类型/牌名，你废除1/2个装备栏。",
 		"mengkanming_info": "堪名|每回合限一次，若你的装备栏均已废除，你可以将一张牌当〖涉渊〗记录牌使用。结算结束后，若没有角色因此牌改变体力值，你复原任意装备栏；每复原1/2个，你摸一张牌/回复1点体力。",
 
 		hyyz_b3_sushang: ['李素裳', ["female", "hyyz_b3", 3, ["mengzhejian", "mengtaixu", "mengjianxin"], []], '微雨', '尾巴已对技能〖太虚〗进行修改，若有其他方案可私信尾巴修改。'],//
@@ -8039,7 +7959,7 @@ const characters = {
 			},
 		},
 		"mengliufeng_info": "流风|锁定技，每轮开始时，你令手牌上限+1/-1，然后其他角色计算与你的距离-1/+1。",
-		"menggexian_info": "歌仙|回合结束后，令所有与你距离为1的其他角色选择一项：交给你一张牌，你执行首个未执行的阶段：准备、判定、摸牌、出牌、弃牌、结束。",
+		"menggexian_info": "歌仙|回合结束后，令所有与你距离为1的其他角色选择一项：交给你一张牌，你执行首个未因此选择的阶段：准备、判定、摸牌、出牌、弃牌、结束。",
 		"mengbaizhan_info": "百盏|锁定技，每回合第Y张牌被使用后，你获得之；若来源为你，此牌不计入次数。Y为你的手牌上限。",
 
 		hyyz_ys_abeiduo: ['阿贝多', ["male", "hyyz_ys", 3, ["mengsucheng", "mengchuangsheng", "mengbaie"], []], '微雨', '尾巴已对技能〖塑成〗〖创生〗进行修改，若有其他方案可私信尾巴修改。'],
@@ -9118,6 +9038,29 @@ const characters = {
 		转换技，阳：${阳2}；阴：${阴2}。<br>
 		转换技，阳：${阳3}；<br>
 		阴：${阴3}。`
-	}
+	},
+	//琪亚娜
+	mengyuehua(player) {
+		const list = [
+			'1.对一名角色造成1点火焰伤害；<br>',
+			'2.回复1点体力；<br>',
+			'3.摸一张牌；<br>',
+			'4.对一名角色造成1点冰冻伤害；<br>',
+			'5.弃置一名角色区域内的一张牌；<br>',
+			'6.获得一名其他角色的一张牌；<br>',
+			'7.对一名角色造成1点雷电伤害。',
+		]
+		let strs = []
+		const storage = player.getStorage('mengyuehua');
+		for (let i = 0; i < 7; i++) {
+			if (storage[i] != undefined) {
+				if (storage[i][0] == true) strs.add('<span class="bluetext">' + list[i] + '</span>')
+				else strs.add('<span class="firetext">' + list[i] + '</span>')
+			} else {
+				strs.add('<s>' + list[i] + '</s>')
+			}
+		}
+		return `当你执行以下一项后，你可以选择一项执行（每回合每项只能触发和执行一次）：<br>${strs.join('')}`
+	},
 };
 export { characters, dynamicTranslates }

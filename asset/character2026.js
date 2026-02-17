@@ -243,7 +243,7 @@ const characters = {
 			subSkill: {
 				buff: {
 					trigger: {
-						player: ['gainAfter', 'loseAfter']//
+						player: ['gainAfter', 'loseAfter']
 					},
 					locked: true,
 					charlotte: true,
@@ -251,13 +251,13 @@ const characters = {
 						if (event.name == 'gain') {
 							return event.getParent(2).name == 'dongzhuxianji' && event.getParent(4).name == 'hyyzfuxia' && event.cards.some(i => get.owner(i) == player)
 						} else {
-							return event.getParent(3).name == 'yiyi', event.getParent(5).name == 'hyyzfuxia' && event.cards.some(i => get.position(i, true) == "d")
+							return event.getParent(3).name == 'yiyi' && event.getParent(5).name == 'hyyzfuxia' && event.cards.some(i => get.position(i, true) == "d")
 						}
 					},
 					async cost(event, trigger, player) {
 						const cards = trigger.cards.filter(i => (trigger.name == 'gain' ? get.owner(i) == player : get.position(i, true) == "d"));
 						const result = await player
-							.chooseToMove("hyyzfuxia：将牌按顺序置于牌堆底")
+							.chooseToMove("赋瑕：将牌按顺序置于牌堆底")
 							.set("list", [["牌堆底(上→下)", cards]])
 							.set("processAI", (list) => {
 								const cards = list[0][1].slice(0);
@@ -377,10 +377,10 @@ const characters = {
 				}
 			}
 		},
-		hyyzfuxia_info: '赋瑕|你可跳过摸牌阶段/出牌阶段，视为对自己使用【洞烛先机】/【以逸待劳】，并将因此获得/弃置的牌置于牌堆底。',
+		hyyzfuxia_info: '赋瑕|你可跳过摸牌阶段/出牌阶段，视为对自己使用【洞烛先机】/【以逸待劳】，并将因此获得/失去的牌置于牌堆底。',
 		hyyzyixing_info: '逸兴|一名角色弃置牌后，你可展示牌堆底三张牌，依次使用弃牌和展示牌中花色数最多的牌；将未使用的牌交给手牌数不大于你的角色，此技失效至该角色的回合开始。',
 
-		hyyz_sp_qingque: ['青雀', ['female', 'qun', 3, ['hyyzyvcui', 'hyyzqiongming'], ['die:hyyz_xt_qingque']], '冷若寒', ''],
+		hyyz_xt_zhishi_qingque: ['青雀', ['female', 'qun', 3, ['hyyzyvcui', 'hyyzqiongming'], ['die:hyyz_xt_qingque']], '冷若寒', ''],
 		hyyzyvcui: {
 			audio: 'hyyzlaoyue',
 			enable: ["chooseToUse"],
@@ -445,9 +445,7 @@ const characters = {
 				const num = Math.abs(a.countCards('h') - b.countCards('h'));
 				const result = (a == player || b == player) ? await player.chooseTarget('令任意角色将手牌数调整至' + num).forResult() : [player];
 				if (result.targets) {
-					const result = await result.targets[0].changeCardTo(num)
-						.forResult();
-					//console.log(result);
+					await result.targets[0].changeCardTo(num)
 				}
 			}
 		},

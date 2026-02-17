@@ -4628,8 +4628,8 @@ const characters = {
 				delete player.storage.hyyzguina_buff;
 			},
 		},
-		hyyzbianbo_info: "辩驳|每回合限一次，一名角色仅对你使用牌时，你可以与其拼点。<br>若你赢，其选择令此牌无效，或受到你造成的1点伤害。<br>若你没赢，不能响应此牌且〖归纳〗计算此牌的N时+1。",
-		hyyzguina_info: "归纳|锁定技，你每轮第N次<span class='bluetext'>成为一种牌的目标</span>/<span class='legendtext'>使用一种牌指定目标</span>后，你<span class='bluetext'>摸N张牌</span>/<span class='legendtext'>此牌结算N次</span>（N须大于1）。",
+		hyyzbianbo_info: "辩驳|每回合限一次，一名角色仅对你使用牌时，你可以与其拼点。<br>若你赢，其选择令此牌无效，或受到你造成的1点伤害。<br>若你没赢，不能响应此牌且〖归纳〗计算此牌的X时+1。",
+		hyyzguina_info: "归纳|锁定技，你每轮第X次<span class='bluetext'>成为一种牌的目标</span>/<span class='legendtext'>使用一种牌指定目标</span>后，你<span class='bluetext'>摸X张牌</span>/<span class='legendtext'>此牌结算X次</span>（X须大于1）。",
 
 		hyyz_b3_jiziwuliangta: ['姬子·无量塔', ["female", "hyyz_b3", 4, ["hyyzxiepin", "hyyzpoxiao", "hyyzhuozhong"], []], '紫灵谷的骊歌', '天命A级女武神。姬子出生于极东之地，是从首批实验性瓦尔基里中成长起来的最高一线作战指挥官。2016年，姬子在与空之律者的战斗中战至力竭，在完成净化律者人格的目标后死亡。'],
 		hyyzxiepin: {
@@ -7635,7 +7635,7 @@ const characters = {
 			"_priority": 0,
 		},
 		"mengfusheng_info": "浮生|转换技，锁定技，阳：锁定技，出牌阶段开始时，你摸一张牌，然后本回合使用牌无次数限制且不可被响应。阴：锁定技，出牌阶段开始时，你弃置一张牌，然后本回合使用的牌无距离限制，且造成的伤害+1。",
-		"mengguiyi_info": "归忆|结束阶段，你可以获得" + get.hyyzIntroduce('中央区') + "中一种牌名的所有牌。",
+		"mengguiyi_info": "归忆|结束阶段，你可以获得本回合弃牌堆中一种牌名的所有牌。",
 		"mengduao_info": "渡鏖|限定技，当你处于濒死状态时，你可以增加一点体力上限，回复所有体力，将手牌补至体力上限。",
 
 		hyyz_b3_sp_kaiwen: ['凯文', ["male", "hyyz_b3", "2/4", ["mengyuxiang", "mengcanmeng", "mengjiushi"], []], '沧海依酥'],
@@ -9931,8 +9931,8 @@ const characters = {
 			forced: true,
 			async content(event, trigger, player) {
 				if (player.isMinHp()) {
-					player.addGaintag(player.getCards('h'), '_hyyz_fireCard');
-					player.markAuto('_hyyz_fireCard', player.getCards('h'));
+					await player.hyyzDianran('h')
+
 					player.when('useCard').filter((event, player) => {
 						return event.getParent(2).name == 'hyyzyingzhu';
 					}).then(() => {
@@ -10551,7 +10551,7 @@ const characters = {
 			},
 		},
 		hyyzminggan_info: "铭感|每回合每种花色限一次。一名角色的判定牌生效前，你可以声明一种花色并视为使用一张【推心置腹】，若因此获得声明花色的牌，打出之代替判定牌并终止此牌结算。",
-		hyyzyibu_info: `忆卜|出牌阶段限一次，你可以令一名角色判定。若该角色本回合失去过结果花色的牌，其失去1点体力；若为你，获得${get.hyyzIntroduce('中央区')}的同花色牌。`,
+		hyyzyibu_info: `忆卜|出牌阶段限一次，你可以令一名角色判定。若该角色本回合失去过结果花色的牌，其失去1点体力；若为你，获得本回合弃牌堆的同花色牌。`,
 		hyyzyuexin_info: "阅心|锁定技，距离为1的角色的手牌对你可见。",
 
 		hyyz_xt_xier: ['希儿', ["female", "hyyz_xt", 4, ['hyyzfuguang', 'hyyzlixing'], []], '紫灵谷的骊歌', '飒爽俊逸的「地火」成员，成长于地底危险混乱的环境，习惯独来独往。<br>作为曾经的弱者，如今的她锲而不舍地追求更强大的力量。为了有朝一日揭示地底的真相，为了给自己的族人正名，希儿可以忍受任何痛苦。<br>保护与被保护，压迫与被压迫，世界向希儿展示的始终是非黑即白的那一面——<br>直至「那名少女」的出现。'],
@@ -11049,7 +11049,7 @@ const characters = {
 				event._result = {};
 
 				if (get.centralCards().length > 0) {
-					var chooseButton = player.chooseButton(1, ["你的手牌", player.getCards("h"), "中央区", get.centralCards()]);
+					var chooseButton = player.chooseButton(1, ["你的手牌", player.getCards("h"), "本回合弃牌堆", get.centralCards()]);
 				} else {
 					var chooseButton = player.chooseButton(1, ["你的手牌", player.getCards("h")]);
 				}
@@ -11078,7 +11078,7 @@ const characters = {
 			},
 		},
 		"mengshangjin_info": "熵烬|锁定技，你的阶段结束时，若你手牌数未于此阶段变化过，你视为使用【树上开花】，弃置的装备牌当火【杀】使用。",
-		"mengranhuang_info": "燃煌|限定技，你可将牌堆顶牌，当【火攻】使用，期间中央区牌视为你的手牌，结算后你分配此技能。",
+		"mengranhuang_info": "燃煌|限定技，你可将牌堆顶牌，当【火攻】使用，期间本回合弃牌堆的牌视为你的手牌，结算后你分配此技能。",
 
 		//hyyz_xt_sp_liuying: ['流萤', ["female", "hyyz_xt", 3, ["mengxinying",], ['die:hyyz_xt_liuying']], '七夕月', ''],//"mengliuying"
 		mengxinying: {
@@ -11501,7 +11501,7 @@ const characters = {
 		},
 		visible_hyyzshenyi: '明·芙',
 		hyyzshenyi_info: '神仪|锁定技，你使用<span class="firetext">明</span>/<span class="greentext">暗</span>置牌不能被<span class="firetext">目标</span>/<span class="greentext">非目标</span>角色响应，然后将一张异置手牌重铸为同置牌。',
-		hyyzmantian_info: '瞒天|锁定技，你<span class="firetext">明</span>置初始牌且<span class="firetext">明</span>置牌不计入手牌上限；<span class="firetext">明</span>置牌减少的回合结束后，令轮次名其他角色【水淹七军】。',
+		hyyzmantian_info: '瞒天|锁定技，你<span class="firetext">明</span>置初始牌且<span class="firetext">明</span>置牌不计入手牌上限；<span class="firetext">明</span>置牌减少的回合结束后，对轮次名其他角色结算【水淹七军】。',
 
 		hyyz_ys_sp_zhongli: ['钟离', ['male', 'hyyz_ys', 4, ['hyyzfuqiang', 'hyyzwanglong'], ['zhu', 'die:hyyz_ys_zhongli']], '鼎铸山河-尾巴酱', '钟离者，神而帝者也。御国以明，擅通财器，璃月因之昌盛。故，税入既足，内可安民之生，外可驱邪避患。若成主公，每轮多决机宜，日理万机，尽瘁至形神磨损。<br>钟离者，帝而神者也。神荫广被，民众无忧，渐失独立之能。然，世事变迁，上有七星夺权，下有民众自立。纵国重生，方能化龙而翔，不受羁绊，翱翔于九天之上。'],
 		hyyzfuqiang: {
@@ -11882,7 +11882,7 @@ const characters = {
 			},
 		},
 		hyyzpaoying_info: '泡影|锁定技，你的初始手牌为不同花色且视为不同基本牌的【影】，你的攻击范围为【影】数。',
-		hyyzhuanshi_info: `患失|锁定技，你失去过牌的回合结束时，若这些牌不全在中央区，你依次无距离限制使用中央区的牌直至无法使用，然后将阻碍流程的牌当不可移动的【闪电】置于一名角色场上。`,
+		hyyzhuanshi_info: `患失|锁定技，你失去过牌的回合结束时，若这些牌不全在弃牌堆，你依次无距离限制使用本回合弃牌堆的牌直至无法使用，然后将中断流程的牌当不可移动的【闪电】置于一名角色场上。`,
 
 		hyyz_ɸ_liang: ['良', ['male', 'hyyz_ɸ', 4, ['hyyzliyi', 'hyyzlangxin'], []], '破枭成凤-尾巴酱', '良家世代行商，他曾想过不承父业，成为一名游历天下的侠客。1626年，天启大爆炸夺走了他的一切，他在家破人亡后便化作流民、继而沦为盗匪，做了许多恶事。'],//
 		hyyzliyi: {
@@ -12423,7 +12423,7 @@ const characters = {
 		},
 		"mengshuanghuaraobaiwei_info": "霜花扰百味|你可熔铸字数共为x的牌，视为使用一张非伤害牌（x为本轮本技能使用次数且初始为1）。",
 		"mengdanqinghuiqianqiu_info": "丹青绘千秋|你使用牌后，若中央区花色未满，你可分配一名手牌不等上限的角色的一点体力或一张手牌，除非其因此手牌数等于上限，你弃置一张牌。",
-		"mengrouyifuwansheng_info": "柔荑抚万生|锁定技，你使用的常规牌皆为打出。中央区包含四色的回合结束时，你奏响“琴音”。",
+		"mengrouyifuwansheng_info": "柔荑抚万生|锁定技，你使用的常规牌皆为打出。" + get.hyyzIntroduce('中央区') + "包含四色的回合结束时，你奏响“琴音”。",
 
 		hyyz_ys_xiaogong: ['宵宫', ['female', 'hyyz_ys', 4, ['mengyanshi', 'mengqingcun', 'menghuahuoyouyi'], []], '柚衣'],// 
 		mengyanshi: {
@@ -13410,11 +13410,11 @@ const characters = {
 				}
 			}
 		},
-		hyyzepiao_info: "饿殍|锁定技，你的摸牌数为体力下限。",
+		hyyzepiao_info: "饿殍|锁定技，你的摸牌数为" + get.hyyzIntroduce('体力下限') + "。",
 		hyyzcimang_info: `刺芒|你可检索令你
 		<span class='firetext'>残躯</span>/<span class='bluetext'>空巢</span>/<span class='greentext'>富甲</span>
 		的其他角色的
-		<span class='firetext'>勾玉</span>/<span class='bluetext'>同名牌</span>/<span class='greentext'>体力下限</span>。`,
+		<span class='firetext'>勾玉</span>/<span class='bluetext'>同名牌</span>/<span class='greentext'>${get.hyyzIntroduce('体力下限')}</span>。`,
 
 		hyyz_ɸ_xi: ['夕', ['female', 'hyyz_ɸ', 3, ['menglanzhanmo', 'mengzhangloudie'], []], '黄粱酒温梦', ''],
 		menglanzhanmo: {
@@ -14503,7 +14503,7 @@ const characters = {
 					var cards = get.centralCards();
 					if (cards.length) {
 						dialog.addAuto(cards);
-					} else return "中央区无牌";
+					} else return "本回合弃牌堆无牌";
 				},
 			},
 			trigger: {
@@ -14520,8 +14520,8 @@ const characters = {
 			},
 			prompt2(event, player, name) {
 				let suits = [];
-				get.centralCards().map(card => suits.add(get.suit(card)));
-				return '中央区有花色<' + get.translation(suits) + '>，令任意角色执行对应的〖悲歌〗项。其他角色执行黑色项后，你执行相同项或翻面。'
+				get.centralCards().forEach(card => suits.add(get.suit(card)));
+				return '本回合弃牌堆有花色<' + get.translation(suits) + '>，令任意角色执行对应的〖悲歌〗项。其他角色执行黑色项后，你执行相同项或翻面。'
 			},
 			round: 1,
 			async content(event, trigger, player) {
@@ -14586,7 +14586,7 @@ const characters = {
 			},
 		},
 		hyyzgongming_info: '共鸣|摸牌/弃牌/出牌阶段，你可以改为令所有角色各摸/弃/使用（不能被响应）一张手牌。若有角色未执行或因此使用牌造成伤害，你可以令其执行其他项，然后终止此流程。',
-		hyyzlingzhong_info: '聆众|每轮限一次，中央区有牌的回合结束时，其中每有一种花色，令一名其他角色执行〖悲歌〗中的此花色项。其他角色执行黑色项后，你执行相同项或翻面。',
+		hyyzlingzhong_info: '聆众|每轮限一次，有牌弃置过的回合结束时，其中每有一种花色，令一名其他角色执行〖悲歌〗中的此花色项。其他角色执行黑色项后，你执行相同项或翻面。',
 
 		hyyz_xt_kekena: ['柯柯娜', ['female', 'hyyz_ɸ', 3, ['hyyzwanmeng', 'hyyzguizhen'], []], '想象一朵未来的玫瑰-尾巴酱', `
 			千金蔽，易初心，志道分流引。<br>
@@ -17303,7 +17303,7 @@ const characters = {
 		"menghesong_info": "合颂|每回合限一次，有角色使用牌造成大于1的伤害后，在此牌结算后你可视为使用一张同名牌。若你因此造成的伤害值与其造成的伤害值：相同，其摸一张牌；不相同，你令受伤角色回复1点体力。",
 		"mengxiezou_info": "协奏|每轮每项各限一次，其他角色造成伤害时，你可观看并分配你与其的手牌且差值不能大于1。若因此你的手牌数大于/小于其，此伤害-1/+1。",
 
-		hyyz_b3_sp_qingque: ['青雀', ['female', 'hyyz_xt', 3, ['mengmystouxian', 'mengmysmianzuo'], ['img:extension/忽悠宇宙/asset/character/image/hyyz_xt_qingque.jpg', 'die:hyyz_xt_qingque']], '落叶秋霜', '尾巴已对技能〖勉作〗进行修改，若有其他方案可私信尾巴修改。'],
+		hyyz_xt_sp_qingque: ['青雀', ['female', 'hyyz_xt', 3, ['mengmystouxian', 'mengmysmianzuo'], ['img:extension/忽悠宇宙/asset/character/image/hyyz_xt_qingque.jpg', 'die:hyyz_xt_qingque']], '落叶秋霜', '尾巴已对技能〖勉作〗进行修改，若有其他方案可私信尾巴修改。'],
 		mengmystouxian: {
 			audio: 'hyyzlaoyue',
 			trigger: {
@@ -17518,6 +17518,7 @@ const characters = {
 		}
 		return `${前言}阳：${阳}；阴：${阴}${后语}`;
 	},
+	//希儿流萤
 	mengxinying(player) {
 		let a = '摸', b = '弃', c = '摸', d = '顶', e = '尾', f = '蓝字';
 		let list = player.storage['mengxinying'] ? ['摸', '弃', '摸', '顶', '尾', '蓝字'] : ['弃', '摸', '弃', '尾', '顶', '蓝字'];
